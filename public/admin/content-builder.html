@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Enterprise Content Builder</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+        
+        /* Clean Input Styling */
+        .input-field {
+            width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out; color: #334155; font-weight: 500;
+        }
+        .input-field:focus {
+            background-color: #ffffff; border-color: #14b8a6; outline: none;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+        }
+        .input-field:disabled { background-color: #f1f5f9; cursor: not-allowed; color: #94a3b8; opacity: 0.7;}
+
+        /* Sidebar Links */
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active {
+            background-color: #f0fdfa; color: #0d9488;
+            border-right: 3px solid #14b8a6;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Quill Editor Overrides */
+        .ql-toolbar.ql-snow { border-radius: 0.75rem 0.75rem 0 0; background: #f8fafc; border-color: #e2e8f0; }
+        .ql-container.ql-snow { border-radius: 0 0 0.75rem 0.75rem; border-color: #e2e8f0; font-family: 'Inter', sans-serif; font-size: 0.875rem; min-height: 250px; background: white; }
+
+        /* Type Cards */
+        .type-card { 
+            border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1.25rem 1rem; 
+            cursor: pointer; transition: all 0.2s; background: white; 
+            display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem;
+        }
+        .type-card:hover { border-color: #cbd5e1; background: #f8fafc; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .type-card.selected { border-color: #0d9488; background: #f0fdfa; box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.1); }
+        .type-card i { font-size: 2rem; margin-bottom: 0.25rem; }
+
+        /* Preview Rich Content */
+        .rich-content { font-size: 14px; line-height: 1.6; color: #475569; }
+        .rich-content h2, .rich-content h3 { color: #0f172a; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.25rem;}
+        .rich-content p { margin-bottom: 1rem; }
+        .rich-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .rich-content img { border-radius: 0.5rem; max-width: 100%; border: 1px solid #e2e8f0; margin: 1rem 0; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <!-- Mobile Top Navigation Bar -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
+        <div class="flex items-center gap-2">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
+            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Sidebar (Desktop & Mobile Drawer) -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
+                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
+            </div>
+        </div>
+        
+        <!-- Navigation Links -->
+         <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link active"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+        </nav>
+        
+        <!-- Bottom Action -->
+        <div class="p-4 border-t border-slate-100">
+            <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-hidden flex flex-col h-full bg-slate-50 relative pt-16 md:pt-0 w-full">
+        <!-- Header -->
+        <div class="px-4 md:px-8 py-5 border-b border-slate-200 bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 shadow-sm z-10">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Curriculum Builder</h2>
+                <p class="text-sm text-slate-500 mt-1">Organize courses, attach reading materials, and manage access.</p>
+            </div>
+            <button class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap" onclick="resetForm()">
+                <i class="fa-solid fa-plus"></i> Create New Item
+            </button>
+        </div>
+
+        <div class="flex flex-col lg:flex-row flex-1 overflow-hidden">
+            
+            <!-- LEFT: Directory Tree -->
+            <div class="w-full lg:w-[320px] shrink-0 border-b lg:border-b-0 lg:border-r border-slate-200 bg-white flex flex-col h-1/3 lg:h-full relative">
+                <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
+                    <h3 class="font-bold text-slate-700 text-xs uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-sitemap text-brand-500"></i> Content Repository
+                    </h3>
+                    <button onclick="fetchContentTree()" class="text-slate-400 hover:text-brand-600 transition p-1" title="Refresh Tree">
+                        <i class="fa-solid fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4" id="hierarchy-tree">
+                    <div class="text-center text-slate-400 py-10 flex flex-col items-center">
+                        <i class="fa-solid fa-circle-notch fa-spin mb-3 text-2xl text-brand-500"></i>
+                        <span class="text-sm">Loading structure...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Dynamic Editor -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 relative">
+                
+                <form id="contentForm" onsubmit="handleFormSubmit(event)" class="max-w-4xl mx-auto pb-20">
+                    
+                    <!-- S3 Upload Overlay -->
+                    <div id="upload-overlay" class="absolute inset-0 bg-white/90 z-50 hidden flex-col items-center justify-center backdrop-blur-sm rounded-xl border border-slate-200 m-4">
+                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-brand-500 mb-4 animate-bounce"></i>
+                        <h3 class="font-bold text-slate-800 text-xl">Uploading Secure Asset...</h3>
+                        <p class="text-sm font-medium text-slate-500 mt-2" id="upload-status-text">Please wait, pushing to AWS S3. Do not close this window.</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-6">
+                        <div>
+                            <h3 id="form-main-title" class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Create New Item</h3>
+                            <span id="edit-badge" class="hidden bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-2 inline-flex items-center gap-1">
+                                <i class="fa-solid fa-pen"></i> Edit Mode
+                            </span>
+                            <p id="edit-type-warning" class="hidden text-xs text-amber-600 mt-2 font-medium">Item type cannot be changed while editing. Please select a parent folder to add a new child item.</p>
+                        </div>
+                        <button type="button" onclick="previewContent()" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-medium transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-eye"></i> Preview
+                        </button>
+                    </div>
+
+                    <input type="hidden" id="editContentId">
+                    <input type="hidden" id="levelType" value="chapter">
+                    
+                    <!-- Step 1: Type Selection Cards -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-7 h-7 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">1</div>
+                            <h4 class="text-base font-bold text-slate-800">What are you creating?</h4>
+                        </div>
+                        <div id="type-cards-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 transition-opacity duration-300">
+                            <div onclick="selectEntryType('chapter')" class="type-card selected" id="type-chapter">
+                                <i class="fa-solid fa-book text-brand-500"></i>
+                                <span class="font-bold text-sm text-slate-800">Course Unit</span>
+                                <span class="text-[11px] text-slate-500">Main Folder</span>
+                            </div>
+                            <div onclick="selectEntryType('subchapter')" class="type-card" id="type-subchapter">
+                                <i class="fa-solid fa-folder-open text-blue-500"></i>
+                                <span class="font-bold text-sm text-slate-800">Sub-Topic</span>
+                                <span class="text-[11px] text-slate-500">Nested Folder</span>
+                            </div>
+                            <div onclick="selectEntryType('document')" class="type-card" id="type-document">
+                                <i class="fa-solid fa-file-pdf text-red-500"></i>
+                                <span class="font-bold text-sm text-slate-800">Reading Mat.</span>
+                                <span class="text-[11px] text-slate-500">PDF Document</span>
+                            </div>
+                            <div onclick="selectEntryType('video')" class="type-card" id="type-video">
+                                <i class="fa-solid fa-circle-play text-purple-500"></i>
+                                <span class="font-bold text-sm text-slate-800">Video Lesson</span>
+                                <span class="text-[11px] text-slate-500">MP4 / WebM File</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Placement & Access -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm">2</div>
+                                <h4 class="text-base font-bold text-slate-800">Placement Location</h4>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Parent Folder</label>
+                                    <p class="text-xs text-slate-500 mb-2">Where should this item live?</p>
+                                    <select id="parentNode" class="input-field" disabled>
+                                        <option value="">-- Main Course Units sit at root --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Item Title</label>
+                                    <input type="text" id="contentTitle" class="input-field font-semibold" placeholder="e.g., Chapter 1: Introduction" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-users"></i></div>
+                                <h4 class="text-base font-bold text-slate-800">Access Permissions</h4>
+                            </div>
+                            
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Target Audience</label>
+                            <p class="text-xs text-amber-600 mb-3">If unchecked on child items, it automatically inherits from its parent folder.</p>
+                            
+                            <div class="border border-slate-200 rounded-lg bg-slate-50 overflow-hidden">
+                                <label class="flex items-center gap-3 cursor-pointer p-3 border-b border-slate-200 bg-white hover:bg-slate-50 transition">
+                                    <input type="checkbox" id="selectAllLevels" value="All Levels" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="toggleAllLevels(this)">
+                                    <span class="font-bold text-sm text-slate-800">Global Access (All Levels)</span>
+                                </label>
+                                <div id="levelCheckboxes" class="max-h-[140px] overflow-y-auto p-2 space-y-1">
+                                    <span class="text-slate-400 text-xs italic px-2">Loading levels...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Media Upload Box (Dynamic) -->
+                    <div id="media-upload-container" class="hidden flex-col gap-6 mb-6 animate-fade-in">
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                <h4 class="text-base font-bold text-slate-800">Secure Asset Upload</h4>
+                            </div>
+                            
+                            <!-- Default Dropzone -->
+                            <div id="upload-dropzone" class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 text-center transition hover:border-purple-400 group">
+                                <i class="fa-solid fa-file-shield text-4xl text-purple-200 mb-3 group-hover:text-purple-300 transition-colors" id="upload-icon"></i>
+                                <p class="text-sm text-slate-600 mb-4 max-w-sm">Select your file. It will be securely stored in AWS S3 and streamed to prevent unauthorized access.</p>
+                                <input type="file" id="standaloneFile" class="text-sm border border-slate-300 rounded-md p-2 bg-white cursor-pointer w-full max-w-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+
+                            <!-- "File Exists" State Card -->
+                            <div id="existing-file-card" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-check"></i></div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-bold text-emerald-800 text-sm mb-0.5">Secure File Attached</h4>
+                                        <p class="text-xs text-emerald-600 font-medium truncate" id="existing-filename">document.pdf</p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="revealUploader()" class="px-3 py-1.5 bg-white border border-emerald-200 text-emerald-700 rounded-lg shadow-sm hover:bg-emerald-100 text-xs font-bold transition shrink-0">Replace File</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes/Rich Text Editor (Always visible) -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col min-h-[350px] mb-6">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-align-left"></i></div>
+                            <h4 class="text-base font-bold text-slate-800">Detailed Content & Notes</h4>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4 ml-10">Use this editor to write notes. You can also insert inline public images or videos using the toolbar.</p>
+                        <div id="quill-editor" class="flex-1 bg-white"></div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row gap-3 mt-8">
+                        <button type="button" onclick="resetForm()" class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-6 py-2.5 rounded-lg font-medium transition shadow-sm w-full sm:w-auto">Cancel</button>
+                        <button type="button" onclick="saveAsDraft()" class="bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 px-6 py-2.5 rounded-lg font-medium transition shadow-sm w-full sm:w-auto sm:ml-auto">Save as Draft</button>
+                        <button type="submit" id="submitBtn" class="bg-brand-600 hover:bg-brand-700 text-white px-8 py-2.5 rounded-lg font-medium transition shadow-sm flex items-center justify-center gap-2 w-full sm:w-auto">
+                            Publish Live <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <!-- ... (Existing modal content remains exactly the same) ... -->
+        <div class="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl rounded-2xl border border-slate-200 animate-fade-in">
+            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-eye"></i> Student View
+                    </span>
+                </div>
+                <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 focus:outline-none p-1 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 md:p-10">
+                <div class="max-w-3xl mx-auto w-full">
+                    <div id="media-preview-block" class="w-full bg-slate-900 rounded-xl flex items-center justify-center shadow-md mb-8 hidden overflow-hidden border border-slate-800"></div>
+                    <div class="bg-white border border-slate-100 rounded-xl p-8 shadow-sm">
+                        <span id="preview-type-badge" class="inline-block px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-bold tracking-widest uppercase rounded mb-4">Item Type</span>
+                        <h1 id="preview-title" class="text-2xl md:text-3xl font-bold text-slate-900 leading-tight border-b border-slate-100 pb-4 mb-6">Content Title</h1>
+                        <div id="preview-body" class="rich-content min-h-[150px]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[200] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        
+        let quill;
+        let allContent = [];
+        let allLevels = [];
+        let currentActionStatus = 'published';
+
+        if (!token || !user || user.role !== 'admin') { 
+            localStorage.clear(); 
+            window.location.href = '../login.html'; 
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            initQuill();
+            await fetchLevels();
+            await fetchContentTree();
+        });
+
+        // --- UI Interactions ---
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); 
+            } else {
+                sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-white border-l-4 border-emerald-500' : 'bg-white border-l-4 border-red-500';
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            toast.className = `${bg} shadow-lg rounded px-4 py-3 text-sm text-slate-700 flex items-center gap-3 animate-slide-in-right pointer-events-auto min-w-[250px]`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        function initQuill() {
+            quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: {
+                        container: [ [{ 'header': [1, 2, 3, false] }], ['bold', 'italic', 'underline', 'strike'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['link', 'image', 'video'], ['clean'] ],
+                        handlers: { image: () => selectLocalMedia('image'), video: () => selectLocalMedia('video') }
+                    }
+                },
+                placeholder: 'Type curriculum notes here...'
+            });
+        }
+
+        function selectLocalMedia(type) {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file'); input.setAttribute('accept', type === 'image' ? 'image/*' : 'video/mp4,video/webm');
+            input.click();
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (!file) return;
+                const overlay = document.getElementById('upload-overlay');
+                overlay.classList.remove('hidden'); overlay.classList.add('flex');
+                document.getElementById('upload-status-text').innerText = `Uploading inline ${type} securely to S3...`;
+                try {
+                    const res = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) 
+                    });
+                    const data = await res.json();
+                    await fetch(data.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, type, data.readUrl); quill.setSelection(range.index + 1);
+                } catch (err) { showToast('S3 Media Upload failed.', 'error'); } finally { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
+            };
+        }
+
+        async function fetchLevels() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/levels`, { headers: { 'Authorization': `Bearer ${token}` } });
+                allLevels = await res.json();
+                const container = document.getElementById('levelCheckboxes'); container.innerHTML = '';
+                allLevels.forEach(lvl => {
+                    container.innerHTML += `<label class="flex items-center gap-3 cursor-pointer hover:bg-slate-100 p-2 rounded-md transition border border-transparent hover:border-slate-200"><input type="checkbox" value="${lvl.levelName}" class="level-cb w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="updateAllLevelsCheckbox()"><span class="text-slate-700 font-medium text-sm">${lvl.levelName}</span></label>`;
+                });
+            } catch(e) { console.error("Failed to fetch levels"); }
+        }
+
+        function toggleAllLevels(selectAllCb) { document.querySelectorAll('.level-cb').forEach(cb => cb.checked = selectAllCb.checked); }
+        function updateAllLevelsCheckbox() {
+            const checkboxes = document.querySelectorAll('.level-cb');
+            document.getElementById('selectAllLevels').checked = Array.from(checkboxes).every(cb => cb.checked);
+        }
+        function getSelectedLevels() {
+            const selectAllCb = document.getElementById('selectAllLevels');
+            if (selectAllCb && selectAllCb.checked) return ['All Levels'];
+            return Array.from(document.querySelectorAll('.level-cb:checked')).map(cb => cb.value);
+        }
+        function setSelectedLevels(levelsArray) {
+            const checkboxes = document.querySelectorAll('.level-cb'); const selectAllCb = document.getElementById('selectAllLevels');
+            checkboxes.forEach(cb => cb.checked = false); if(selectAllCb) selectAllCb.checked = false;
+            if (!levelsArray || levelsArray.length === 0) return;
+            if (levelsArray.includes('All Levels')) {
+                if(selectAllCb) selectAllCb.checked = true; checkboxes.forEach(cb => cb.checked = true);
+            } else { checkboxes.forEach(cb => { cb.checked = levelsArray.includes(cb.value); }); }
+        }
+
+        function selectEntryType(type) {
+            document.getElementById('levelType').value = type;
+            document.querySelectorAll('.type-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById(`type-${type}`).classList.add('selected');
+            toggleFormMode();
+        }
+
+        function toggleFormMode() {
+            const type = document.getElementById('levelType').value;
+            const parentSelect = document.getElementById('parentNode');
+            const mediaContainer = document.getElementById('media-upload-container');
+            const fileInput = document.getElementById('standaloneFile');
+            const uploadIcon = document.getElementById('upload-icon');
+            
+            // LOCK TYPE CHANGES IF EDITING (Prevent overwriting chapters with pdfs)
+            const isEditing = document.getElementById('editContentId').value !== '';
+            const typeCardsContainer = document.getElementById('type-cards-container');
+            if(isEditing) {
+                typeCardsContainer.classList.add('opacity-50', 'pointer-events-none');
+                document.getElementById('edit-type-warning').classList.remove('hidden');
+            } else {
+                typeCardsContainer.classList.remove('opacity-50', 'pointer-events-none');
+                document.getElementById('edit-type-warning').classList.add('hidden');
+            }
+            
+            if (type === 'chapter') {
+                parentSelect.disabled = true; parentSelect.classList.add('bg-slate-50', 'opacity-70'); 
+                parentSelect.innerHTML = '<option value="">-- Main Course Units sit at root --</option>';
+            } else {
+                parentSelect.disabled = false; parentSelect.classList.remove('bg-slate-50', 'opacity-70');
+                populateParentOptions(type);
+            }
+
+            if (type === 'video' || type === 'document') {
+                mediaContainer.classList.remove('hidden'); mediaContainer.classList.add('flex');
+                if(type === 'video') {
+                    fileInput.setAttribute('accept', 'video/mp4,video/webm');
+                    uploadIcon.className = "fa-solid fa-file-video text-4xl text-purple-200 mb-3 group-hover:text-purple-300 transition-colors";
+                } else {
+                    fileInput.setAttribute('accept', 'application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation');
+                    uploadIcon.className = "fa-solid fa-file-pdf text-4xl text-red-200 mb-3 group-hover:text-red-300 transition-colors";
+                }
+            } else {
+                mediaContainer.classList.add('hidden'); mediaContainer.classList.remove('flex');
+            }
+        }
+
+        function populateParentOptions(type) {
+            const parentSelect = document.getElementById('parentNode');
+            const currentValue = parentSelect.value;
+            parentSelect.innerHTML = '<option value="" disabled selected>-- Select a Parent Folder --</option>';
+            
+            // Subchapters must live in chapters. Files can live in chapters OR subchapters.
+            let validParents = [];
+            if (type === 'subchapter') {
+                validParents = allContent.filter(c => c.type === 'chapter');
+            } else if (type === 'document' || type === 'video') {
+                validParents = allContent.filter(c => c.type === 'chapter' || c.type === 'subchapter');
+            }
+            
+            validParents.forEach(p => parentSelect.innerHTML += `<option value="${p.id}">${p.title} (${p.type})</option>`);
+            
+            // Retain selected parent if it still exists in the new options list
+            if (currentValue && Array.from(parentSelect.options).some(opt => opt.value === currentValue)) {
+                parentSelect.value = currentValue;
+            }
+        }
+
+        function extractFilename(s3Key) {
+            if (!s3Key) return 'Secure Uploaded File';
+            const parts = s3Key.split('-'); return parts.length > 1 ? parts.slice(1).join('-') : s3Key.split('/').pop();
+        }
+        function revealUploader() {
+            document.getElementById('existing-file-card').classList.add('hidden'); document.getElementById('upload-dropzone').classList.remove('hidden');
+            document.getElementById('upload-dropzone').classList.add('flex'); document.getElementById('standaloneFile').value = '';
+        }
+
+        async function fetchContentTree() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/content`, { headers: { 'Authorization': `Bearer ${token}` } });
+                allContent = await res.json();
+                renderTree();
+                toggleFormMode(); 
+            } catch (e) { document.getElementById('hierarchy-tree').innerHTML = '<p class="text-red-500 text-center py-4 text-sm">Failed to load repository.</p>'; }
+        }
+
+        // CORRECTED RENDER TREE LOGIC (Strict Hierarchy)
+        function renderTree() {
+            const tree = document.getElementById('hierarchy-tree');
+            tree.innerHTML = '';
+            
+            // Only pull strict root chapters
+            const chapters = allContent.filter(c => c.type === 'chapter');
+            if(chapters.length === 0) { 
+                tree.innerHTML = '<div class="text-center text-slate-400 py-10 flex flex-col items-center"><i class="fa-solid fa-folder-open text-3xl mb-3 opacity-50 text-slate-300"></i><span class="text-sm font-medium">Repository is empty.</span></div>'; 
+                return; 
+            }
+
+            let html = '';
+            chapters.forEach(folder => {
+                html += buildNodeHtml(folder, 'fa-book', 'text-brand-500', true);
+                html += `<div class="tree-children border-l-2 border-slate-100 ml-3.5 pl-3 mt-1.5 space-y-1 mb-4">`;
+                
+                // Get strictly subchapters inside this folder
+                const subfolders = allContent.filter(c => c.parentId === folder.id && c.type === 'subchapter');
+                subfolders.forEach(sub => {
+                    html += buildNodeHtml(sub, 'fa-folder-open', 'text-blue-500', false);
+                    html += `<div class="tree-children border-l border-slate-100 ml-3 pl-3 mt-1 space-y-1 mb-3">`;
+                    
+                    // Get files strictly inside this subchapter
+                    const files = allContent.filter(c => c.parentId === sub.id && (c.type === 'document' || c.type === 'video'));
+                    files.forEach(file => {
+                        const icon = file.type === 'document' ? 'fa-file-pdf' : 'fa-circle-play';
+                        const color = file.type === 'document' ? 'text-red-400' : 'text-purple-400';
+                        html += buildNodeHtml(file, icon, color, false, true);
+                    });
+                    html += `</div>`; 
+                });
+                
+                // Get files directly inside the main folder
+                const directFiles = allContent.filter(c => c.parentId === folder.id && (c.type === 'document' || c.type === 'video'));
+                directFiles.forEach(file => {
+                    const icon = file.type === 'document' ? 'fa-file-pdf' : 'fa-circle-play';
+                    const color = file.type === 'document' ? 'text-red-400' : 'text-purple-400';
+                    html += buildNodeHtml(file, icon, color, false, true);
+                });
+
+                html += `</div>`; 
+            });
+            tree.innerHTML = html;
+        }
+
+        function buildNodeHtml(node, iconClass, colorClass, isRoot = false, isFile = false) {
+            const hasS3File = node.s3Key ? true : false;
+            const fileBadge = hasS3File ? `<span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded ml-2 font-bold whitespace-nowrap"><i class="fa-solid fa-paperclip"></i> Attached</span>` : '';
+            const draftBadge = node.status === 'draft' ? `<span class="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded ml-2 font-bold whitespace-nowrap">Draft</span>` : '';
+            
+            const bgClass = isRoot ? 'bg-slate-50 border border-slate-200 hover:bg-slate-100' : 'hover:bg-slate-50 border border-transparent';
+            const padding = isRoot ? 'p-2.5 mt-2 rounded-lg' : 'py-1.5 px-2 rounded-md';
+            const titleClass = isRoot ? 'font-bold text-sm text-slate-800' : (isFile ? 'font-medium text-xs text-slate-600' : 'font-semibold text-[13px] text-slate-700');
+
+            // Add Child Button (Only for folders)
+            const addChildBtn = !isFile ? `<button type="button" onclick="prepareAddChild('${node.id}', '${node.type}'); event.stopPropagation();" class="text-slate-400 hover:text-brand-600 transition w-6 h-6 flex items-center justify-center rounded hover:bg-slate-50" title="Add Item Inside"><i class="fa-solid fa-plus text-[10px]"></i></button>` : '';
+
+            return `
+                <div class="group flex justify-between items-start ${bgClass} ${padding} transition cursor-pointer" onclick="editContent('${node.id}')">
+                    <div class="flex-1 overflow-hidden flex items-center">
+                        <div class="${titleClass} flex items-center truncate">
+                            <i class="fa-solid ${iconClass} ${colorClass} w-5 text-center mr-1"></i> ${node.title}
+                        </div>
+                        ${fileBadge}
+                        ${draftBadge}
+                    </div>
+                    <div class="hidden group-hover:flex gap-1 pl-2 pt-0.5 bg-white shadow-sm rounded px-1 shrink-0 ml-2">
+                        ${addChildBtn}
+                        <button type="button" onclick="editContent('${node.id}'); event.stopPropagation();" class="text-slate-400 hover:text-blue-600 transition w-6 h-6 flex items-center justify-center rounded hover:bg-blue-50" title="Edit"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button type="button" onclick="deleteContent('${node.id}'); event.stopPropagation();" class="text-slate-400 hover:text-red-500 transition w-6 h-6 flex items-center justify-center rounded hover:bg-red-50" title="Delete"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    </div>
+                </div>`;
+        }
+        
+        // NEW HELPER: Set Form up to create a child directly inside a specific parent
+        function prepareAddChild(parentId, parentType) {
+            resetForm(); 
+            let childType = parentType === 'chapter' ? 'subchapter' : 'document';
+            selectEntryType(childType);
+            
+            setTimeout(() => {
+                const parentSelect = document.getElementById('parentNode');
+                if(parentSelect) parentSelect.value = parentId;
+            }, 50); // delay allows UI to repopulate dropdown
+            
+            document.getElementById('contentForm').scrollIntoView({ behavior: 'smooth' });
+            showToast(`Ready to add item inside folder.`, 'success');
+        }
+
+        function previewContent() {
+            const title = document.getElementById('contentTitle').value || 'Untitled Content';
+            const type = document.getElementById('levelType').value;
+            const bodyContainer = document.getElementById('preview-body'); const mediaBlock = document.getElementById('media-preview-block');
+            
+            document.getElementById('preview-title').innerText = title; document.getElementById('preview-type-badge').innerText = type.toUpperCase();
+            
+            if (type === 'video' || type === 'document') {
+                mediaBlock.classList.remove('hidden'); const fileInput = document.getElementById('standaloneFile'); const existingFileCard = document.getElementById('existing-file-card');
+                if (fileInput && fileInput.files.length > 0) {
+                    const fileUrl = URL.createObjectURL(fileInput.files[0]);
+                    if (type === 'video') { mediaBlock.innerHTML = `<video src="${fileUrl}" controls class="w-full h-full max-h-[400px] object-contain bg-black rounded-xl"></video>`; } 
+                    else { mediaBlock.innerHTML = `<div class="text-slate-500 flex flex-col items-center py-12 w-full bg-slate-50 border border-slate-200"><i class="fa-solid fa-file-pdf text-5xl mb-4 text-red-400"></i><p class="font-bold text-sm text-slate-600 mt-2">Local File Selected</p><p class="text-xs text-slate-500 mt-1">${fileInput.files[0].name}</p></div>`; }
+                } else if (existingFileCard && !existingFileCard.classList.contains('hidden')) {
+                    mediaBlock.innerHTML = `<div class="text-slate-500 flex flex-col items-center py-12 w-full bg-slate-800"><i class="fa-solid fa-cloud text-5xl mb-4 text-brand-300"></i><p class="font-bold text-sm text-slate-300 mt-2">File is securely stored in AWS</p><p class="text-xs text-slate-400 mt-1">${document.getElementById('existing-filename').innerText}</p></div>`;
+                } else { mediaBlock.innerHTML = `<div class="text-slate-500 flex flex-col items-center py-12 w-full bg-slate-50 border border-slate-200"><i class="fa-solid fa-file-shield text-5xl mb-4 text-slate-300"></i><p class="font-bold text-sm text-slate-500">Secure Asset Placeholder</p></div>`; }
+            } else { mediaBlock.classList.add('hidden'); mediaBlock.innerHTML = ''; }
+
+            bodyContainer.innerHTML = quill.root.innerHTML || '<p class="text-slate-400 italic text-sm">No text notes provided.</p>';
+            document.getElementById('preview-modal').classList.remove('hidden');
+        }
+
+        function editContent(id) {
+            const item = allContent.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('upload-dropzone').classList.remove('hidden'); document.getElementById('upload-dropzone').classList.add('flex');
+            document.getElementById('existing-file-card').classList.add('hidden'); document.getElementById('existing-file-card').classList.remove('flex');
+            document.getElementById('standaloneFile').value = '';
+
+            document.getElementById('editContentId').value = item.id;
+            document.getElementById('contentTitle').value = item.title;
+            
+            selectEntryType(item.type); // selectEntryType triggers toggleFormMode which locks type cards because editContentId is set
+            setSelectedLevels(item.levels || []);
+
+            if (item.parentId) { document.getElementById('parentNode').value = item.parentId; }
+
+            quill.clipboard.dangerouslyPasteHTML(item.textContent || '');
+            
+            if (item.type === 'video' || item.type === 'document') {
+                if(item.s3Key) {
+                    const filename = extractFilename(item.s3Key);
+                    document.getElementById('existing-filename').innerText = filename;
+                    document.getElementById('upload-dropzone').classList.add('hidden'); document.getElementById('upload-dropzone').classList.remove('flex');
+                    document.getElementById('existing-file-card').classList.remove('hidden'); document.getElementById('existing-file-card').classList.add('flex');
+                }
+            }
+
+            document.getElementById('form-main-title').innerText = `Editing: ${item.title}`;
+            document.getElementById('edit-badge').classList.remove('hidden');
+            document.getElementById('submitBtn').innerHTML = `Update Live <i class="fa-solid fa-paper-plane ml-2"></i>`;
+        }
+
+        function resetForm() {
+            document.getElementById('contentForm').reset();
+            document.getElementById('editContentId').value = '';
+            setSelectedLevels([]);
+            quill.setContents([]);
+            
+            document.getElementById('upload-dropzone').classList.remove('hidden'); document.getElementById('upload-dropzone').classList.add('flex');
+            document.getElementById('existing-file-card').classList.add('hidden'); document.getElementById('existing-file-card').classList.remove('flex');
+            document.getElementById('standaloneFile').value = '';
+            
+            document.getElementById('form-main-title').innerText = `Create New Item`;
+            document.getElementById('edit-badge').classList.add('hidden');
+            document.getElementById('submitBtn').innerHTML = `Publish Live <i class="fa-solid fa-paper-plane ml-2"></i>`;
+            
+            selectEntryType('chapter');
+        }
+
+        function saveAsDraft() {
+            currentActionStatus = 'draft';
+            if(document.getElementById('contentForm').reportValidity()) { handleFormSubmit(null); }
+        }
+
+        async function deleteContent(id) {
+            if(!confirm('Delete this item? Note: Ensure folders are empty before deleting.')) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/content/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) { showToast('Item deleted successfully.'); fetchContentTree(); } 
+                else { showToast('Failed to delete item.', 'error'); }
+            } catch (e) { showToast('Delete failed. Network error.', 'error'); }
+        }
+
+        async function handleFormSubmit(e) {
+            if(e) e.preventDefault();
+            const statusAction = currentActionStatus;
+            currentActionStatus = 'published'; 
+            
+            const id = document.getElementById('editContentId').value;
+            const title = document.getElementById('contentTitle').value.trim();
+            const levels = getSelectedLevels();
+            const type = document.getElementById('levelType').value;
+            const parentId = document.getElementById('parentNode').value;
+            const textContent = quill.root.innerHTML;
+            const fileInput = document.getElementById('standaloneFile');
+            
+            // Allow empty levels for nested items to rely on inherited permissions!
+            if (type === 'chapter' && levels.length === 0) return showToast("Please select at least one Target Audience level for Main Course Units.", "error");
+            if (type !== 'chapter' && !parentId) return showToast('Please select a Parent Folder.', "error");
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Saving...`; 
+            submitBtn.disabled = true;
+
+            try {
+                let s3Key = null;
+                
+                // Handle S3 Upload
+                if ((type === 'video' || type === 'document') && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const overlay = document.getElementById('upload-overlay');
+                    overlay.classList.remove('hidden'); overlay.classList.add('flex');
+                    document.getElementById('upload-status-text').innerText = `Uploading ${file.name}... Please do not refresh.`;
+
+                    const urlRes = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) 
+                    });
+                    
+                    if(!urlRes.ok) throw new Error("Failed to get S3 upload URL");
+                    
+                    const urlData = await urlRes.json();
+                    s3Key = urlData.s3Key;
+                    
+                    await fetch(urlData.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    overlay.classList.add('hidden'); overlay.classList.remove('flex');
+                } else if ((type === 'video' || type === 'document') && !id && fileInput.files.length === 0) {
+                    submitBtn.innerHTML = originalText; submitBtn.disabled = false;
+                    return showToast("Please select a file to upload for a new asset entry.", "error");
+                }
+
+                const payload = { title, type, parentId, levels, textContent, status: statusAction };
+                if (id) payload.id = id;
+                if (s3Key) payload.s3Key = s3Key;
+
+                const saveRes = await fetch(`${API_BASE_URL}/admin/content`, { 
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) 
+                });
+                
+                if(!saveRes.ok) throw new Error("Database save failed");
+                
+                showToast(`Successfully saved as ${statusAction.toUpperCase()}!`);
+                resetForm();
+                fetchContentTree();
+            } catch (err) { 
+                showToast('Save failed.', 'error'); 
+                document.getElementById('upload-overlay').classList.add('hidden'); document.getElementById('upload-overlay').classList.remove('flex');
+            } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
+        }
+
+        function handleLogout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>

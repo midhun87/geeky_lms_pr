@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Geeky Researcher | Premium Video Lectures</title>
+    
+    <!-- PERFORMANCE BOOST: DNS Prefetching and Preconnects -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['Lora', 'serif']
+                    }, 
+                    colors: { 
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
+                        surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' } 
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
+                        'card': '0 2px 12px rgba(0,0,0,0.03)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'watermark-drift': 'watermarkDrift 25s linear infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(15px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        watermarkDrift: {
+                            '0%': { transform: 'translate(0, 0) rotate(-35deg)' },
+                            '100%': { transform: 'translate(30px, 30px) rotate(-35deg)' }
+                        }
+                    }
+                } 
+            } 
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #f8fafc; 
+            color: #334155; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            
+            /* Aggressive Mobile Copy/Save Prevention */
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            overscroll-behavior-y: none;
+        }
+
+        /* HARD BLOCK PRINTING / SAVE AS PDF */
+        @media print {
+            body { display: none !important; }
+            html { background-color: #000000; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .sidebar-link { transition: all 0.25s ease; border-radius: 0.875rem; margin-bottom: 0.25rem; position: relative; }
+        .sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-link.active { background: #f0fdf4; color: #16a34a; font-weight: 600; }
+        .sidebar-link.active i { color: #16a34a; }
+        .sidebar-link.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); height: 60%; width: 4px; background: #16a34a; border-radius: 0 4px 4px 0; }
+
+        .panel { background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+
+        .tree-node { transition: all 0.2s ease; border-radius: 0.75rem; }
+        .tree-node:active { transform: scale(0.98); }
+        .tree-node:hover { background: #f8fafc; }
+        .tree-node.active-node { background: #f0fdf4; color: #16a34a; font-weight: 600; border: 1px solid #bbf7d0; }
+
+        .video-container-wrapper {
+            background: #000000; border-radius: 1rem; overflow: hidden; position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25); width: 100%; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Mobile: Edge-to-edge video */
+        @media (max-width: 1023px) { .video-container-wrapper { border-radius: 0; box-shadow: none; border-bottom: 1px solid #334155; } }
+
+        /* Drifting Watermark Strictly OVER the video element */
+        .watermark-overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: hidden;
+            display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around;
+            opacity: 0.20; mix-blend-mode: overlay;
+        }
+        .watermark-text {
+            font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; user-select: none;
+            padding: 50px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); animation: watermarkDrift 25s linear infinite alternate;
+        }
+
+        .reader-paper { transition: all 0.5s ease; border-radius: 1.25rem; }
+        #main-video-player { transition: filter 0.6s ease, transform 0.3s ease; }
+        
+        .theme-light { background-color: #ffffff; color: #334155; }
+        .theme-light h1, .theme-light h2, .theme-light h3 { color: #0f172a; }
+        .video-theme-light { filter: none; }
+        
+        .theme-sepia { background-color: #FBF0D9; color: #5F4B32; border: 1px solid #EADAB8; }
+        .theme-sepia h1, .theme-sepia h2, .theme-sepia h3 { color: #3E2D1A; }
+        .video-theme-sepia { filter: sepia(0.4) contrast(0.95) brightness(0.9); }
+        
+        .theme-sage { background-color: #E6EFE9; color: #2C4C3B; border: 1px solid #C4D9CD; }
+        .theme-sage h1, .theme-sage h2, .theme-sage h3 { color: #152B20; }
+        .video-theme-sage { filter: sepia(0.15) hue-rotate(15deg) brightness(0.9) contrast(0.9); }
+
+        .theme-dark { background-color: #0f172a; color: #94a3b8; border: 1px solid #1e293b; }
+        .theme-dark h1, .theme-dark h2, .theme-dark h3 { color: #f8fafc; }
+        .video-theme-dark { filter: brightness(0.7) contrast(1.05); }
+
+        .rich-content { font-family: 'Lora', serif; font-size: 1.15rem; line-height: 1.85; max-width: 70ch; margin: 0 auto; }
+        .rich-content h1, .rich-content h2, .rich-content h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; line-height: 1.3; }
+        @media (max-width: 768px) { .rich-content { font-size: 1.05rem; } .rich-content h1, .rich-content h2 { margin-top: 1.5rem; margin-bottom: 0.75rem; } }
+        .rich-content p { margin-bottom: 1.5rem; }
+        .rich-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+
+        #privacy-blur-layer {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        #privacy-blur-layer.active { opacity: 1; pointer-events: auto; }
+        
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
+        .pb-safe-offset { padding-bottom: calc(env(safe-area-inset-bottom, 1rem) + 0.5rem); }
+        
+        .speed-btn.active { background-color: #10b981; color: #ffffff; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
+
+        /* Workspace Modes (Mobile App Toggling & Desktop Theater) */
+        .workspace-wrapper { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        @media (max-width: 1023px) {
+            .mobile-hide { display: none !important; }
+            #workspace { padding-bottom: 5rem; }
+            /* Sticky Video on Mobile */
+            .mobile-sticky-video { position: sticky; top: 0; z-index: 40; background: #000; }
+        }
+
+        @media (min-width: 1024px) {
+            .theater-mode-active .sidebar-syllabus { width: 0 !important; opacity: 0; overflow: hidden; padding: 0; margin: 0; border: none; }
+            .theater-mode-active #reader-panel-wrapper { max-width: 100%; border-radius: 0.5rem; }
+            .theater-mode-active .video-container-wrapper { border-radius: 0.5rem; max-height: 80vh; }
+        }
+    </style>
+</head>
+
+<body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
+
+    <div id="privacy-blur-layer">
+        <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-brand-200 shadow-2xl">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Protected Stream</h2>
+        <p class="text-surface-400 text-sm font-medium px-4 text-center">Recording or screen-capturing is strictly prohibited.</p>
+        <button onclick="document.getElementById('privacy-blur-layer').classList.remove('active')" class="mt-6 px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold transition text-sm">Return to Video</button>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <aside class="w-[280px] hidden lg:flex flex-col shrink-0 z-30 bg-white border-r border-surface-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div class="h-full flex flex-col overflow-hidden">
+            <div class="h-20 flex items-center px-6 gap-3 z-10 pt-safe">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col justify-center min-w-0">
+                    <span class="text-surface-900 font-bold tracking-tight text-[16px] truncate">Geeky Researcher</span>
+                    <span class="text-brand-600 text-[11px] font-bold tracking-wider uppercase">Scholar Portal</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-4 py-8 space-y-6 z-10 hide-scrollbar">
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Learn</p>
+                    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-border-all w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Overview</span>
+                    </a>
+                    <a href="chapters.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-book-open w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Study Materials</span>
+                    </a>
+                    <a href="media-viewer.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-circle-play w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Video Lectures</span>
+                    </a>
+                </div>
+                
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Evaluate</p>
+                    <a href="assessment.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-pen-ruler w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Assessments</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-4 z-10 pb-safe">
+                <div class="rounded-2xl p-3 flex items-center gap-3 bg-surface-50 border border-surface-200 hover:border-surface-300 hover:bg-surface-100 transition-all cursor-pointer group">
+                    <div id="sidebar-avatar" class="w-10 h-10 bg-surface-800 text-white rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">S</div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-[14px] font-bold text-surface-900 truncate">Student Name</p>
+                        <p class="text-[12px] text-surface-500 truncate font-medium" id="sidebar-plan-label">Plan Active</p>
+                    </div>
+                    <button onclick="logout()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0" title="Logout">
+                        <i class="fa-solid fa-power-off text-[14px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50">
+        
+        <header class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center glass sticky top-0 border-b border-surface-200/50 pt-safe shrink-0">
+            <div class="flex items-center gap-3 lg:hidden">
+                <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                </div>
+                <span class="text-surface-900 font-bold tracking-tight text-[15px]">Geeky Researcher</span>
+            </div>
+            
+            <div class="hidden lg:flex items-center gap-2 text-[14px] font-medium text-surface-400">
+                <a href="dashboard.html" class="hover:text-surface-900 transition-colors">Dashboard</a>
+                <span class="text-surface-300 mx-1">/</span>
+                <span class="text-surface-900">Premium Video Lectures</span>
+            </div>
+            
+            <div class="flex items-center gap-3 ml-auto">
+                <div class="hidden md:flex items-center bg-white/60 border border-surface-200 rounded-full px-4 py-2 w-72 focus-within:ring-2 focus-within:ring-brand-500/20 focus-within:bg-white transition-all shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass text-surface-400 text-[14px]"></i>
+                    <input type="text" placeholder="Search lectures..." class="bg-transparent border-none outline-none text-[14px] ml-2 w-full text-surface-700 placeholder:text-surface-400 font-medium">
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center text-surface-600 hover:text-surface-900 bg-white border border-surface-200 rounded-full shadow-sm transition-all hover:shadow relative">
+                    <i class="fa-regular fa-bell text-[16px]"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Workspace (App-Like State toggling on mobile) -->
+        <div id="workspace" class="workspace-wrapper flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 p-0 lg:p-6 overflow-hidden">
+            
+            <!-- PANEL 1: SYLLABUS -->
+            <div id="syllabus-panel" class="sidebar-syllabus panel w-full lg:w-[340px] flex flex-col h-full shrink-0 overflow-hidden shadow-none lg:shadow-card border-x-0 border-t-0 rounded-none lg:rounded-xl transition-all duration-300">
+                <div class="px-5 py-4 border-b border-surface-100 flex justify-between items-center bg-surface-50/50">
+                    <h3 class="font-bold text-surface-900 text-[16px] tracking-tight">Video Repository</h3>
+                    <span class="text-[10px] font-bold bg-brand-50 text-brand-600 px-2 py-1 rounded border border-brand-100 shadow-sm"><i class="fa-solid fa-shield-halved"></i> Secured</span>
+                </div>
+                <div id="tree-container" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white hide-scrollbar">
+                    <div class="text-center text-surface-400 py-8 text-sm font-medium flex flex-col items-center">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> Loading curriculum...
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: VIDEO PLAYER -->
+            <div id="reader-panel-wrapper" class="mobile-hide panel flex-1 flex flex-col h-full relative overflow-hidden shadow-none lg:shadow-card border-none lg:border-solid rounded-none lg:rounded-xl bg-surface-50/50 transition-all duration-300">
+                
+                <!-- Floating Controls -->
+                <div class="absolute top-2 lg:top-4 inset-x-2 lg:inset-x-6 z-50 flex items-center justify-between pointer-events-none drop-shadow-sm">
+                    
+                    <div class="flex items-center gap-2 pointer-events-auto">
+                        <!-- Mobile Back Button -->
+                        <button type="button" onclick="showMobileSyllabus()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/95 backdrop-blur-xl border border-surface-200 text-surface-600 shadow-sm">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        
+                        <div class="bg-white/90 backdrop-blur-xl border border-surface-200 shadow-sm rounded-xl px-3 lg:px-4 py-2 flex items-center gap-2 text-surface-600 text-[12px] lg:text-[13px] font-semibold truncate max-w-[150px] sm:max-w-[250px] lg:max-w-[400px]">
+                            <i class="fa-solid fa-circle-play text-brand-500 hidden sm:inline"></i> 
+                            <span id="video-breadcrumbs" class="truncate">Select a lecture...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 pointer-events-auto">
+                        <button type="button" onclick="toggleTheaterMode()" class="hidden lg:flex w-10 h-10 items-center justify-center rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-brand-600 shadow-sm transition-all" title="Theater Mode">
+                            <i class="fa-solid fa-expand" id="theater-icon"></i>
+                        </button>
+
+                        <div class="relative dropdown-wrapper">
+                            <button type="button" onclick="toggleThemeMenu(event)" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
+                                <i class="fa-solid fa-eye text-brand-500" id="current-theme-icon"></i> 
+                                <span class="hidden lg:inline text-[13px] font-semibold">Eye Care</span>
+                            </button>
+                            
+                            <div id="theme-menu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-surface-200 rounded-2xl shadow-float overflow-hidden py-1.5 z-[60] transform origin-top-right transition-all">
+                                <div class="px-4 py-2 mb-1 border-b border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Environment Filters</div>
+                                <button type="button" onclick="setTheme('light')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-surface-100 flex items-center justify-center border border-surface-200"><i class="fa-solid fa-sun text-[12px] text-surface-500"></i></div> Daylight
+                                </button>
+                                <button type="button" onclick="setTheme('sepia')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center border border-amber-200"><i class="fa-solid fa-book-bookmark text-[12px] text-amber-700"></i></div> Warm Sepia
+                                </button>
+                                <button type="button" onclick="setTheme('sage')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center border border-emerald-200"><i class="fa-solid fa-leaf text-[12px] text-emerald-700"></i></div> Soft Sage
+                                </button>
+                                <button type="button" onclick="setTheme('dark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center border border-slate-700"><i class="fa-solid fa-moon text-[12px] text-slate-300"></i></div> Night Slate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reader-viewport" class="flex-1 overflow-y-auto w-full relative scroll-smooth hide-scrollbar lg:p-12 lg:pt-20">
+                    <div class="max-w-5xl mx-auto flex flex-col gap-0 lg:gap-4">
+                        
+                        <!-- Sticky Mobile Video Wrapper -->
+                        <div class="mobile-sticky-video video-container-wrapper aspect-video flex items-center justify-center group w-full mx-auto relative pt-16 lg:pt-0">
+                            <!-- Secure Watermark strictly over the video -->
+                            <div id="watermark-container" class="watermark-overlay"></div>
+
+                            <div class="absolute bottom-16 right-3 lg:bottom-4 lg:right-4 z-20 bg-black/50 text-white px-2 py-1 rounded text-[9px] font-bold tracking-widest uppercase border border-white/20 flex items-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <i class="fa-solid fa-shield-halved mr-1.5 text-brand-400"></i> Secure
+                            </div>
+
+                            <div id="video-placeholder" class="text-surface-400 flex flex-col items-center p-6 text-center animate-fade-in w-full h-full bg-surface-900 justify-center z-20 absolute inset-0 pt-20 lg:pt-0">
+                                <div class="w-16 h-16 bg-surface-800 rounded-2xl flex items-center justify-center mb-4 shadow-inner border border-surface-700">
+                                    <i class="fa-solid fa-photo-film text-3xl text-surface-500"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-surface-200 mb-2 tracking-tight">No Video Selected</h2>
+                                <p class="text-[13px] font-medium max-w-xs text-surface-500 leading-relaxed">Choose a lecture from the repository.</p>
+                            </div>
+                            
+                            <!-- Video Loader Indicator -->
+                            <div id="video-loader" class="hidden absolute inset-0 flex-col items-center justify-center bg-black z-15">
+                                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
+                                <p class="text-sm font-medium text-slate-400">Decrypting stream...</p>
+                            </div>
+
+                            <video id="main-video-player" class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload" oncanplay="document.getElementById('video-loader').classList.replace('flex', 'hidden')"></video>
+                        </div>
+
+                        <!-- Horizontal Scrollable Control Chips -->
+                        <div id="video-extras" class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-3 px-3 lg:px-0 lg:py-1 hidden animate-slide-up bg-surface-50/50 lg:bg-white/50 rounded-none lg:rounded-2xl border-b lg:border border-surface-200 backdrop-blur-sm">
+                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-surface-200 shrink-0 shadow-sm">
+                                <span class="hidden sm:inline text-[10px] font-bold text-surface-400 uppercase tracking-widest px-2"><i class="fa-solid fa-gauge-high mr-1 text-brand-500"></i> Speed</span>
+                                <button onclick="setSpeed(0.75, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600 hover:bg-surface-50 transition-all">0.75x</button>
+                                <button onclick="setSpeed(1, this)" class="speed-btn active px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600 hover:bg-surface-50 transition-all">1.0x</button>
+                                <button onclick="setSpeed(1.25, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600 hover:bg-surface-50 transition-all">1.25x</button>
+                                <button onclick="setSpeed(1.5, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600 hover:bg-surface-50 transition-all">1.5x</button>
+                            </div>
+
+                            <button onclick="skipVideo(-10)" class="shrink-0 px-3 py-2 rounded-xl bg-white hover:bg-surface-50 border border-surface-200 text-surface-700 text-[13px] font-semibold transition-all flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-rotate-left"></i> 10s
+                            </button>
+                            <button onclick="skipVideo(10)" class="shrink-0 px-3 py-2 rounded-xl bg-white hover:bg-surface-50 border border-surface-200 text-surface-700 text-[13px] font-semibold transition-all flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-rotate-right"></i> 10s
+                            </button>
+
+                            <button onclick="togglePip()" class="shrink-0 px-3 py-2 rounded-xl bg-white hover:bg-surface-50 border border-surface-200 text-surface-700 text-[13px] font-semibold transition-all flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-clone text-brand-500"></i> PiP
+                            </button>
+                            
+                            <button onclick="addBookmark()" class="shrink-0 px-4 py-2 rounded-xl bg-brand-50 border border-brand-200 hover:bg-brand-100 text-brand-700 text-[13px] font-semibold transition-all flex items-center gap-2 shadow-sm ml-auto mr-4 lg:mr-0">
+                                <i class="fa-solid fa-bookmark"></i> Save Note
+                            </button>
+                        </div>
+
+                        <div id="notes-paper" class="reader-paper theme-light p-5 lg:p-8 flex-1 relative overflow-hidden shadow-none lg:shadow-card hidden animate-fade-in mt-2 border border-transparent bg-white">
+                            <div class="relative z-10">
+                                <span class="inline-flex items-center justify-center px-3 py-1 bg-surface-100 text-surface-600 text-[10px] font-bold tracking-widest uppercase rounded-full mb-3 border border-surface-200"><i class="fa-solid fa-chalkboard-user mr-1.5"></i> Instructor Notes</span>
+                                <h1 id="video-title" class="text-xl lg:text-2xl font-bold leading-tight tracking-tight mb-4">Lecture Details</h1>
+                                <div id="video-desc" class="pt-4 border-t border-surface-200/50 rich-content"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Dock -->
+    <div class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
+        <nav class="bg-white/95 backdrop-blur-xl border border-surface-200/60 shadow-glass rounded-2xl flex justify-around items-center px-2 py-2 pb-safe-offset transition-transform duration-300 relative overflow-hidden">
+            <a href="dashboard.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-border-all text-[20px] mb-1 relative z-10"></i>
+                <span class="text-[10px] font-bold relative z-10">Home</span>
+            </a>
+            <a href="chapters.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-book-open text-[20px] mb-1 relative z-10"></i>
+                <span class="text-[10px] font-bold relative z-10">Study</span>
+            </a>
+            <a href="media-viewer.html" class="flex flex-col items-center justify-center w-16 h-14 relative group">
+                <div class="absolute inset-0 bg-brand-50 rounded-xl transition-opacity opacity-100"></div>
+                <i class="fa-solid fa-circle-play text-[20px] mb-1 text-brand-600 relative z-10"></i>
+                <span class="text-[10px] font-bold text-brand-700 relative z-10">Watch</span>
+            </a>
+            <a href="assessment.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-pen-ruler text-[20px] mb-1 relative z-10"></i>
+                <span class="text-[10px] font-bold relative z-10">Test</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        let token = localStorage.getItem('token');
+        let allRecordings = [];
+        let currentVideoId = null;
+
+        if (!token) {
+            token = "mock_token_for_preview";
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', email: 'scholar@agri.edu', level: 'PG Research' }));
+        }
+
+        /* --- HARDCORE SECURITY --- */
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        document.addEventListener('copy', (e) => {
+            e.preventDefault();
+            if (e.clipboardData) e.clipboardData.setData('text/plain', 'Content protected by Geeky Researcher Portal.');
+            triggerPrivacyWarning();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
+                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
+                e.preventDefault(); triggerPrivacyWarning(); return false;
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen' || e.keyCode === 44) {
+                try { navigator.clipboard.writeText(''); } catch(err) {} 
+                triggerPrivacyWarning();
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'hidden') {
+                const player = document.getElementById('main-video-player');
+                if(player && !player.paused) player.pause(); 
+                document.getElementById('privacy-blur-layer').classList.add('active');
+            } else {
+                document.getElementById('privacy-blur-layer').classList.remove('active');
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            const player = document.getElementById('main-video-player');
+            if(player && !player.paused) player.pause(); 
+            document.getElementById('privacy-blur-layer').classList.add('active');
+        });
+        window.addEventListener('focus', () => document.getElementById('privacy-blur-layer').classList.remove('active'));
+
+        function triggerPrivacyWarning() {
+            const layer = document.getElementById('privacy-blur-layer');
+            layer.classList.add('active');
+            setTimeout(() => layer.classList.remove('active'), 2000);
+        }
+
+        // Reduced DOM Nodes for smooth performance
+        function getWatermarkHTML() {
+            let user = { email: 'scholar@agri.edu' };
+            try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
+            let html = '';
+            for(let i=0; i<8; i++) {
+                html += `<div class="watermark-text" style="animation-delay: -${Math.random() * 20}s">${user.email} • IP Protected</div>`;
+            }
+            return html;
+        }
+
+        function initWatermark() {
+            document.getElementById('watermark-container').innerHTML = getWatermarkHTML();
+        }
+
+        /* --- MOBILE UX WORKSPACE TOGGLING --- */
+        function showMobileReader() {
+            if(window.innerWidth < 1024) {
+                document.getElementById('syllabus-panel').classList.add('mobile-hide');
+                document.getElementById('reader-panel-wrapper').classList.remove('mobile-hide');
+                window.scrollTo(0,0);
+            }
+        }
+
+        function showMobileSyllabus() {
+            if(window.innerWidth < 1024) {
+                document.getElementById('syllabus-panel').classList.remove('mobile-hide');
+                document.getElementById('reader-panel-wrapper').classList.add('mobile-hide');
+                const player = document.getElementById('main-video-player');
+                if(player && !player.paused) player.pause(); 
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            if(window.innerWidth >= 1024) {
+                document.getElementById('syllabus-panel').classList.remove('mobile-hide');
+                document.getElementById('reader-panel-wrapper').classList.remove('mobile-hide');
+            } else {
+                const placeholderVisible = !document.getElementById('video-placeholder').classList.contains('hidden');
+                if(placeholderVisible) showMobileSyllabus();
+            }
+        });
+
+        /* --- PRO THEMES & THEATER --- */
+        function toggleThemeMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('theme-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden'); menu.style.opacity = 0; menu.style.transform = 'translateY(-10px) scale(0.95)';
+                requestAnimationFrame(() => {
+                    menu.style.transition = 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'; menu.style.opacity = 1; menu.style.transform = 'translateY(0) scale(1)';
+                });
+            } else { menu.classList.add('hidden'); }
+        }
+        
+        window.addEventListener('click', () => document.getElementById('theme-menu')?.classList.add('hidden'));
+
+        function setTheme(themeName) {
+            const paper = document.getElementById('notes-paper');
+            if(paper) {
+                paper.classList.remove('theme-light', 'theme-sepia', 'theme-sage', 'theme-dark');
+                paper.classList.add(`theme-${themeName}`);
+            }
+            const video = document.getElementById('main-video-player');
+            if(video) {
+                video.classList.remove('video-theme-light', 'video-theme-sepia', 'video-theme-sage', 'video-theme-dark');
+                video.classList.add(`video-theme-${themeName}`);
+            }
+            localStorage.setItem('reader-theme', themeName); 
+        }
+
+        function toggleTheaterMode() {
+            const workspace = document.getElementById('workspace');
+            const icon = document.getElementById('theater-icon');
+            workspace.classList.toggle('theater-mode-active');
+            if (workspace.classList.contains('theater-mode-active')) icon.classList.replace('fa-expand', 'fa-compress');
+            else icon.classList.replace('fa-compress', 'fa-expand');
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const player = document.getElementById('main-video-player');
+            if (!player || player.classList.contains('hidden')) return;
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+            switch(e.key.toLowerCase()) {
+                case ' ': case 'k': e.preventDefault(); player.paused ? player.play() : player.pause(); break;
+                case 'arrowright': case 'l': e.preventDefault(); skipVideo(10); break;
+                case 'arrowleft': case 'j': e.preventDefault(); skipVideo(-10); break;
+                case 'f': e.preventDefault(); if (!document.fullscreenElement) { player.requestFullscreen().catch(err=>console.log(err)); } else { document.exitFullscreen(); } break;
+                case 'm': e.preventDefault(); player.muted = !player.muted; break;
+            }
+        });
+
+        function skipVideo(seconds) {
+            const player = document.getElementById('main-video-player');
+            if (player && !player.classList.contains('hidden')) player.currentTime += seconds;
+        }
+
+        document.getElementById('main-video-player').addEventListener('timeupdate', function() {
+            if (currentVideoId && this.currentTime > 5) localStorage.setItem(`video_progress_${currentVideoId}`, this.currentTime);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let user = { name: 'Scholar', paymentPlan: '100' };
+            try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
+            
+            document.getElementById('sidebar-plan-label').textContent = `Access Active: ${user.paymentPlan || 100}%`;
+            document.getElementById('sidebar-name').textContent = user.name || 'Student';
+            document.getElementById('sidebar-avatar').textContent = (user.name || 'S')[0].toUpperCase();
+            
+            setTheme(localStorage.getItem('reader-theme') || 'light');
+            initWatermark();
+            loadRecordings();
+        });
+
+        async function loadRecordings() {
+            const treeContainer = document.getElementById('tree-container');
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/student/recordings`, { 
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error("Fetch failed");
+                const allContent = await response.json();
+                allRecordings = allContent.filter(c => c.type === 'video' || c.type === 'folder' || c.type === 'subfolder');
+                if (allRecordings.length === 0) throw new Error("Empty");
+            } catch (error) { 
+                allRecordings = [
+                    { id: 'v1', title: 'Module 1: Advanced Research Design', type: 'folder', parentId: null },
+                    { id: 'v2', title: 'Lecture 1.1: Quantitative Hypotheses', type: 'video', parentId: 'v1', mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', notes: '<p>In this lecture, we examine strict parameter establishment.</p>' }
+                ];
+            }
+
+            const allIds = new Set(allRecordings.map(c => c.id));
+            const rootNodes = allRecordings.filter(c => !c.parentId || !allIds.has(c.parentId));
+            treeContainer.innerHTML = buildTreeHTML(rootNodes);
+        }
+
+        function buildTreeHTML(nodes) {
+            if (!nodes || nodes.length === 0) return '';
+            let html = '';
+            nodes.forEach(child => {
+                const isFolder = child.type === 'folder' || child.type === 'subfolder';
+                const children = allRecordings.filter(c => c.parentId === child.id);
+
+                if (isFolder) {
+                    const iconClass = child.type === 'subfolder' ? 'fa-folder-open text-blue-500/80' : 'fa-folder-closed text-brand-500/80';
+                    html += `
+                        <div class="mb-1">
+                            <div class="tree-node group flex items-stretch cursor-pointer border border-transparent">
+                                <div onclick="toggleFolder(this); event.stopPropagation();" class="px-3 py-3 lg:py-2.5 text-surface-400 hover:text-surface-800 flex items-center justify-center w-10 lg:w-8">
+                                    <i class="fa-solid fa-chevron-down text-[13px] lg:text-[11px] transition-transform duration-200"></i>
+                                </div>
+                                <div onclick="toggleFolder(this.previousElementSibling); event.stopPropagation();" class="flex-1 pr-3 py-3 lg:py-2.5 text-[15px] lg:text-[14px] font-semibold text-surface-700 flex items-center group-hover:text-surface-900 transition-colors">
+                                    <i class="fa-solid ${iconClass} mr-3 text-lg lg:text-base"></i> 
+                                    <span class="truncate">${child.title}</span>
+                                </div>
+                            </div>
+                            <div class="tree-children hidden ml-[24px] lg:ml-[22px] border-l border-surface-200 pl-3 mt-1 space-y-1 lg:space-y-0.5">
+                                ${buildTreeHTML(children)}
+                            </div>
+                        </div>
+                    `;
+                } else if (child.type === 'video') {
+                    html += `
+                        <div onclick="playVideo('${child.id}', this)" class="tree-node cursor-pointer px-3 py-3 lg:py-2.5 text-[14px] lg:text-[13.5px] font-medium text-surface-600 flex items-center group transition-colors mt-0.5 border border-transparent">
+                            <div class="w-8 h-8 lg:w-7 lg:h-7 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center mr-3 shrink-0 shadow-sm transition-colors group-hover:bg-brand-100 play-icon-bg">
+                                <i class="fa-solid fa-play text-[12px] lg:text-[11px] text-brand-600 play-icon"></i>
+                            </div>
+                            <span class="truncate flex-1 group-hover:text-surface-900">${child.title}</span>
+                        </div>
+                    `;
+                }
+            });
+            return html;
+        }
+
+        function toggleFolder(iconElement) {
+            const childrenContainer = iconElement.parentElement.nextElementSibling;
+            if(childrenContainer) {
+                childrenContainer.classList.toggle('hidden');
+                iconElement.querySelector('i').classList.toggle('-rotate-90');
+                const folderIcon = iconElement.parentElement.querySelector('.fa-folder-closed, .fa-folder-open');
+                if(folderIcon) {
+                    folderIcon.classList.toggle('fa-folder-closed'); folderIcon.classList.toggle('fa-folder-open');
+                }
+            }
+        }
+
+        function playVideo(id, element) {
+            showMobileReader(); // Triggers mobile app slide-over logic
+
+            document.querySelectorAll('.tree-node').forEach(el => {
+                el.classList.remove('active-node');
+                const iconBg = el.querySelector('.play-icon-bg');
+                if(iconBg) {
+                    iconBg.classList.replace('bg-brand-500', 'bg-brand-50');
+                    const icon = el.querySelector('.play-icon');
+                    if(icon) icon.classList.replace('text-white', 'text-brand-600');
+                }
+            });
+            
+            element.classList.add('active-node');
+            const newIconBg = element.querySelector('.play-icon-bg');
+            if(newIconBg) {
+                newIconBg.classList.replace('bg-brand-50', 'bg-brand-500');
+                const newIcon = element.querySelector('.play-icon');
+                if(newIcon) newIcon.classList.replace('text-brand-600', 'text-white');
+            }
+
+            const video = allRecordings.find(v => v.id === id);
+            if (!video) return;
+            
+            currentVideoId = id;
+            document.getElementById('video-breadcrumbs').innerHTML = `<span class="text-surface-900 font-bold truncate">${video.title}</span>`;
+
+            const player = document.getElementById('main-video-player');
+            const placeholder = document.getElementById('video-placeholder');
+            const loader = document.getElementById('video-loader');
+            const extras = document.getElementById('video-extras');
+            const notesPaper = document.getElementById('notes-paper');
+            
+            if (video.mediaUrl) {
+                placeholder.classList.add('hidden');
+                player.classList.remove('hidden');
+                loader.classList.remove('hidden'); loader.classList.add('flex');
+                
+                setTimeout(() => {
+                    player.src = video.mediaUrl;
+                    const savedTime = localStorage.getItem(`video_progress_${id}`);
+                    if(savedTime) player.currentTime = parseFloat(savedTime);
+
+                    extras.classList.remove('hidden'); notesPaper.classList.remove('hidden');
+                    
+                    if(window.innerWidth < 1024) { 
+                        setTimeout(() => document.getElementById('reader-viewport').scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                    }
+                    player.play().catch(e => console.log("Auto-play restricted."));
+                }, 50);
+            } else {
+                player.classList.add('hidden'); placeholder.classList.remove('hidden');
+                extras.classList.add('hidden'); notesPaper.classList.add('hidden');
+            }
+
+            document.getElementById('video-title').textContent = video.title;
+            const desc = document.getElementById('video-desc');
+            if(video.notes && video.notes.trim() !== '') {
+                desc.innerHTML = video.notes; desc.classList.remove('hidden');
+            } else { desc.classList.add('hidden'); }
+        }
+
+        function setSpeed(speed, btnElement) {
+            document.getElementById('main-video-player').playbackRate = speed;
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-brand-500', 'text-white'); btn.classList.add('text-surface-600');
+            });
+            btnElement.classList.remove('text-surface-600'); btnElement.classList.add('active', 'bg-brand-500', 'text-white');
+        }
+
+        async function togglePip() {
+            const player = document.getElementById('main-video-player');
+            try {
+                if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                else if (document.pictureInPictureEnabled) await player.requestPictureInPicture();
+            } catch (err) { console.log(err); }
+        }
+
+        function addBookmark() {
+            const player = document.getElementById('main-video-player');
+            if(!player || player.classList.contains('hidden')) return;
+
+            const time = Math.floor(player.currentTime);
+            const mins = Math.floor(time / 60); const secs = time % 60;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[200] bg-surface-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 rounded-3xl max-w-[280px] w-full text-center shadow-glass border border-white">
+                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-brand-100 shadow-sm">
+                        <i class="fa-solid fa-bookmark text-xl"></i>
+                    </div>
+                    <h3 class="text-[16px] font-bold text-surface-900 mb-1 tracking-tight">Timestamp Saved</h3>
+                    <p class="text-surface-500 text-[13px] font-medium mb-6">Marked at ${mins}:${secs < 10 ? '0' : ''}${secs}.</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-2xl text-[14px] shadow-sm transition-all">Continue Watching</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>

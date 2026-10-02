@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Admin Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for a polished look */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+        
+        /* Clean Input Styling */
+        .input-field {
+            width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            background-color: #ffffff; border-color: #14b8a6; outline: none;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+        }
+
+        /* Glassmorphism Sidebar Active State */
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active {
+            background-color: #f0fdfa; color: #0d9488;
+            border-right: 3px solid #14b8a6;
+        }
+
+        /* Helper for hiding scrollbar in mobile nav */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <!-- Mobile Top Navigation Bar -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
+        <div class="flex items-center gap-2">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
+            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Sidebar (Desktop & Mobile Drawer) -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
+                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
+            </div>
+        </div>
+        
+        <!-- Navigation Links -->
+         <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link active"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+        </nav>
+        
+        <!-- Bottom Action -->
+        <div class="p-4 border-t border-slate-100">
+            <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full w-full pt-16 md:pt-0 overflow-y-auto bg-slate-50/50">
+        <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
+            
+            <!-- Page Header -->
+            <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">System Dashboard</h1>
+                    <p class="text-slate-500 text-sm mt-1">Live metrics and course level management.</p>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <!-- Stat Card 1 -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 flex-shrink-0">
+                        <i class="fa-solid fa-user-graduate text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wide">Total Students</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="m-students">--</h3>
+                    </div>
+                </div>
+                
+                <!-- Stat Card 2 -->
+                <a href="approvals.html" class="block bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 group cursor-pointer hover:border-amber-300 transition">
+                    <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clock text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wide">Pending Approvals</p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <h3 class="text-2xl font-bold text-amber-600" id="m-pending">--</h3>
+                            <span class="text-xs font-medium text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Stat Card 3 -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 flex-shrink-0">
+                        <i class="fa-solid fa-layer-group text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wide">Active Levels</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="m-levels">--</h3>
+                    </div>
+                </div>
+
+                <!-- Stat Card 4 -->
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                        <i class="fa-solid fa-photo-film text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs font-medium uppercase tracking-wide">Content Assets</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mt-1" id="m-content">--</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout Grid for Form and List -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                
+                <!-- Left Column: Add New Level Form -->
+                <div class="xl:col-span-1">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200">
+                            <h3 class="text-base font-semibold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-plus-circle text-brand-500"></i> Create New Level
+                            </h3>
+                            <p class="text-xs text-slate-500 mt-1">Add a new course tier for your students.</p>
+                        </div>
+                        <div class="p-5">
+                            <form onsubmit="handleAddLevel(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Level Name</label>
+                                    <input type="text" id="new-lvl-name" required placeholder="e.g., Beginners Batch" class="input-field">
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label>
+                                        <div class="relative">
+                                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">₹</span>
+                                            <input type="number" id="new-lvl-fee" required placeholder="5000" class="input-field pl-7">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Duration</label>
+                                        <div class="relative">
+                                            <input type="number" id="new-lvl-duration" required placeholder="6" class="input-field pr-16">
+                                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 text-sm pointer-events-none">Months</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Payment QR Image <span class="text-slate-400 font-normal">(Optional)</span></label>
+                                    <input type="file" id="new-lvl-qr-file" accept="image/*" class="text-sm text-slate-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer border border-slate-200 rounded-lg bg-slate-50 p-1">
+                                    <p class="text-[11px] text-slate-500 mt-1">Directly upload a QR code image to attach to this level.</p>
+                                </div>
+
+                                <button type="submit" id="add-lvl-btn" class="w-full mt-2 bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-check"></i> Save New Level
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: List of Levels -->
+                <div class="xl:col-span-2">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full flex flex-col">
+                        <div class="px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base font-semibold text-slate-800">Active Levels</h3>
+                                <p class="text-xs text-slate-500 mt-1">Manage currently available levels.</p>
+                            </div>
+                            <span id="level-count-badge" class="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-full">0</span>
+                        </div>
+                        
+                        <div class="p-5 flex-1 bg-slate-50/50">
+                            <div id="level-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Loading State -->
+                                <div class="col-span-full py-12 flex flex-col items-center justify-center text-slate-400">
+                                    <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i>
+                                    <p class="text-sm">Loading your levels...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900" id="modal-title">Delete Level</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500">Are you sure you want to delete "<span id="delete-target-name" class="font-bold text-slate-700"></span>"? This action cannot be undone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                    <button type="button" onclick="confirmDelete()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                        Yes, Delete It
+                    </button>
+                    <button type="button" onclick="closeDeleteModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[70] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+
+        // Ensure user is authorized
+        if (!token || !user || user.role !== 'admin') { 
+            localStorage.clear(); 
+            window.location.href = '../login.html'; 
+        }
+
+        let currentLevels = [];
+        let levelToDelete = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMetrics();
+            fetchLevels();
+        });
+
+        // --- UI Interactions ---
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden'); 
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bg = type === 'success' ? 'bg-white border-l-4 border-green-500' : 'bg-white border-l-4 border-red-500';
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-green-500"></i>' : '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            
+            toast.className = `${bg} shadow-lg rounded px-4 py-3 text-sm text-slate-700 flex items-center gap-3 animate-slide-in-right pointer-events-auto min-w-[250px]`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function promptDelete(name) {
+            levelToDelete = name;
+            document.getElementById('delete-target-name').innerText = name;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            levelToDelete = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        // --- Data Fetching ---
+
+        async function fetchMetrics() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/metrics`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    const data = await res.json();
+                    document.getElementById('m-students').innerText = (data.totalStudents || 0).toLocaleString();
+                    document.getElementById('m-pending').innerText = data.pendingApprovals || 0;
+                    document.getElementById('m-levels').innerText = data.activeLevels || 0;
+                    document.getElementById('m-content').innerText = data.contentAssets || 0;
+                }
+            } catch (err) { 
+                console.error("Failed to fetch metrics:", err); 
+            }
+        }
+
+        async function fetchLevels() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/levels`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(res.ok) {
+                    currentLevels = await res.json();
+                    renderLevelsUI();
+                } else {
+                    document.getElementById('level-list').innerHTML = `<div class="col-span-full py-12 flex justify-center text-red-500 text-sm">Failed to load levels data.</div>`;
+                }
+            } catch (err) { 
+                console.error("Failed to fetch levels:", err); 
+                document.getElementById('level-list').innerHTML = `<div class="col-span-full py-12 flex justify-center text-red-500 text-sm">Network error while fetching levels.</div>`;
+            }
+        }
+
+        // --- Data Rendering ---
+
+        function renderLevelsUI() {
+            const list = document.getElementById('level-list');
+            document.getElementById('level-count-badge').innerText = currentLevels.length;
+            
+            list.innerHTML = '';
+            
+            if(currentLevels.length === 0) {
+                list.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center justify-center text-center">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                            <i class="fa-solid fa-folder-open text-2xl"></i>
+                        </div>
+                        <h4 class="text-sm font-semibold text-slate-700">No levels created yet</h4>
+                        <p class="text-xs text-slate-500 mt-1 max-w-xs">Use the form on the left to create your first course or subscription tier.</p>
+                    </div>`;
+                return;
+            }
+            
+            currentLevels.forEach(l => {
+                const levelName = l.levelName || l.name;
+                const qrIndicator = l.qrCodeUrl 
+                    ? `<div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                        <img src="${l.qrCodeUrl}" onerror="this.src='https://placehold.co/40x40/f1f5f9/94a3b8?text=Err'" class="h-8 w-8 object-cover rounded shadow-sm border border-slate-200">
+                        <span class="text-xs text-slate-500">Custom QR Attached</span>
+                       </div>` 
+                    : `<div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-slate-400">
+                        <i class="fa-solid fa-qrcode text-sm"></i> <span class="text-xs">System Default QR</span>
+                       </div>`;
+
+                list.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col relative group">
+                        
+                        <button onclick="promptDelete('${levelName}')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                        
+                        <div class="font-bold text-slate-800 text-lg pr-8 leading-tight">${levelName}</div>
+                        
+                        <div class="mt-4 grid grid-cols-2 gap-4">
+                            <div class="bg-slate-50 rounded p-2">
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">Fee</div>
+                                <div class="font-medium text-slate-700">₹${(l.fee || 0).toLocaleString()}</div>
+                            </div>
+                            <div class="bg-slate-50 rounded p-2">
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">Duration</div>
+                                <div class="font-medium text-slate-700">${l.durationMonths || 0} Months</div>
+                            </div>
+                        </div>
+                        
+                        ${qrIndicator}
+                    </div>
+                `;
+            });
+        }
+
+        // --- Actions ---
+
+        async function handleAddLevel(e) {
+            e.preventDefault();
+            const btn = document.getElementById('add-lvl-btn');
+            
+            const name = document.getElementById('new-lvl-name').value;
+            const fee = document.getElementById('new-lvl-fee').value;
+            const duration = document.getElementById('new-lvl-duration').value;
+            const qrFile = document.getElementById('new-lvl-qr-file').files[0];
+
+            // Loading state
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...'; 
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                let finalQrUrl = '';
+
+                // Handle Image Upload if a file is selected
+                if (qrFile) {
+                    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Uploading Image...';
+                    
+                    // 1. Get pre-signed URL from our new endpoint
+                    const urlRes = await fetch(`${API_BASE_URL}/admin/levels/upload-url`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ fileName: qrFile.name, fileType: qrFile.type })
+                    });
+                    
+                    if (!urlRes.ok) throw new Error('Failed to retrieve secure upload URL.');
+                    const { uploadUrl, readUrl } = await urlRes.json();
+
+                    // 2. Upload file directly to S3
+                    const uploadRes = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': qrFile.type },
+                        body: qrFile
+                    });
+                    
+                    if (!uploadRes.ok) throw new Error('Failed to upload image to AWS S3.');
+                    
+                    finalQrUrl = readUrl; // Save the public read URL
+                }
+
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving Level...';
+
+                const payload = {
+                    name: name,
+                    fee: fee,
+                    durationMonths: duration,
+                    qrCodeUrl: finalQrUrl
+                };
+
+                const res = await fetch(`${API_BASE_URL}/admin/levels`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                
+                if(res.ok) { 
+                    e.target.reset();
+                    fetchLevels(); 
+                    fetchMetrics(); 
+                    showToast(`Level "${name}" created successfully.`);
+                } else {
+                    showToast(`Failed to create level. Server responded with error.`, 'error');
+                }
+            } catch(error) {
+                console.error(error);
+                showToast(`Error: ${error.message || 'Network error while creating level.'}`, 'error');
+            } finally {
+                // Reset button UI
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Save New Level'; 
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        async function confirmDelete() {
+            if (!levelToDelete) return;
+            
+            const levelName = levelToDelete;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/levels/${encodeURIComponent(levelName)}`, { 
+                    method: 'DELETE', 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                
+                if(res.ok) { 
+                    fetchLevels(); 
+                    fetchMetrics(); 
+                    closeDeleteModal();
+                    showToast(`Level "${levelName}" has been deleted.`);
+                } else {
+                    showToast(`Failed to delete level. It might be in use.`, 'error');
+                    closeDeleteModal();
+                }
+            } catch(error) {
+                console.error(error);
+                showToast(`Network error while deleting.`, 'error');
+                closeDeleteModal();
+            }
+        }
+
+        function handleLogout() {
+            localStorage.clear(); 
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>

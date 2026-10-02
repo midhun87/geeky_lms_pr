@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Geeky Researcher | Assessments & Proctored Exams</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Modern typography for Dashboard -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        cbt: ['Arial', 'Helvetica', 'sans-serif'] // Utilitarian font for Govt exam view
+                    }, 
+                    colors: { 
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
+                        surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        cbt: { main: '#1a365d', sec: '#2563eb', border: '#cbd5e1', bg: '#f1f5f9' }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
+                        'card': '0 2px 12px rgba(0,0,0,0.03)',
+                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+                        'mnc': '0 4px 12px rgba(0,0,0,0.05)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(16px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #f8fafc; 
+            color: #334155; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior-y: none;
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .sidebar-link { 
+            transition: all 0.25s ease; 
+            border-radius: 0.875rem; 
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+        .sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-link.active {
+            background: #f0fdf4; 
+            color: #16a34a; 
+            font-weight: 600;
+        }
+        .sidebar-link.active i { color: #16a34a; }
+        .sidebar-link.active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: #16a34a;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .panel {
+            background-color: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .panel-hover:hover {
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* ----- CBT / GOVT EXAM STYLES ----- */
+        .cbt-opt-label { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 0.75rem; 
+            padding: 0.5rem; 
+            cursor: pointer; 
+            transition: background 0.1s; 
+            background: #ffffff; 
+        }
+        
+        .cbt-opt-label:has(input:checked) { 
+            background: #f0fdf4; 
+            color: #0f172a; 
+            font-weight: bold;
+        }
+
+        /* Standard CBT Palette Colors */
+        .palette-btn {
+            width: 100%;
+            aspect-ratio: 1/1;
+            max-width: 3rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+            background: #f1f5f9; /* Not Visited (Grey) */
+            color: #475569;
+            margin: 0 auto;
+        }
+        .palette-btn:hover { filter: brightness(0.95); }
+        .palette-btn.not-answered { background: #ef4444; color: white; border-color: #dc2626; } /* Red */
+        .palette-btn.answered { background: #22c55e; color: white; border-color: #16a34a; } /* Green */
+        .palette-btn.marked { background: #a855f7; color: white; border-color: #9333ea; } /* Purple */
+        .palette-btn.marked-answered { background: #a855f7; color: white; border-color: #9333ea; position: relative;} /* Purple with Green Dot */
+        .palette-btn.marked-answered::after {
+             content: '';
+             position: absolute;
+             bottom: 2px;
+             right: 2px;
+             width: 6px;
+             height: 6px;
+             background-color: #22c55e;
+             border-radius: 50%;
+        }
+
+        .palette-btn.active-q { box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); outline: 1px solid white;}
+
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
+    </style>
+</head>
+
+<body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
+
+    <!-- Desktop Sidebar (Pre-Exam) -->
+    <aside id="main-sidebar" class="w-[280px] hidden lg:flex flex-col shrink-0 z-30 bg-white border-r border-surface-200 transition-all duration-300">
+        <div class="h-full flex flex-col overflow-hidden">
+            <div class="h-20 flex items-center px-6 gap-3 z-10 pt-safe">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-surface-100">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col justify-center min-w-0">
+                    <span class="text-surface-900 font-bold tracking-tight text-[16px] truncate">Geeky Researcher</span>
+                    <span class="text-brand-600 text-[11px] font-bold tracking-wider uppercase">Scholar Portal</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-4 py-8 space-y-6 z-10 hide-scrollbar">
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Learn</p>
+                    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-border-all w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Overview</span>
+                    </a>
+                    <a href="chapters.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-book-open w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Study Materials</span>
+                    </a>
+                    <a href="media-viewer.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-circle-play w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Video Lectures</span>
+                    </a>
+                </div>
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Evaluate</p>
+                    <a href="assessment.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-pen-ruler w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Assessments</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-4 z-10 pb-safe">
+                <div class="rounded-2xl p-3 flex items-center gap-3 bg-surface-50 border border-surface-200 hover:border-surface-300 hover:bg-surface-100 transition-all cursor-pointer group">
+                    <div id="sidebar-avatar" class="w-10 h-10 bg-surface-800 text-white rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">S</div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-[14px] font-bold text-surface-900 truncate">Student Name</p>
+                        <p class="text-[12px] text-surface-500 truncate font-medium" id="sidebar-plan-label">Plan Active</p>
+                    </div>
+                    <button onclick="logout()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0" title="Logout">
+                        <i class="fa-solid fa-power-off text-[14px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace (Pre-Exam Dashboard) -->
+    <main id="main-content" class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50 transition-all duration-300">
+        
+        <header id="main-header" class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center bg-white/75 backdrop-blur-md sticky top-0 pt-safe border-b border-surface-200/50">
+            <div class="flex items-center gap-3 lg:hidden">
+                <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm border border-surface-200">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                </div>
+                <span class="text-surface-900 font-bold tracking-tight text-[15px]">Assessments</span>
+            </div>
+            
+            <div class="hidden lg:flex items-center gap-2 text-[14px] font-medium text-surface-400">
+                <a href="dashboard.html" class="hover:text-surface-900 transition-colors">Dashboard</a>
+                <span class="text-surface-300 mx-1">/</span>
+                <span class="text-surface-900">Assessments</span>
+            </div>
+            
+            <div class="flex items-center gap-3 ml-auto">
+                <button class="hidden md:flex w-10 h-10 items-center justify-center text-surface-600 hover:text-surface-900 bg-white border border-surface-200 rounded-full shadow-sm transition-all hover:shadow">
+                    <i class="fa-regular fa-bell text-[16px]"></i>
+                </button>
+                <button onclick="logout()" class="lg:hidden w-10 h-10 flex items-center justify-center text-surface-600 hover:text-rose-600 bg-white border border-surface-200 rounded-full shadow-sm transition-colors">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-[15px]"></i>
+                </button>
+            </div>
+        </header>
+
+        <div id="dashboard-scroll-area" class="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-32 lg:pb-12 hide-scrollbar scroll-smooth">
+            <div class="max-w-5xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
+                
+                <div class="panel p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 bg-surface-900 text-white overflow-hidden relative shadow-mnc border-surface-800">
+                    <div class="absolute right-0 top-0 w-[300px] h-[300px] bg-brand-500/20 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none"></div>
+                    <div class="space-y-3 text-center sm:text-left relative z-10 flex-1">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 border border-white/20 text-white/90 text-[11px] font-bold uppercase tracking-widest rounded-full backdrop-blur-md">
+                            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse"></span> Proctorix AI Surveillance
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Proctored Assessments</h1>
+                        <p class="text-[14px] text-surface-300 font-medium max-w-xl leading-relaxed">
+                            Examinations are strictly monitored. Tests mandate a full-screen lock environment, continuous tracking, and structured progression equivalent to MNC standards.
+                        </p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20 flex items-center justify-center shrink-0 relative z-10">
+                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1774461599/proctorix_w82lug.png" alt="Proctorix Logo" class="h-10 object-contain brightness-0 invert">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    
+                    <!-- Tabs Navigation -->
+                    <div class="flex gap-6 border-b border-surface-200 mb-6">
+                        <button onclick="switchTab('pending')" id="tab-pending" class="pb-3 border-b-2 border-brand-600 font-bold text-brand-600 transition-colors text-[15px]">Pending Examinations</button>
+                        <button onclick="switchTab('history')" id="tab-history" class="pb-3 border-b-2 border-transparent font-bold text-surface-500 hover:text-surface-800 transition-colors text-[15px]">Test History</button>
+                    </div>
+
+                    <!-- Pending Examinations Container -->
+                    <div id="pending-container" class="space-y-4 block">
+                        <div class="flex justify-between items-center px-2">
+                            <h3 class="font-bold text-surface-900 text-[16px] md:text-[18px]">Assigned to You</h3>
+                            <span class="text-[11px] font-bold text-surface-500 uppercase tracking-widest bg-surface-200 px-3 py-1.5 rounded-full"><i class="fa-solid fa-desktop text-surface-600 mr-1"></i> Client Locked</span>
+                        </div>
+
+                        <div id="test-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <div class="col-span-full py-16 text-center text-surface-400 font-medium flex flex-col items-center">
+                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
+                                Fetching assigned examinations...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test History Container -->
+                    <div id="history-container" class="space-y-4 hidden">
+                        <div class="flex justify-between items-center px-2">
+                            <h3 class="font-bold text-surface-900 text-[16px] md:text-[18px]">Previous Attempts</h3>
+                        </div>
+
+                        <div id="history-grid" class="flex flex-col gap-4">
+                            <div class="py-16 text-center text-surface-400 font-medium flex flex-col items-center">
+                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
+                                Loading historical data...
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="mobile-dock" class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
+        <nav class="bg-white/90 backdrop-blur-xl border border-surface-200/60 shadow-glass rounded-2xl flex justify-around items-center px-2 py-2 pb-safe-offset transition-transform duration-300">
+            <a href="dashboard.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-border-all text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="chapters.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-book-open text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Study</span>
+            </a>
+            <a href="media-viewer.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-circle-play text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Watch</span>
+            </a>
+            <a href="assessment.html" class="flex flex-col items-center justify-center w-16 h-14 relative group">
+                <div class="absolute inset-0 bg-brand-50 rounded-xl transition-opacity opacity-100"></div>
+                <i class="fa-solid fa-pen-ruler text-[20px] mb-1 text-brand-600 relative z-10"></i>
+                <span class="text-[10px] font-bold text-brand-700 relative z-10">Test</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MNC / GOVT STANDARD CBT ENVIRONMENT        -->
+    <!-- ========================================== -->
+    <div id="active-test-area" class="hidden fixed inset-0 z-[100] bg-cbt-bg flex-col w-full h-full font-cbt tracking-normal">
+        
+        <!-- Standard CBT System Bar -->
+        <div class="h-12 bg-cbt-main text-white border-b border-cbt-sec flex justify-between items-center px-4 shrink-0 shadow-sm relative z-20">
+            <div class="flex items-center gap-3">
+                <div class="hidden md:block font-bold tracking-widest text-[16px] uppercase opacity-90">Computer Based Test</div>
+                <div class="w-px h-6 bg-white/20 hidden md:block mx-2"></div>
+                <h2 id="active-test-title" class="text-[15px] md:text-[16px] font-bold truncate max-w-[200px] md:max-w-xl">Exam Title</h2>
+            </div>
+
+            <!-- Mobile Controls in Header -->
+            <div class="flex items-center gap-3 md:hidden">
+                <div class="bg-black/20 px-2 py-1 border border-white/10 rounded text-[13px] font-mono"><span id="exam-timer-mobile">00:00:00</span></div>
+                <button onclick="confirmSubmitTest()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-[13px] rounded font-bold border border-red-800">Submit</button>
+            </div>
+        </div>
+
+        <!-- Layout Body -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative pb-8"> <!-- Added pb-8 for footer space -->
+            
+            <!-- Left: Question Panel -->
+            <div class="flex-1 flex flex-col bg-white overflow-hidden border-r-2 md:border-r-4 border-cbt-sec">
+                <!-- Header Info for Question -->
+                <div class="px-4 py-3 border-b border-cbt-border bg-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center shrink-0 gap-2 pr-14 sm:pr-4"> <!-- Added flex-col for mobile, pr-14 to avoid overlap -->
+                    <div class="font-bold text-[#111] text-[15px]">
+                        Question No. <span id="q-current-display">1</span>
+                    </div>
+                    <div class="flex flex-row sm:gap-4 text-left">
+                        <span class="text-[12px] sm:text-[13px] font-semibold text-green-700 mr-2 sm:mr-0">Marks for correct answer <span id="q-marks-positive" class="text-green-800 ml-1">3</span></span>
+                        <span class="text-[12px] sm:text-[13px] font-semibold text-red-600">Negative marks <span id="q-marks-negative" class="text-red-700 ml-1">1</span></span>
+                    </div>
+                </div>
+
+                <!-- Scrollable Question Content -->
+                <div class="flex-1 overflow-y-auto p-4 md:p-8 hide-scrollbar" id="questions-container">
+                    <!-- Injected via JS -->
+                </div>
+
+                <!-- Footer Controls -->
+                <div class="p-4 md:p-5 border-t border-surface-200 bg-surface-50 flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
+                    <div class="flex gap-2 w-full lg:w-auto">
+                        <button onclick="markForReview()" id="btn-mark" class="flex-1 lg:flex-none px-4 py-2.5 bg-white border border-surface-300 text-surface-800 rounded font-semibold hover:bg-surface-100 transition shadow-sm text-[13px]">
+                            Mark for Review & Next
+                        </button>
+                        <button onclick="clearResponse()" class="flex-1 lg:flex-none px-4 py-2.5 bg-white border border-surface-300 text-surface-800 rounded font-semibold hover:bg-surface-100 transition shadow-sm text-[13px]">
+                            Clear Response
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full lg:w-auto">
+                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="flex-1 lg:flex-none px-6 py-2.5 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300 transition shadow-sm text-[13px] disabled:opacity-50 disabled:cursor-not-allowed">
+                            Previous
+                        </button>
+                        <button onclick="saveAndNext()" id="btn-next" class="flex-1 lg:flex-none px-8 py-2.5 bg-[#22c55e] text-white rounded font-bold hover:bg-[#16a34a] transition shadow-sm border border-[#16a34a] text-[13px]">
+                            Save & Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Question Palette (Sidebar) -->
+            <div id="palette-panel" class="absolute inset-y-0 right-0 z-40 w-[280px] lg:w-[320px] bg-white border-l border-cbt-border flex flex-col shrink-0 transform translate-x-full md:relative md:translate-x-0 transition-transform duration-300 shadow-xl md:shadow-none h-full"> <!-- Added h-full to ensure it respects parent pb-8 -->
+                
+                <!-- Profile and Timer Block -->
+                <div class="flex flex-col shrink-0 border-b border-cbt-border bg-blue-50/50">
+                    <!-- Timer prominently displayed (CBT style) -->
+                    <div class="py-4 border-b border-blue-100 flex flex-col items-center justify-center">
+                        <span class="text-[12px] text-gray-600 font-bold mb-1 uppercase tracking-wider">Time Left</span>
+                        <span id="exam-timer" class="font-mono font-bold text-2xl text-[#1a365d] tracking-widest bg-white px-4 py-1.5 rounded shadow-sm border border-blue-200">00:00:00</span>
+                    </div>
+                    
+                    <!-- Candidate details -->
+                    <div class="p-3 bg-white flex items-center gap-3">
+                        <div class="w-[50px] h-[50px] bg-white border border-gray-300 p-0.5 shrink-0">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-0.5">Candidate</p>
+                            <p id="exam-candidate-name" class="font-bold text-gray-900 text-[13px] truncate leading-tight">Student Name</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="p-4 border-b border-surface-200 shrink-0 grid grid-cols-2 gap-y-3 gap-x-2 text-[11px] font-medium text-surface-600 bg-white">
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-[#22c55e] border border-[#16a34a] shrink-0"></span> Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-[#ef4444] border border-[#dc2626] shrink-0"></span> Not Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-[#f1f5f9] border border-[#cbd5e1] shrink-0"></span> Not Visited</div>
+                    <div class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-[#a855f7] border border-[#9333ea] shrink-0"></span> Marked for Review</div>
+                    <div class="flex items-center gap-2 col-span-2"><span class="w-4 h-4 rounded-sm bg-[#a855f7] border border-[#9333ea] relative shrink-0"><span class="absolute bottom-0 right-0 w-1.5 h-1.5 bg-[#22c55e] rounded-full"></span></span> Answered & Marked for Review</div>
+                </div>
+
+                <!-- Palette Grid Container -->
+                <div class="flex-1 overflow-y-auto p-4 bg-surface-50 relative">
+                    <!-- Mobile Close Palette -->
+                    <button onclick="toggleMobilePalette()" class="md:hidden absolute top-2 right-2 w-7 h-7 flex items-center justify-center text-gray-600 bg-gray-200 rounded-full border border-gray-300 shadow-sm">
+                        <i class="fa-solid fa-times text-[14px]"></i>
+                    </button>
+                    
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2 mt-4 md:mt-0">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Main Submit Button -->
+                <div class="p-3 border-t border-cbt-border bg-gray-100 shrink-0 hidden md:block">
+                    <button onclick="confirmSubmitTest()" class="w-full bg-[#1a365d] hover:bg-blue-900 text-white font-bold py-2.5 shadow-sm border border-[#112440] text-[15px] rounded-sm transition-colors">
+                        Submit Examination
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Toggle Palette Button -->
+            <button onclick="toggleMobilePalette()" class="md:hidden absolute top-3 right-3 z-30 w-10 h-10 flex items-center justify-center bg-white text-[#1a365d] border border-gray-400 shadow-md rounded-sm">
+                <i class="fa-solid fa-list-ul"></i>
+            </button>
+            
+            <!-- Absolute Footer -->
+            <div class="absolute bottom-0 left-0 w-full h-8 bg-surface-100 border-t border-surface-200 flex items-center justify-center text-[11px] text-surface-500 font-medium z-10 shrink-0">
+                <span>Examination system <a href="https://proctorix.in" target="_blank" class="text-brand-600 hover:underline">Proctorix-api</a>. Designed & Developed By <a href="https://xetatechsolutions.com" target="_blank" class="text-brand-600 hover:underline font-bold">Xeta Tech Solutions</a></span>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        let token = localStorage.getItem('token');
+        let availableTests = [];
+        let testHistory = [];
+        let currentTest = null;
+        let timerInterval = null;
+        
+        let currentQuestionIndex = 0;
+        let isMobilePaletteOpen = false;
+        
+        // Track states: 'not-visited', 'not-answered', 'answered', 'marked', 'marked-answered'
+        let questionStates = [];
+
+        if (!token) {
+            token = "mock_token_for_preview";
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', paymentPlan: '100' }));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let user = { name: 'Scholar', paymentPlan: '100' };
+            try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
+
+            document.getElementById('sidebar-name').textContent = user.name || 'Student';
+            document.getElementById('exam-candidate-name').textContent = user.name || 'Student';
+            document.getElementById('sidebar-plan-label').textContent = `Access Active: ${user.paymentPlan || 100}%`;
+            document.getElementById('sidebar-avatar').textContent = (user.name || 'S')[0].toUpperCase();
+            
+            loadTests();
+        });
+
+        // Tab Switching Logic
+        function switchTab(tab) {
+            const activeClass = 'pb-3 border-b-2 border-brand-600 font-bold text-brand-600 transition-colors text-[15px]';
+            const inactiveClass = 'pb-3 border-b-2 border-transparent font-bold text-surface-500 hover:text-surface-800 transition-colors text-[15px]';
+            
+            document.getElementById('tab-pending').className = tab === 'pending' ? activeClass : inactiveClass;
+            document.getElementById('tab-history').className = tab === 'history' ? activeClass : inactiveClass;
+            
+            if(tab === 'pending') {
+                document.getElementById('pending-container').classList.remove('hidden');
+                document.getElementById('history-container').classList.add('hidden');
+            } else {
+                document.getElementById('pending-container').classList.add('hidden');
+                document.getElementById('history-container').classList.remove('hidden');
+                loadHistory(); // Load data dynamically when tab is clicked
+            }
+        }
+
+        // Data Fetching
+        async function loadTests() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/student/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error();
+                availableTests = await res.json();
+                renderTestList();
+            } catch (err) {
+                // High quality Mock data for preview
+                availableTests = [
+                    { id: 't1', title: 'TCS iON NQT Mock: Core Engineering & Aptitude', timeLimit: 45, passingScore: 65, maxAttempts: 2, attemptCount: 0, questions: [
+                        { id: 'q1', type: 'mcq', text: 'Which data collection method is most resilient to self-reporting bias in longitudinal studies?', options: ['Likert-scale Surveys', 'Direct Observational Tracking', 'Retrospective Interviews', 'Focus Group Dynamics'], correctOptions: ['1'], positiveMarks: 3, negativeMarks: 1 },
+                        { id: 'q2', type: 'fib', text: 'Enter the standard critical p-value threshold typically used to reject the null hypothesis in quantitative research:', correctOptions: ['0.05'], positiveMarks: 3, negativeMarks: 1 },
+                        { id: 'q3', type: 'mcq', text: 'What is the time complexity of binary search on a sorted array?', options: ['O(n)', 'O(n log n)', 'O(log n)', 'O(1)'], correctOptions: ['2'], positiveMarks: 2, negativeMarks: 0.5 },
+                        { id: 'q4', type: 'mcq', text: 'Which principle of OOP describes hiding internal state and requiring all interaction to be performed through an object\'s methods?', options: ['Inheritance', 'Polymorphism', 'Encapsulation', 'Abstraction'], correctOptions: ['2'], positiveMarks: 4, negativeMarks: 1 },
+                        { id: 'q5', type: 'mcq', text: 'What is the point in qualitative coding where no new themes emerge?', options: ['Thematic Saturation', 'Data Exhaustion', 'Grounded Theory Endpoint', 'Hermeneutic Loop'], correctOptions: ['0'], positiveMarks: 4, negativeMarks: 1 },
+                        { id: 'q6', type: 'mcq', text: 'Which keyword is used to define a function in Python?', options: ['function', 'def', 'func', 'define'], correctOptions: ['1'], positiveMarks: 3, negativeMarks: 1 }
+                    ]}
+                ];
+                renderTestList();
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/student/tests/history`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error();
+                testHistory = await res.json();
+                renderHistory(testHistory);
+            } catch (err) {
+                // Mock history for preview
+                testHistory = [
+                    { testTitle: 'Advanced Data Structures & Algorithms', scorePercentage: '88.50', passed: true, submittedAt: new Date().toISOString(), attemptNumber: 1, totalScore: 35, maxScore: 40 },
+                    { testTitle: 'Cloud Computing Fundamentals', scorePercentage: '42.00', passed: false, submittedAt: new Date(Date.now() - 86400000).toISOString(), attemptNumber: 1, totalScore: 21, maxScore: 50 }
+                ];
+                renderHistory(testHistory);
+            }
+        }
+
+        // UI Renderers
+        function renderTestList() {
+            const grid = document.getElementById('test-grid');
+            grid.innerHTML = '';
+            
+            if (availableTests.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                        <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
+                            <i class="fa-solid fa-clipboard-check text-2xl text-surface-300"></i>
+                        </div>
+                        <h4 class="text-surface-900 font-bold mb-1">No Pending Assessments</h4>
+                        <p class="text-surface-500 text-[14px]">There are no active examinations assigned to your profile at this time.</p>
+                    </div>`;
+                return;
+            }
+
+            availableTests.forEach(test => {
+                const qCount = test.questions ? test.questions.length : 0;
+                const attemptsUsed = test.attemptCount || 0;
+                const maxAttempts = test.maxAttempts || 1;
+                const canAttempt = attemptsUsed < maxAttempts;
+
+                let actionButton = '';
+                if (canAttempt) {
+                    actionButton = `<button onclick="startTest('${test.id}')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-[15px]"><i class="fa-solid fa-play text-[12px]"></i> Launch Exam Window</button>`;
+                } else {
+                    actionButton = `<button disabled class="w-full bg-surface-100 text-surface-400 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed border border-surface-200 flex items-center justify-center gap-2 text-[15px]"><i class="fa-solid fa-lock"></i> Max Attempts Reached</button>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="panel panel-hover p-6 md:p-8 flex flex-col justify-between rounded-2xl">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="bg-surface-900 text-white px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest shadow-sm"><i class="fa-solid fa-video mr-1 text-brand-400"></i> Proctored</span>
+                                <span class="text-[12px] font-bold text-surface-600">Attempt ${attemptsUsed}/${maxAttempts}</span>
+                            </div>
+                            <h3 class="font-bold text-surface-900 text-lg md:text-xl tracking-tight leading-tight mb-6">${test.title}</h3>
+                            
+                            <div class="grid grid-cols-3 gap-3 mb-8 border-y border-surface-100 py-4">
+                                <div class="text-center border-r border-surface-100">
+                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Questions</p>
+                                    <p class="text-[16px] font-extrabold text-surface-900">${qCount}</p>
+                                </div>
+                                <div class="text-center border-r border-surface-100">
+                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Duration</p>
+                                    <p class="text-[16px] font-extrabold text-surface-900">${test.timeLimit || 60}m</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Pass Mark</p>
+                                    <p class="text-[16px] font-extrabold text-surface-900">${test.passingScore || 50}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderHistory(history) {
+            const grid = document.getElementById('history-grid');
+            grid.innerHTML = '';
+            
+            if (history.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                        <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl text-surface-300"></i>
+                        </div>
+                        <h4 class="text-surface-900 font-bold mb-1">No History Found</h4>
+                        <p class="text-surface-500 text-[14px]">You haven't completed any assessments yet.</p>
+                    </div>`;
+                return;
+            }
+
+            history.forEach(item => {
+                const dateStr = new Date(item.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const statusClass = item.passed ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-rose-600 bg-rose-50 border-rose-200';
+                const statusIcon = item.passed ? 'fa-check' : 'fa-xmark';
+                const statusText = item.passed ? 'PASSED' : 'FAILED';
+
+                grid.innerHTML += `
+                    <div class="panel p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl transition-all hover:bg-surface-50">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-surface-500 uppercase tracking-widest bg-surface-100 px-2.5 py-1 rounded-md border border-surface-200">Attempt ${item.attemptNumber}</span>
+                                <span class="text-[11px] text-surface-400 font-medium">${dateStr}</span>
+                            </div>
+                            <h4 class="font-bold text-surface-900 text-[16px]">${item.testTitle}</h4>
+                            <div class="text-[13px] text-surface-500 mt-1 font-medium">Score: ${item.totalScore} / ${item.maxScore}</div>
+                        </div>
+                        <div class="shrink-0 flex items-center gap-4 w-full md:w-auto border-t md:border-t-0 border-surface-100 pt-4 md:pt-0 mt-2 md:mt-0">
+                            <div class="text-right flex-1 md:flex-none">
+                                <p class="text-[20px] font-black text-surface-900 tracking-tight">${item.scorePercentage}%</p>
+                            </div>
+                            <div class="w-px h-10 bg-surface-200 hidden md:block"></div>
+                            <div class="${statusClass} px-3 py-1.5 rounded-lg border flex items-center justify-center gap-1.5 font-bold text-[12px] tracking-widest uppercase shadow-sm">
+                                <i class="fa-solid ${statusIcon}"></i> ${statusText}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function startTest(id) {
+            currentTest = availableTests.find(t => t.id === id);
+            if (!currentTest || !currentTest.questions || currentTest.questions.length === 0) {
+                showCustomModal("Exam Error", "Test data is invalid or empty.");
+                return;
+            }
+
+            try {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) { await elem.requestFullscreen(); } 
+                else if (elem.webkitRequestFullscreen) { await elem.webkitRequestFullscreen(); }
+            } catch (err) {
+                console.warn("Fullscreen required:", err.message);
+            }
+
+            document.getElementById('active-test-area').classList.remove('hidden');
+            document.getElementById('active-test-area').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('active-test-title').textContent = currentTest.title;
+
+            const timeLimitMins = parseInt(currentTest.timeLimit) || 60;
+            let timeRemaining = timeLimitMins * 60;
+            updateTimerDisplay(timeRemaining);
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay(timeRemaining);
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest(true);
+                }
+            }, 1000);
+
+            currentQuestionIndex = 0;
+            
+            // Initialize states
+            questionStates = new Array(currentTest.questions.length).fill('not-visited');
+            questionStates[0] = 'not-answered'; // First question is visited immediately
+            
+            renderQuestionsAndPalette();
+            showQuestion(0);
+        }
+
+        function exitExamFullscreen() {
+            document.body.style.overflow = '';
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(err => console.log(err));
+            }
+        }
+
+        function renderQuestionsAndPalette() {
+            const qContainer = document.getElementById('questions-container');
+            const pContainer = document.getElementById('palette-grid');
+            qContainer.innerHTML = '';
+            pContainer.innerHTML = '';
+
+            currentTest.questions.forEach((q, index) => {
+                // Generate Palette Button - initial class set via state
+                const stateClass = questionStates[index] === 'not-visited' ? '' : questionStates[index];
+                pContainer.innerHTML += `<button id="pal-btn-${index}" onclick="showQuestion(${index})" class="palette-btn ${stateClass} shadow-sm">${index + 1}</button>`;
+
+                // Generate Question Block (MNC Style)
+                let optionsHtml = '';
+                if (q.type === 'mcq' || q.type === 'msq') {
+                    const inputType = q.type === 'mcq' ? 'radio' : 'checkbox';
+                    q.options.forEach((opt, optIdx) => {
+                        if (opt && opt.trim() !== '') {
+                            optionsHtml += `
+                                <label class="cbt-opt-label group">
+                                    <input type="${inputType}" name="ans_${q.id}" value="${optIdx}" class="w-4 h-4 mt-0.5 accent-[#22c55e] cursor-pointer">
+                                    <span class="text-[15px] group-hover:text-black">${opt}</span>
+                                </label>
+                            `;
+                        }
+                    });
+                } else {
+                    optionsHtml = `<input type="text" name="ans_${q.id}" class="w-full max-w-lg p-3 border border-gray-300 focus:border-blue-500 focus:outline-none text-[15px] shadow-sm rounded-sm" placeholder="Type your answer...">`;
+                }
+
+                qContainer.innerHTML += `
+                    <div class="question-block hidden" data-qid="${q.id}" data-type="${q.type}" id="q-block-${index}">
+                        <div class="text-[16px] md:text-[18px] text-[#111] font-bold leading-relaxed mb-6 border-b border-gray-200 pb-4">${index + 1}. ${q.text}</div>
+                        <div class="space-y-3">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.querySelectorAll('.question-block input').forEach(input => {
+                input.addEventListener('change', updateCurrentQuestionState);
+                input.addEventListener('keyup', updateCurrentQuestionState);
+            });
+        }
+        
+        function updateCurrentQuestionState() {
+            const block = document.getElementById(`q-block-${currentQuestionIndex}`);
+            if (!block) return;
+            
+            if(questionStates[currentQuestionIndex] === 'marked' || questionStates[currentQuestionIndex] === 'marked-answered') {
+               questionStates[currentQuestionIndex] = 'not-answered';
+               updatePaletteVisuals();
+            }
+        }
+
+        function showQuestion(index) {
+            document.querySelectorAll('.question-block').forEach(b => b.classList.add('hidden'));
+            
+            if (index < 0) index = 0;
+            if (index >= currentTest.questions.length) index = currentTest.questions.length - 1;
+            
+            if (currentQuestionIndex !== index) {
+               evaluateQuestionState(currentQuestionIndex);
+            }
+            
+            currentQuestionIndex = index;
+            
+            if (questionStates[currentQuestionIndex] === 'not-visited') {
+                questionStates[currentQuestionIndex] = 'not-answered';
+            }
+
+            const targetBlock = document.getElementById(`q-block-${index}`);
+            if (targetBlock) {
+                targetBlock.classList.remove('hidden');
+            }
+
+            document.getElementById('q-current-display').textContent = index + 1;
+            const qData = currentTest.questions[index];
+            document.getElementById('q-marks-positive').textContent = qData.positiveMarks || 3;
+            document.getElementById('q-marks-negative').textContent = qData.negativeMarks || 1;
+
+            document.getElementById('btn-prev').disabled = (index === 0);
+            
+            document.querySelectorAll('.palette-btn').forEach(btn => btn.classList.remove('active-q'));
+            const activePalBtn = document.getElementById(`pal-btn-${index}`);
+            if(activePalBtn) activePalBtn.classList.add('active-q');
+            
+            if(isMobilePaletteOpen) toggleMobilePalette();
+            
+            updatePaletteVisuals();
+            
+            document.getElementById('questions-container').scrollTop = 0;
+        }
+        
+        function hasResponse(index) {
+            const block = document.getElementById(`q-block-${index}`);
+            if (!block) return false;
+            
+            const hasChecked = block.querySelectorAll('input:checked').length > 0;
+            const textInput = block.querySelector('input[type="text"]');
+            const hasText = textInput && textInput.value.trim() !== '';
+            
+            return hasChecked || hasText;
+        }
+
+        function evaluateQuestionState(index) {
+            if(questionStates[index] !== 'marked' && questionStates[index] !== 'marked-answered') {
+                 if(hasResponse(index)) {
+                     questionStates[index] = 'answered';
+                 } else {
+                     questionStates[index] = 'not-answered';
+                 }
+            }
+        }
+
+        function saveAndNext() {
+            if(hasResponse(currentQuestionIndex)) {
+                questionStates[currentQuestionIndex] = 'answered';
+            } else {
+                questionStates[currentQuestionIndex] = 'not-answered';
+            }
+            navigateQuestion(1);
+        }
+
+        function markForReview() {
+            if(hasResponse(currentQuestionIndex)) {
+                questionStates[currentQuestionIndex] = 'marked-answered';
+            } else {
+                questionStates[currentQuestionIndex] = 'marked';
+            }
+            navigateQuestion(1);
+        }
+
+        function navigateQuestion(direction) {
+            showQuestion(currentQuestionIndex + direction);
+        }
+
+        function clearResponse() {
+            const activeBlock = document.getElementById(`q-block-${currentQuestionIndex}`);
+            if (!activeBlock) return;
+            
+            activeBlock.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(i => i.checked = false);
+            activeBlock.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+            
+            questionStates[currentQuestionIndex] = 'not-answered';
+            updatePaletteVisuals();
+        }
+
+        function updatePaletteVisuals() {
+            currentTest.questions.forEach((q, index) => {
+                const palBtn = document.getElementById(`pal-btn-${index}`);
+                if (!palBtn) return;
+                
+                palBtn.classList.remove('answered', 'not-answered', 'marked', 'marked-answered');
+                
+                if (questionStates[index] !== 'not-visited') {
+                    palBtn.classList.add(questionStates[index]);
+                }
+            });
+        }
+
+        function toggleMobilePalette() {
+            const panel = document.getElementById('palette-panel');
+            isMobilePaletteOpen = !isMobilePaletteOpen;
+            if (isMobilePaletteOpen) {
+                panel.classList.remove('translate-x-full');
+            } else {
+                panel.classList.add('translate-x-full');
+            }
+        }
+
+        function updateTimerDisplay(seconds) {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            const timeStr = `${h}:${m}:${s}`;
+            
+            const timerMain = document.getElementById('exam-timer');
+            const timerMobile = document.getElementById('exam-timer-mobile');
+            if(timerMain) timerMain.textContent = timeStr;
+            if(timerMobile) timerMobile.textContent = timeStr;
+        }
+
+        function confirmSubmitTest() {
+            let answeredCount = questionStates.filter(s => s === 'answered' || s === 'marked-answered').length;
+            let markedCount = questionStates.filter(s => s === 'marked' || s === 'marked-answered').length;
+            let total = currentTest.questions.length;
+            
+            let message = `You have answered ${answeredCount} questions and marked ${markedCount} for review out of ${total}. Are you sure you want to submit the assessment? This action is final.`;
+            
+            showCustomConfirm("Submit Assessment", message, () => {
+                submitTest(false);
+            });
+        }
+
+        async function submitTest(isAutoSubmit = false) {
+            clearInterval(timerInterval);
+            exitExamFullscreen();
+
+            const responses = {};
+            document.querySelectorAll('.question-block').forEach(block => {
+                const qId = block.dataset.qid;
+                const type = block.dataset.type;
+                if (type === 'mcq' || type === 'msq') {
+                    const checked = block.querySelectorAll(`input[name="ans_${qId}"]:checked`);
+                    responses[qId] = Array.from(checked).map(el => el.value);
+                } else {
+                    const input = block.querySelector(`input[name="ans_${qId}"]`);
+                    responses[qId] = input ? input.value.trim() : "";
+                }
+            });
+
+            showLoadingOverlay();
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/student/tests/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ testId: currentTest.id, responses })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Submission failed");
+                removeLoadingOverlay();
+                showResultsOverlay(data.result, data.testSettings, data.questions);
+            } catch (err) {
+                setTimeout(() => {
+                    removeLoadingOverlay();
+                    // Fallback for UI testing if the server is offline
+                    showResultsOverlay({ passed: true, scorePercentage: '85.00', totalScore: 6, maxScore: 6, attemptNumber: 1, maxAttempts: 2 });
+                }, 1500);
+            }
+        }
+        
+        function showLoadingOverlay() {
+            const overlay = document.createElement('div');
+            overlay.id = 'submit-loading-overlay';
+            overlay.className = 'fixed inset-0 z-[200] bg-surface-900/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-white animate-fade-in';
+            overlay.innerHTML = `
+                <i class="fa-solid fa-circle-notch fa-spin text-5xl text-brand-500 mb-6"></i>
+                <h3 class="text-2xl font-bold tracking-tight mb-2">Submitting Assessment...</h3>
+                <p class="text-surface-400">Please do not close this window.</p>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        function removeLoadingOverlay() {
+            const overlay = document.getElementById('submit-loading-overlay');
+            if(overlay) overlay.remove();
+        }
+
+        function showResultsOverlay(result, testSettings = {}, questions = []) {
+            document.getElementById('active-test-area').classList.add('hidden');
+            document.getElementById('active-test-area').classList.remove('flex');
+            
+            let detailedReviewHtml = '';
+            
+            // If the test settings permit showing answers, build the detailed review section
+            if (testSettings.showAnswers && questions && questions.length > 0) {
+                detailedReviewHtml += `<div class="mt-8 text-left border-t border-surface-200 pt-6">
+                    <h4 class="font-bold text-surface-900 mb-4 text-lg"><i class="fa-solid fa-list-check text-brand-500 mr-2"></i> Detailed Performance Review</h4>
+                    <div class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 hide-scrollbar">`;
+                
+                questions.forEach((q, idx) => {
+                    const studentAnsRaw = result.responses ? result.responses[q.id] : null;
+                    let studentAnsText = "<span class='text-surface-400 italic'>Not Answered</span>";
+
+                    if (studentAnsRaw) {
+                        if (q.type === 'fib') { 
+                            studentAnsText = studentAnsRaw; 
+                        } else if (Array.isArray(studentAnsRaw) && studentAnsRaw.length > 0) {
+                            studentAnsText = studentAnsRaw.map(optIdx => q.options[parseInt(optIdx)] || `Unknown`).join('<span class="text-surface-300 mx-1">|</span>');
+                        }
+                    }
+
+                    let correctAnsText = q.type === 'fib' ? (q.correctOptions[0] || '') : q.correctOptions.map(optIdx => q.options[parseInt(optIdx)]).join('<span class="text-surface-300 mx-1">|</span>');
+
+                    let isCorrect = false;
+                    if (q.type === 'fib') {
+                        isCorrect = studentAnsRaw && typeof studentAnsRaw === 'string' && studentAnsRaw.trim().toLowerCase() === correctAnsText.trim().toLowerCase();
+                    } else if (Array.isArray(studentAnsRaw)) {
+                        const sortedStudent = [...studentAnsRaw].sort();
+                        const sortedCorrect = [...q.correctOptions].sort();
+                        isCorrect = studentAnsRaw.length > 0 && sortedStudent.length === sortedCorrect.length && sortedStudent.every((val, index) => val === sortedCorrect[index]);
+                    }
+
+                    const badge = isCorrect 
+                        ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-200 shrink-0 uppercase tracking-widest"><i class="fa-solid fa-check mr-1"></i> Correct</span>`
+                        : `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold border border-rose-200 shrink-0 uppercase tracking-widest"><i class="fa-solid fa-xmark mr-1"></i> Incorrect</span>`;
+
+                    detailedReviewHtml += `
+                        <div class="bg-surface-50 p-4 rounded-xl border border-surface-200 shadow-sm relative">
+                            <div class="flex justify-between items-start gap-3 mb-3">
+                                <p class="font-semibold text-surface-800 text-[14px] leading-snug flex-1"><span class="text-brand-600 font-bold mr-1">Q${idx+1}.</span> ${q.text}</p>
+                                ${badge}
+                            </div>
+                            <div class="space-y-1.5 text-[13px] bg-white p-3 rounded-lg border border-surface-100">
+                                <div class="flex gap-2"><span class="font-bold text-surface-400 w-16 shrink-0 uppercase tracking-wider text-[10px] mt-0.5">You:</span> <span class="${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'}">${studentAnsText}</span></div>
+                                <div class="flex gap-2"><span class="font-bold text-surface-400 w-16 shrink-0 uppercase tracking-wider text-[10px] mt-0.5">Key:</span> <span class="text-surface-700 font-semibold">${correctAnsText}</span></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                detailedReviewHtml += `</div></div>`;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 z-[200] bg-surface-900/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in';
+            overlay.innerHTML = `
+                <div class="panel bg-white p-8 sm:p-10 rounded-3xl max-w-2xl w-full text-center shadow-glass relative overflow-hidden font-sans my-8">
+                    <div class="absolute top-0 right-0 w-32 h-32 ${result.passed ? 'bg-emerald-500/10' : 'bg-rose-500/10'} rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    
+                    <div class="w-20 h-20 ${result.passed ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'} rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm border relative z-10">
+                        <i class="fa-solid ${result.passed ? 'fa-check' : 'fa-times'}"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-surface-900 mb-2 tracking-tight relative z-10">Assessment Completed</h3>
+                    <p class="text-surface-500 text-[13px] font-medium mb-8 relative z-10">Results synced with <strong class="text-surface-800">Proctorix AI Engine</strong></p>
+                    
+                    <div class="bg-surface-50 p-6 rounded-2xl border border-surface-200 flex justify-around items-center shadow-soft-inner relative z-10">
+                        <div>
+                            <p class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Status</p>
+                            <p class="text-xl font-black ${result.passed ? 'text-emerald-600' : 'text-rose-600'} tracking-tight">${result.passed ? 'PASSED' : 'FAILED'}</p>
+                        </div>
+                        <div class="w-px h-12 bg-surface-200"></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Final Score</p>
+                            <p class="text-2xl font-black text-surface-900 tracking-tight">${result.scorePercentage}%</p>
+                        </div>
+                    </div>
+                    
+                    ${detailedReviewHtml}
+
+                    <button onclick="window.location.reload()" class="mt-8 w-full bg-surface-900 hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-md relative z-10 cursor-pointer text-[15px]">
+                        Return to Dashboard
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function showCustomModal(title, message) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
+                    <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 border border-rose-100 shadow-sm">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <p class="text-surface-500 text-[14px] font-medium mb-8">${message}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-surface-900 hover:bg-black text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[15px]">Acknowledge</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
+                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-4 border border-brand-100 shadow-sm">
+                        <i class="fa-solid fa-paper-plane text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <p class="text-surface-500 text-[14px] font-medium mb-8 leading-relaxed">${message}</p>
+                    <div class="flex gap-3">
+                        <button id="modal-cancel" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Review</button>
+                        <button id="modal-ok" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[14px]">Submit</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.querySelector('#modal-cancel').onclick = () => modal.remove();
+            modal.querySelector('#modal-ok').onclick = () => { modal.remove(); onConfirm(); };
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>

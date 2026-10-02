@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            light: '#4ade80',
+                            DEFAULT: '#16a34a', // Leaf green from logo
+                            dark: '#15803d',
+                            teal: '#2dd4bf',    // Arc color from logo
+                            darkTeal: '#0f766e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ccfbf1 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #1f2937;
+        }
+        .glossy-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px -10px rgba(15, 118, 110, 0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a 0%, #0f766e 100%);
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(15, 118, 110, 0.6);
+        }
+    </style>
+</head>
+<body class="antialiased w-full min-h-screen flex items-center justify-center p-4">
+
+    <main class="w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-12 py-12">
+        <div class="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+            <div class="inline-block px-4 py-1.5 rounded-full glossy-card text-brand-darkTeal font-semibold text-sm mb-2 border-brand/20 border">
+                <i class="fa-solid fa-microscope mr-2"></i> Enterprise Pathology LMS
+            </div>
+            
+            <h1 class="text-5xl lg:text-6xl font-bold leading-tight text-gray-900">
+                Master Pathology with <br> 
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand to-brand-teal">Geeky Researcher</span>
+            </h1>
+            
+            <p class="text-lg text-gray-600 max-w-lg">
+                A premier digital learning environment offering high-yield videos, case studies, and assessments tailored for clinical and anatomic pathology departments.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-4">
+                <a href="register.html" class="btn-primary px-8 py-3 rounded-xl font-bold text-lg shadow-lg text-center">
+                    Student Registration
+                </a>
+                <a href="login.html" class="glossy-card px-8 py-3 rounded-xl font-bold text-lg text-brand-dark hover:bg-white/80 transition text-center">
+                    Login to Portal
+                </a>
+            </div>
+        </div>
+        
+        <div class="md:w-1/2 flex justify-center p-6">
+            <div class="glossy-card p-8 rounded-3xl relative">
+                <div class="absolute -inset-4 bg-gradient-to-r from-brand-teal to-brand opacity-20 blur-2xl rounded-full z-0"></div>
+                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" 
+                     alt="Geeky Researcher Logo" 
+                     class="relative z-10 w-full max-w-md rounded-2xl shadow-sm object-contain bg-white/60 p-4">
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

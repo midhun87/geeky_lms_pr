@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Verification Pending</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { DEFAULT: '#16a34a' } } } }
+        }
+    </script>
+
+    <style>
+        body { background: linear-gradient(135deg, #f0fdf4 0%, #ccfbf1 100%); min-height: 100vh; }
+        .glossy-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 10px 40px -10px rgba(15, 118, 110, 0.15); }
+    </style>
+</head>
+<body class="antialiased flex items-center justify-center p-4">
+
+    <div class="glossy-card p-10 w-full max-w-md text-center flex flex-col items-center rounded-3xl" id="status-container">
+        
+        <!-- Pending State -->
+        <div id="pending-state" class="flex flex-col items-center">
+            <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-3xl mb-6 shadow-inner">
+                <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Pending Approval</h2>
+            <p class="text-gray-600 mb-8 text-sm px-4">
+                We have received your registration. Your payment is currently being verified by the Administration. 
+                Please wait here or check your email for updates.
+            </p>
+            
+            <div class="flex items-center space-x-3 text-brand font-medium bg-white/50 px-6 py-3 rounded-full border border-brand/20">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> 
+                <span id="status-text">Awaiting Admin Verification...</span>
+            </div>
+        </div>
+
+        <!-- Success State (Hidden initially) -->
+        <div id="success-state" class="hidden flex flex-col items-center w-full">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Account Approved!</h2>
+            <p class="text-gray-600 mb-8 text-sm">Your payment has been verified. You now have full access to the LMS.</p>
+            <button onclick="window.location.href='login.html'" class="w-full py-3 bg-gradient-to-r from-brand to-teal-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                Go to Login <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <div class="mt-8 pt-6 border-t w-full border-gray-200/50" id="footer-links">
+            <p class="text-xs text-gray-500 mb-2">Registered Email: <strong id="display-email">...</strong></p>
+            <a href="login.html" class="text-sm font-bold text-gray-500 hover:text-gray-800">Return to Login Screen</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/apis'; // Change this when deploying
+        let pollingInterval;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const email = localStorage.getItem('pendingEmail');
+            if (!email) {
+                // If they landed here directly without an email, send back to login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('display-email').textContent = email;
+            startPolling(email);
+        });
+
+        function startPolling(email) {
+            // Check status immediately, then every 10 seconds
+            checkStatus(email);
+            pollingInterval = setInterval(() => checkStatus(email), 10000);
+        }
+
+        async function checkStatus(email) {
+            try {
+                // We use a mock login attempt with a special parameter or just rely on the standard error response
+                // A better approach would be a dedicated public endpoint, but we can infer from the login endpoint.
+                
+                // For this implementation, we will assume you add a quick endpoint in server.js to check status:
+                // GET /api/auth/status?email=xxx
+                const response = await fetch(`${API_BASE_URL}/auth/status?email=${encodeURIComponent(email)}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.status === 'approved') {
+                        clearInterval(pollingInterval);
+                        localStorage.removeItem('pendingEmail'); // Clean up
+                        showSuccess();
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking status:", error);
+                // Keep polling if there's a network error
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('pending-state').classList.add('hidden');
+            document.getElementById('footer-links').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

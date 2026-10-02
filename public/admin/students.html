@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Student Directory</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active { background-color: #f0fdfa; color: #0d9488; border-right: 3px solid #14b8a6; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <!-- Mobile Top Navigation Bar -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
+        <div class="flex items-center gap-2">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
+            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
+                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
+            </div>
+        </div>
+        
+       <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link active"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-100">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full w-full pt-16 md:pt-0 overflow-y-auto bg-slate-50/50">
+        
+        <div class="p-4 md:p-8 max-w-7xl mx-auto w-full flex flex-col h-full">
+            <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 shrink-0">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Student Directory</h1>
+                    <p class="text-slate-500 text-sm mt-1">Comprehensive overview of enrolled users and financial insights.</p>
+                </div>
+            </div>
+
+            <!-- Stats Widgets -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 shrink-0">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Total Students</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="stat-total">--</h3>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Active / Approved</p>
+                    <h3 class="text-2xl font-bold text-emerald-600" id="stat-active">--</h3>
+                </div>
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1">Expired Access</p>
+                    <h3 class="text-2xl font-bold text-red-500" id="stat-expired">--</h3>
+                </div>
+                <div class="bg-indigo-50 rounded-xl p-5 shadow-sm border border-indigo-100">
+                    <p class="text-indigo-600 text-[10px] font-bold uppercase tracking-wider mb-1">Revenue Realized</p>
+                    <h3 class="text-2xl font-bold text-indigo-900" id="stat-revenue">--</h3>
+                </div>
+            </div>
+            
+            <!-- Table Section -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden min-h-[400px]">
+                
+                <!-- Table Controls -->
+                <div class="px-5 py-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
+                    <div class="relative w-full max-w-sm">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, email, or level..." class="w-full pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:ring-opacity-20 outline-none transition-all">
+                    </div>
+                </div>
+
+                <!-- Scrollable Table -->
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10">
+                            <tr>
+                                <th class="px-6 py-4">Student Details</th>
+                                <th class="px-6 py-4">Level Enrolled</th>
+                                <th class="px-6 py-4">Term Plan</th>
+                                <th class="px-6 py-4 text-right">Amount Paid</th>
+                                <th class="px-6 py-4">Current Status</th>
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="directory-tbody" class="divide-y divide-slate-100">
+                            <tr><td colspan="6" class="text-center py-16"><div class="flex flex-col items-center justify-center text-slate-400"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i><p class="text-sm">Fetching directory...</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Block Confirmation Modal -->
+    <div id="block-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeBlockModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-user-lock text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900">Revoke Student Access</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500">Are you sure you want to instantly revoke access for <span id="block-target-email" class="font-bold text-slate-700"></span>? They will be unable to log in to their courses.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                    <button type="button" id="confirm-block-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                        Revoke Access
+                    </button>
+                    <button type="button" onclick="closeBlockModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unblock Confirmation Modal -->
+    <div id="unblock-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeUnblockModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-unlock-keyhole text-emerald-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900">Restore Student Access</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500">Are you sure you want to restore access for <span id="unblock-target-email" class="font-bold text-slate-700"></span>? They will be able to log in again immediately.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                    <button type="button" id="confirm-unblock-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                        Restore Access
+                    </button>
+                    <button type="button" onclick="closeUnblockModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend Duration Modal -->
+    <div id="extend-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeExtendModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <div class="bg-white px-6 pt-6 pb-6">
+                    <div class="sm:flex sm:items-start mb-4">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-calendar-plus text-blue-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900">Extend Access Duration</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500">Select a new expiration date for <span id="extend-target-email" class="font-bold text-slate-700"></span>.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pl-0 sm:pl-14 w-full">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">New Expiry Date</label>
+                        <input type="date" id="new-expiry-date" class="w-full text-sm border border-slate-300 rounded-lg bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all px-3 py-2 cursor-pointer">
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                    <button type="button" id="confirm-extend-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                        Update Duration
+                    </button>
+                    <button type="button" onclick="closeExtendModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[70] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        
+        let allStudents = [];
+        let studentToBlock = null;
+        let studentToUnblock = null;
+        let studentToExtend = null;
+
+        if (!token || !user || user.role !== 'admin') { localStorage.clear(); window.location.href = '../login.html'; }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); 
+            } else {
+                sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-white border-l-4 border-emerald-500' : 'bg-white border-l-4 border-red-500';
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            toast.className = `${bg} shadow-lg rounded px-4 py-3 text-sm text-slate-700 flex items-center gap-3 animate-slide-in-right pointer-events-auto min-w-[250px]`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDirectory();
+            document.getElementById('searchInput').addEventListener('input', filterTable);
+        });
+
+        async function loadDirectory() {
+            const tbody = document.getElementById('directory-tbody');
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/students-directory`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) throw new Error('Failed to fetch data');
+                allStudents = await response.json();
+                calculateMetrics(allStudents);
+                renderTable(allStudents);
+            } catch (err) { 
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-red-500 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Failed to connect to server.</td></tr>`; 
+            }
+        }
+
+        function calculateMetrics(students) {
+            let total = students.length, active = 0, expired = 0, revenue = 0;
+            students.forEach(s => {
+                if (s.status === 'approved') active++;
+                if (s.status === 'expired' || s.status === 'blocked') expired++;
+                if (s.status !== 'pending_initial' && s.status !== 'pending') { revenue += parseFloat(s.amountPaid) || 0; }
+            });
+            document.getElementById('stat-total').textContent = total.toLocaleString();
+            document.getElementById('stat-active').textContent = active.toLocaleString();
+            document.getElementById('stat-expired').textContent = expired.toLocaleString();
+            document.getElementById('stat-revenue').textContent = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(revenue);
+        }
+
+        function renderTable(students) {
+            const tbody = document.getElementById('directory-tbody');
+            tbody.innerHTML = '';
+            
+            if(students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-16"><div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 mx-auto mb-4"><i class="fa-solid fa-user-slash text-2xl"></i></div><h4 class="text-sm font-semibold text-slate-700">No students found.</h4></td></tr>`;
+                return;
+            }
+
+            students.forEach(student => {
+                let statusBadge = '';
+                if (student.status === 'approved') { statusBadge = `<span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-200 inline-flex items-center gap-1 uppercase tracking-wider"><i class="fa-solid fa-check-circle"></i> Active</span>`; } 
+                else if (student.status === 'expired' || student.status === 'blocked') { const label = student.status === 'blocked' ? 'Blocked' : 'Expired'; statusBadge = `<span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-red-200 inline-flex items-center gap-1 uppercase tracking-wider"><i class="fa-solid fa-ban"></i> ${label}</span>`; } 
+                else if (student.status === 'pending_upgrade') { statusBadge = `<span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-blue-200 inline-flex items-center gap-1 uppercase tracking-wider"><i class="fa-solid fa-arrow-up"></i> Upgrade Pending</span>`; } 
+                else { statusBadge = `<span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-amber-200 inline-flex items-center gap-1 uppercase tracking-wider"><i class="fa-solid fa-clock"></i> Pending Initial</span>`; }
+
+                const isFull = student.paymentPlan === '100';
+                const planBadge = isFull ? `<span class="font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-xs">100% (Full)</span>` : `<span class="font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded text-xs">${student.paymentPlan}% Term</span>`;
+                
+                const expiryDate = student.accessExpiresAt ? new Date(student.accessExpiresAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '<span class="text-slate-400 italic text-xs">Not set</span>';
+                const amountFormatted = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(student.amountPaid);
+
+                let actionButton = '';
+                if (student.status === 'blocked') {
+                    actionButton = `<button onclick="promptUnblock('${student.email}')" class="text-emerald-600 bg-white hover:bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 font-medium transition-colors text-xs shadow-sm flex items-center justify-center gap-1.5 ml-auto w-full max-w-[150px]"><i class="fa-solid fa-unlock-keyhole"></i> Unblock</button>`;
+                } else if (student.status === 'approved' || student.status === 'expired' || student.status === 'pending_upgrade') {
+                    actionButton = `
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="promptExtend('${student.email}', '${student.accessExpiresAt || ''}')" class="text-blue-600 bg-white hover:bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200 font-medium transition-colors text-xs shadow-sm flex items-center gap-1.5" title="Extend Duration">
+                            <i class="fa-solid fa-calendar-plus"></i> Extend
+                        </button>
+                        <button onclick="promptBlock('${student.email}')" class="text-red-500 bg-white hover:bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-200 font-medium transition-colors text-xs shadow-sm flex items-center gap-1.5" title="Revoke Access">
+                            <i class="fa-solid fa-user-lock"></i> Revoke
+                        </button>
+                    </div>`;
+                } else {
+                    actionButton = `<span class="text-slate-400 text-xs italic pr-4">N/A</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition duration-150">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold border border-slate-200 shrink-0 uppercase">${student.name.charAt(0)}</div>
+                                <div>
+                                    <div class="font-semibold text-slate-900">${student.name}</div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">${student.email}</div>
+                                    <div class="text-[10px] font-medium text-slate-400 mt-0.5 truncate max-w-[200px]"><i class="fa-regular fa-building mr-1"></i> ${student.organization}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-medium text-brand-600">${student.level}</td>
+                        <td class="px-6 py-4">${planBadge}</td>
+                        <td class="px-6 py-4 text-right font-semibold text-slate-800">${amountFormatted}</td>
+                        <td class="px-6 py-4">
+                            ${statusBadge}
+                            <div class="text-[10px] text-slate-400 mt-1">Exp: ${expiryDate}</div>
+                        </td>
+                        <td class="px-6 py-4 text-right">${actionButton}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterTable(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = allStudents.filter(s => s.name.toLowerCase().includes(term) || s.email.toLowerCase().includes(term) || s.organization.toLowerCase().includes(term) || s.level.toLowerCase().includes(term));
+            renderTable(filtered);
+        }
+
+        // === Action: Block / Revoke ===
+        function promptBlock(email) {
+            studentToBlock = email;
+            document.getElementById('block-target-email').innerText = email;
+            document.getElementById('block-modal').classList.remove('hidden');
+            document.getElementById('confirm-block-btn').onclick = () => executeBlock();
+        }
+
+        function closeBlockModal() {
+            studentToBlock = null;
+            document.getElementById('block-modal').classList.add('hidden');
+        }
+
+        async function executeBlock() {
+            if(!studentToBlock) return;
+            const email = studentToBlock;
+            const btn = document.getElementById('confirm-block-btn');
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Revoking...`;
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/block-student`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email }) });
+                if(res.ok) { showToast('Student access revoked successfully.'); closeBlockModal(); loadDirectory(); } 
+                else { showToast('Failed to revoke access.', 'error'); closeBlockModal(); }
+            } catch(e) { showToast('Network error while processing request.', 'error'); closeBlockModal(); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        }
+
+        // === Action: Unblock / Restore ===
+        function promptUnblock(email) {
+            studentToUnblock = email;
+            document.getElementById('unblock-target-email').innerText = email;
+            document.getElementById('unblock-modal').classList.remove('hidden');
+            document.getElementById('confirm-unblock-btn').onclick = () => executeUnblock();
+        }
+
+        function closeUnblockModal() {
+            studentToUnblock = null;
+            document.getElementById('unblock-modal').classList.add('hidden');
+        }
+
+        async function executeUnblock() {
+            if(!studentToUnblock) return;
+            const email = studentToUnblock;
+            const btn = document.getElementById('confirm-unblock-btn');
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin gap-2"></i> Restoring...`;
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/unblock-student`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ email }) });
+                if(res.ok) { showToast('Student access successfully restored.'); closeUnblockModal(); loadDirectory(); } 
+                else { showToast('Failed to restore access.', 'error'); closeUnblockModal(); }
+            } catch(e) { showToast('Network error while processing request.', 'error'); closeUnblockModal(); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        }
+
+        // === Action: Extend Duration ===
+        function promptExtend(email, currentExpiry) {
+            studentToExtend = email;
+            document.getElementById('extend-target-email').innerText = email;
+            
+            const dateInput = document.getElementById('new-expiry-date');
+            
+            // Pre-fill the date input if they already have an expiry date
+            if (currentExpiry && currentExpiry !== 'undefined' && currentExpiry !== 'null') {
+                const d = new Date(currentExpiry);
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                dateInput.value = `${yyyy}-${mm}-${dd}`;
+            } else {
+                dateInput.value = '';
+            }
+
+            document.getElementById('extend-modal').classList.remove('hidden');
+            document.getElementById('confirm-extend-btn').onclick = () => executeExtend();
+        }
+
+        function closeExtendModal() {
+            studentToExtend = null;
+            document.getElementById('extend-modal').classList.add('hidden');
+        }
+
+        async function executeExtend() {
+            if(!studentToExtend) return;
+            const email = studentToExtend;
+            const newDate = document.getElementById('new-expiry-date').value;
+            
+            if(!newDate) { 
+                showToast('Please select a valid new expiry date.', 'error'); 
+                return; 
+            }
+
+            const btn = document.getElementById('confirm-extend-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin gap-2"></i> Extending...`;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/extend-student`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                    body: JSON.stringify({ email, newExpiryDate: newDate }) 
+                });
+                
+                if(res.ok) { 
+                    showToast('Student duration extended successfully.'); 
+                    closeExtendModal(); 
+                    loadDirectory(); 
+                } else { 
+                    showToast('Failed to extend duration.', 'error'); 
+                    closeExtendModal(); 
+                }
+            } catch(e) { 
+                showToast('Network error while processing request.', 'error'); 
+                closeExtendModal(); 
+            } finally { 
+                btn.innerHTML = originalText; 
+                btn.disabled = false; 
+            }
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>

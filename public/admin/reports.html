@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Admin Reports</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active { background-color: #f0fdfa; color: #0d9488; border-right: 3px solid #14b8a6; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <!-- Mobile Top Navigation Bar -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
+        <div class="flex items-center gap-2">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
+            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
+                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link active"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-100">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full w-full pt-16 md:pt-0 overflow-hidden bg-slate-50/50">
+        <div class="p-4 md:p-8 max-w-7xl mx-auto w-full h-full flex flex-col">
+            
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 shrink-0">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Student Analytics</h1>
+                    <p class="text-sm text-slate-500 mt-1">Aggregated progress metrics and assessment tracking.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <!-- Dropdown Filter for Specific Tests -->
+                    <div class="relative w-full sm:w-64">
+                        <select id="test-filter" class="w-full pl-3 pr-8 py-2 text-sm font-semibold border border-slate-300 rounded-lg bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500 focus:ring-opacity-20 outline-none shadow-sm transition appearance-none cursor-pointer text-slate-700" onchange="filterReports()">
+                            <option value="all">All Assessments (Global View)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+
+                    <button onclick="exportCSV()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col overflow-hidden">
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10">
+                            <tr>
+                                <th class="px-6 py-4">Student Name & Email</th>
+                                <th class="px-6 py-4">Assessment Taken</th>
+                                <th class="px-6 py-4 text-center">Score</th>
+                                <th class="px-6 py-4 text-center">Status</th>
+                                <th class="px-6 py-4 text-right">Date Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-tbody" class="divide-y divide-slate-100">
+                            <tr><td colspan="5" class="text-center py-16"><div class="flex flex-col items-center justify-center text-slate-400"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i><p class="text-sm">Loading test data...</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-slate-50 border-t border-slate-200 px-6 py-3 text-xs text-slate-500 font-medium flex justify-between items-center" id="report-footer">
+                    Loading...
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal for Detailed Responses -->
+    <div id="response-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 animate-fade-in">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-file-signature text-brand-500"></i> Assessment Review</h3>
+                <button onclick="document.getElementById('response-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 transition p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-50/50 flex-1" id="response-content">
+                <!-- Dynamic Review Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        
+        if (!token || !user || user.role !== 'admin') { localStorage.clear(); window.location.href = '../login.html'; }
+        
+        let allReportsData = []; // Master list fetched from DB
+        let filteredReportsData = []; // State array for current UI view
+        let testsData = [];
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); 
+            } else {
+                sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tbody = document.getElementById('reports-tbody');
+            try {
+                // Fetch tests for reference logic
+                const testsRes = await fetch(`${API_BASE_URL}/admin/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
+                testsData = await testsRes.json();
+                
+                // Fetch submission reports
+                const res = await fetch(`${API_BASE_URL}/admin/reports`, { headers: { 'Authorization': `Bearer ${token}` } });
+                allReportsData = await res.json();
+                allReportsData.sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+                
+                filteredReportsData = [...allReportsData]; // Initialize UI with all data
+                
+                populateFilterDropdown();
+                renderReports(filteredReportsData);
+            } catch (e) { 
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-red-500 text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Failed to generate reports.</td></tr>'; 
+            }
+        });
+
+        // 1. POPULATE FILTER DROPDOWN
+        function populateFilterDropdown() {
+            const filterDropdown = document.getElementById('test-filter');
+            // We'll populate based on the active tests in the database, even if no submissions exist yet.
+            if(testsData && testsData.length > 0) {
+                testsData.forEach(test => {
+                    const option = document.createElement('option');
+                    option.value = test.id;
+                    option.textContent = test.title;
+                    filterDropdown.appendChild(option);
+                });
+            }
+        }
+
+        // 2. TRIGGER FILTER RENDER
+        function filterReports() {
+            const selectedTestId = document.getElementById('test-filter').value;
+            
+            if (selectedTestId === 'all') {
+                filteredReportsData = [...allReportsData];
+            } else {
+                filteredReportsData = allReportsData.filter(report => report.testId === selectedTestId);
+            }
+            renderReports(filteredReportsData);
+        }
+
+        // 3. RENDER TABLE
+        function renderReports(dataToRender) {
+            const tbody = document.getElementById('reports-tbody');
+            tbody.innerHTML = '';
+            
+            if(dataToRender.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-16"><div class="text-slate-400"><i class="fa-solid fa-folder-open text-3xl mb-3"></i><p class="text-sm font-medium">No assessment submissions match your criteria.</p></div></td></tr>';
+                document.getElementById('report-footer').innerText = `Displaying 0 records`;
+                return;
+            }
+
+            dataToRender.forEach(r => {
+                const scoreColor = r.passed ? 'text-emerald-600' : 'text-red-500';
+                const statusBadge = r.passed 
+                    ? '<span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-emerald-200 uppercase tracking-wider shadow-sm">PASSED</span>' 
+                    : '<span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[10px] font-bold border border-red-200 uppercase tracking-wider shadow-sm">FAILED</span>';
+                
+                const date = new Date(r.submittedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition duration-150 cursor-pointer group" onclick="viewResponses('${r.id}')">
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-slate-900">${r.studentName || 'Unknown Student'}</div>
+                            <div class="text-[11px] font-medium text-slate-500 mt-0.5">${r.studentEmail || 'N/A'}</div>
+                        </td>
+                        <td class="px-6 py-4 font-medium text-slate-700 group-hover:text-brand-600 transition-colors">${r.testTitle}</td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="font-extrabold ${scoreColor} text-lg leading-tight">${r.scorePercentage}%</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wide mt-1">${r.totalScore} / ${r.maxScore} Marks</div>
+                        </td>
+                        <td class="px-6 py-4 text-center">${statusBadge}</td>
+                        <td class="px-6 py-4 text-right font-medium text-slate-500 text-xs">${date}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('report-footer').innerText = `Displaying ${dataToRender.length} assessment records`;
+        }
+
+        // 4. DETAILED RESPONSE VIEW (Unchanged Logic)
+        function viewResponses(id) {
+            const report = allReportsData.find(r => r.id === id);
+            if(!report) return;
+
+            const test = testsData.find(t => t.id === report.testId);
+            const container = document.getElementById('response-content');
+
+            if (!test) {
+                container.innerHTML = `<div class="bg-amber-50 text-amber-700 p-4 rounded-xl border border-amber-200 text-sm font-medium"><i class="fa-solid fa-circle-exclamation mr-2"></i> The original test definition could not be found. Raw data:<br><pre class="mt-4 p-4 bg-slate-900 text-emerald-400 rounded-lg overflow-x-auto text-xs font-mono">${JSON.stringify(report.responses, null, 2)}</pre></div>`;
+                document.getElementById('response-modal').classList.remove('hidden');
+                return;
+            }
+
+            let html = `<div class="space-y-4">`;
+            test.questions.forEach((q, idx) => {
+                const studentAnsRaw = report.responses[q.id];
+                let studentAnsText = "<span class='text-slate-400 italic'>No Answer Provided</span>";
+
+                if (studentAnsRaw) {
+                    if (q.type === 'fib') { studentAnsText = studentAnsRaw; } 
+                    else if (Array.isArray(studentAnsRaw) && studentAnsRaw.length > 0) {
+                        studentAnsText = studentAnsRaw.map(optIdx => q.options[parseInt(optIdx)] || `Unknown Option`).join('<span class="text-slate-300 mx-1">|</span>');
+                    }
+                }
+
+                let correctAnsText = q.type === 'fib' ? (q.correctOptions[0] || '') : q.correctOptions.map(optIdx => q.options[parseInt(optIdx)]).join('<span class="text-slate-300 mx-1">|</span>');
+
+                let isCorrect = false;
+                if (q.type === 'fib') {
+                    isCorrect = studentAnsRaw && typeof studentAnsRaw === 'string' && studentAnsRaw.trim().toLowerCase() === correctAnsText.trim().toLowerCase();
+                } else if (Array.isArray(studentAnsRaw)) {
+                    const sortedStudent = [...studentAnsRaw].sort();
+                    const sortedCorrect = [...q.correctOptions].sort();
+                    isCorrect = studentAnsRaw.length > 0 && sortedStudent.length === sortedCorrect.length && sortedStudent.every((val, index) => val === sortedCorrect[index]);
+                }
+
+                const badge = isCorrect 
+                    ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded shadow-sm text-[10px] font-bold border border-emerald-200 shrink-0">CORRECT</span>`
+                    : `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded shadow-sm text-[10px] font-bold border border-red-200 shrink-0">INCORRECT</span>`;
+
+                html += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start gap-4 mb-4">
+                            <p class="font-bold text-slate-800 text-sm leading-relaxed"><span class="text-brand-500 mr-1">Q${idx+1}.</span> ${q.text}</p>
+                            ${badge}
+                        </div>
+                        <div class="space-y-2 text-sm bg-slate-50 p-4 rounded-lg border border-slate-100">
+                            <div class="flex gap-2"><span class="font-bold text-slate-500 w-24 shrink-0 text-xs uppercase tracking-wider mt-0.5">Student:</span> <span class="${isCorrect ? 'text-emerald-700 font-medium' : 'text-red-600 font-medium'}">${studentAnsText}</span></div>
+                            <div class="flex gap-2"><span class="font-bold text-slate-500 w-24 shrink-0 text-xs uppercase tracking-wider mt-0.5">Correct:</span> <span class="text-slate-700 font-medium">${correctAnsText}</span></div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            document.getElementById('response-modal').classList.remove('hidden');
+        }
+
+        // 5. EXPORT CSV LOGIC
+        function exportCSV() {
+            if (filteredReportsData.length === 0) {
+                alert("No data available to export based on current filters.");
+                return;
+            }
+
+            // CSV Headers
+            const headers = [
+                "Submission ID", 
+                "Student Name", 
+                "Student Email", 
+                "Test Title", 
+                "Total Score", 
+                "Max Score", 
+                "Percentage", 
+                "Status", 
+                "Date Submitted"
+            ];
+
+            // Build CSV Content
+            let csvContent = "data:text/csv;charset=utf-8," 
+                + headers.join(",") + "\n";
+
+            filteredReportsData.forEach(row => {
+                // Formatting data carefully to prevent CSV breaks (e.g. commas in names or titles)
+                const formattedRow = [
+                    `"${row.id}"`,
+                    `"${row.studentName || 'Unknown'}"`,
+                    `"${row.studentEmail || 'N/A'}"`,
+                    `"${row.testTitle || 'Unknown Test'}"`,
+                    `${row.totalScore}`,
+                    `${row.maxScore}`,
+                    `"${row.scorePercentage}%"`,
+                    `"${row.passed ? 'PASSED' : 'FAILED'}"`,
+                    `"${new Date(row.submittedAt).toLocaleString()}"`
+                ];
+                csvContent += formattedRow.join(",") + "\n";
+            });
+
+            // Trigger the browser download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            
+            // Dynamic filename generation based on current filter
+            const filterDropdown = document.getElementById('test-filter');
+            const selectedText = filterDropdown.options[filterDropdown.selectedIndex].text;
+            const safeFileName = selectedText.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const dateStr = new Date().toISOString().split('T')[0];
+            
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `geeky_analytics_${safeFileName}_${dateStr}.csv`);
+            
+            document.body.appendChild(link); // Required for FF
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>

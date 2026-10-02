@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: { DEFAULT: '#0f172a', accent: '#3b82f6', success: '#10b981' } }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+            min-height: 100vh;
+            background-image: radial-gradient(at 40% 20%, hsla(228,100%,74%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 0% 50%, hsla(355,100%,93%,0.1) 0px, transparent 50%);
+        }
+        .premium-card { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(24px); 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); 
+        }
+        .premium-input { 
+            background: rgba(255, 255, 255, 0.9); 
+            border: 1px solid #cbd5e1; 
+            border-radius: 0.75rem; 
+            transition: all 0.3s ease; 
+        }
+        .premium-input:focus { 
+            background: #ffffff; 
+            border-color: #3b82f6; 
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); 
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            color: white; 
+            transition: all 0.2s; 
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4); 
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-accent:hover {
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); 
+        }
+        .btn-disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        
+        /* View transitions */
+        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .view-section.active { display: block; opacity: 1; }
+    </style>
+</head>
+<body class="antialiased flex items-center justify-center p-4">
+
+    <div class="premium-card p-8 sm:p-10 w-full max-w-md relative rounded-3xl overflow-hidden">
+        <!-- Logo Section -->
+        <div class="text-center mb-8 mt-2">
+            <div class="w-16 h-16 mx-auto bg-gradient-to-tr from-brand-accent to-blue-300 rounded-2xl flex items-center justify-center shadow-lg mb-4 text-white transform -rotate-3 hover:rotate-0 transition">
+                <i class="fa-solid fa-graduation-cap text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight" id="headerTitle">Welcome Back</h2>
+            <p class="text-slate-500 mt-1 text-sm" id="headerSub">Sign in to continue to your dashboard</p>
+        </div>
+
+        <!-- Global Alert Message -->
+        <div id="alert-message" class="hidden mb-6 p-3 text-sm rounded-xl border text-center transition-all"></div>
+
+        <!-- View 1: Login -->
+        <div id="view-login" class="view-section active">
+            <!-- Role Toggles -->
+            <div class="flex bg-slate-100 rounded-xl p-1 mb-6 shadow-inner border border-slate-200">
+                <button id="tab-student" type="button" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white text-slate-900 shadow transition" onclick="setRole('student')">Student</button>
+                <button id="tab-admin" type="button" class="flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition" onclick="setRole('admin')">Admin</button>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="email" id="loginEmail" required class="premium-input w-full pl-11 pr-4 py-3" placeholder="student@institute.edu">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-slate-700">Password</label>
+                        <button type="button" onclick="switchView('view-forgot-email')" class="text-xs text-brand-accent font-semibold hover:underline">Forgot Password?</button>
+                    </div>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="password" id="loginPassword" required class="premium-input w-full pl-11 pr-4 py-3" placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" id="submitBtn" class="btn-primary w-full py-3.5 rounded-xl font-bold text-[15px] mt-4 flex justify-center items-center gap-2">
+                    <span id="btnText">Sign In</span>
+                    <i id="btnSpinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                </button>
+            </form>
+            
+            <p class="text-center text-sm text-slate-500 mt-8" id="register-link">
+                Don't have an account? <a href="register.html" class="text-brand-accent font-bold hover:underline">Register Now</a>
+            </p>
+        </div>
+        
+        <!-- View 4: Force Login (Active Session Detected) -->
+        <div id="view-force-login" class="view-section">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-4 text-orange-500 shadow-sm">
+                    <i class="fa-solid fa-laptop-medical text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800">Account in Use</h3>
+                <p class="text-slate-500 text-sm mt-2">You are currently logged in on another device. Would you like to end that session?</p>
+                <div class="mt-5 p-3 bg-slate-50 rounded-lg border border-slate-200 shadow-inner">
+                    <span class="block text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Active Device</span>
+                    <span id="activeDeviceLabel" class="block text-slate-800 font-medium mt-1">Unknown</span>
+                </div>
+            </div>
+            
+            <button type="button" onclick="handleLogin(event, true)" id="btnForceLogin" class="btn-accent w-full py-3.5 rounded-xl font-bold text-[15px] flex justify-center items-center gap-2 mb-3">
+                <span id="textForceLogin">Logout there & Login here</span>
+                <i id="spinForceLogin" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+            </button>
+            <button type="button" onclick="switchView('view-login')" class="w-full py-3 text-slate-500 hover:text-slate-800 text-sm font-semibold transition bg-slate-100 rounded-xl hover:bg-slate-200">Cancel</button>
+        </div>
+
+        <!-- View 2: Forgot Password (Email step) -->
+        <div id="view-forgot-email" class="view-section">
+            <form onsubmit="handleSendResetOTP(event)" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Enter your registered email</label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="email" id="resetEmail" required class="premium-input w-full pl-11 pr-4 py-3" placeholder="email@institute.edu">
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">We will send a 6-digit verification code to this address.</p>
+                </div>
+                
+                <button type="submit" id="btnSendOTP" class="btn-accent w-full py-3.5 rounded-xl font-bold text-[15px] mt-2 flex justify-center items-center gap-2">
+                    <span id="textSendOTP">Send Verification Code</span>
+                    <i id="spinSendOTP" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                </button>
+                <button type="button" onclick="switchView('view-login')" class="w-full py-3 text-slate-500 hover:text-slate-800 text-sm font-semibold transition">Back to Login</button>
+            </form>
+        </div>
+
+        <!-- View 3: Reset Password -->
+        <div id="view-reset-password" class="view-section">
+            <form onsubmit="handleResetPassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">6-Digit Code</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-shield-halved absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="text" id="resetOTP" required pattern="[0-9]{6}" maxlength="6" class="premium-input w-full pl-11 pr-4 py-3 tracking-widest font-mono text-lg" placeholder="123456">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-4 top-3.5 text-slate-400"></i>
+                        <input type="password" id="newPassword" required minlength="6" class="premium-input w-full pl-11 pr-4 py-3" placeholder="New strong password">
+                    </div>
+                </div>
+                
+                <button type="submit" id="btnResetPass" class="btn-success bg-emerald-600 hover:bg-emerald-700 text-white w-full py-3.5 rounded-xl font-bold text-[15px] mt-4 flex justify-center items-center gap-2 transition shadow-lg shadow-emerald-500/30">
+                    <span id="textResetPass">Securely Reset Password</span>
+                    <i id="spinResetPass" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                </button>
+                <button type="button" onclick="switchView('view-login')" class="w-full py-3 text-slate-500 hover:text-slate-800 text-sm font-semibold transition">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api'; // Update for production
+        let currentRole = 'student';
+
+        // Check authentication status on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const expiredError = urlParams.get('error');
+            
+            if (expiredError === 'session_conflict') {
+                showAlert('You have been logged out because your account was accessed from another device.');
+                localStorage.clear();
+            } else {
+                const token = localStorage.getItem('token');
+                const role = localStorage.getItem('role');
+                const userStr = localStorage.getItem('user');
+                
+                if (token && role && userStr) {
+                    try {
+                        const user = JSON.parse(userStr);
+                        if (user && user.role === role) {
+                            window.location.href = role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html';
+                        } else {
+                            localStorage.clear();
+                        }
+                    } catch(e) {
+                        localStorage.clear();
+                    }
+                } else if (token) {
+                    localStorage.clear();
+                }
+            }
+        });
+
+        // Parse basic device/browser info
+        function getDeviceName() {
+            const ua = navigator.userAgent;
+            let browser = "Unknown Browser";
+            let os = "Unknown OS";
+            
+            if (ua.includes("Firefox")) browser = "Firefox";
+            else if (ua.includes("Edg")) browser = "Edge";
+            else if (ua.includes("Chrome")) browser = "Chrome";
+            else if (ua.includes("Safari")) browser = "Safari";
+            
+            if (ua.includes("Win")) os = "Windows";
+            else if (ua.includes("Mac")) os = "MacOS";
+            else if (ua.includes("Android")) os = "Android";
+            else if (ua.includes("like Mac")) os = "iOS";
+            else if (ua.includes("Linux")) os = "Linux";
+            
+            return `${os} - ${browser}`;
+        }
+
+        // UI Helpers
+        function showAlert(msg, type = 'error') {
+            const el = document.getElementById('alert-message');
+            el.innerHTML = msg;
+            el.className = `mb-6 p-3 text-sm rounded-xl border text-center transition-all ${
+                type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            }`;
+            el.classList.remove('hidden');
+        }
+
+        function hideAlert() {
+            document.getElementById('alert-message').classList.add('hidden');
+        }
+
+        function switchView(viewId) {
+            hideAlert();
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            const title = document.getElementById('headerTitle');
+            const sub = document.getElementById('headerSub');
+            
+            if(viewId === 'view-login') {
+                title.innerText = 'Welcome Back';
+                sub.innerText = 'Sign in to continue to your dashboard';
+            } else if(viewId === 'view-forgot-email') {
+                title.innerText = 'Reset Password';
+                sub.innerText = 'No worries, we will help you recover it';
+            } else if(viewId === 'view-reset-password') {
+                title.innerText = 'Create New Password';
+                sub.innerText = 'Check your email for the verification code';
+            } else if (viewId === 'view-force-login') {
+                title.innerText = 'Session Active';
+                sub.innerText = 'Action required to proceed';
+            }
+        }
+
+        function setRole(role) {
+            currentRole = role;
+            const btnS = document.getElementById('tab-student');
+            const btnA = document.getElementById('tab-admin');
+            const emailInput = document.getElementById('loginEmail');
+            const regLink = document.getElementById('register-link');
+            
+            hideAlert();
+
+            if(role === 'student') {
+                btnS.className = "flex-1 py-2 rounded-lg text-sm font-bold bg-white text-slate-900 shadow transition";
+                btnA.className = "flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition";
+                emailInput.placeholder = "student@institute.edu";
+                regLink.style.display = 'block';
+            } else {
+                btnA.className = "flex-1 py-2 rounded-lg text-sm font-bold bg-white text-slate-900 shadow transition";
+                btnS.className = "flex-1 py-2 rounded-lg text-sm font-bold text-slate-500 hover:text-slate-700 transition";
+                emailInput.placeholder = "admin@geeky.com";
+                regLink.style.display = 'none';
+            }
+        }
+
+        // Login Logic with Single Device restriction
+        async function handleLogin(e, forceLogin = false) {
+            if(e) e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const submitBtn = forceLogin ? document.getElementById('btnForceLogin') : document.getElementById('submitBtn');
+            const btnText = forceLogin ? document.getElementById('textForceLogin') : document.getElementById('btnText');
+            const btnSpinner = forceLogin ? document.getElementById('spinForceLogin') : document.getElementById('btnSpinner');
+            
+            const originalText = btnText.innerText;
+
+            hideAlert();
+            submitBtn.classList.add('btn-disabled');
+            btnText.innerText = forceLogin ? 'Terminating & Signing in...' : 'Signing in...';
+            btnSpinner.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email, 
+                        password, 
+                        role: currentRole,
+                        deviceName: getDeviceName(),
+                        forceLogin 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 409 && data.error === 'ACTIVE_SESSION') {
+                    // Show force login view
+                    document.getElementById('activeDeviceLabel').innerText = data.activeDeviceName || 'Unknown Device';
+                    switchView('view-force-login');
+                    return; // Stop here, wait for user action
+                }
+
+                if (!response.ok) throw new Error(data.error || 'Login failed');
+
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('role', data.user.role);
+
+                window.location.href = data.user.role === 'admin' ? '/admin/dashboard.html' : '/student/dashboard.html';
+            } catch (error) {
+                if (error.message.includes('pending verification')) {
+                    localStorage.setItem('pendingEmail', email);
+                    window.location.href = 'payment-pending.html';
+                } else {
+                    showAlert(error.message);
+                }
+            } finally {
+                submitBtn.classList.remove('btn-disabled');
+                btnText.innerText = originalText;
+                btnSpinner.classList.add('hidden');
+            }
+        }
+
+        // Send Password Reset OTP
+        async function handleSendResetOTP(e) {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            
+            const btn = document.getElementById('btnSendOTP');
+            const txt = document.getElementById('textSendOTP');
+            const spin = document.getElementById('spinSendOTP');
+
+            hideAlert();
+            btn.classList.add('btn-disabled');
+            txt.innerText = 'Sending...';
+            spin.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, type: 'reset' })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to send code');
+
+                showAlert(data.message, 'success');
+                setTimeout(() => switchView('view-reset-password'), 1500);
+            } catch (error) {
+                showAlert(error.message);
+            } finally {
+                btn.classList.remove('btn-disabled');
+                txt.innerText = 'Send Verification Code';
+                spin.classList.add('hidden');
+            }
+        }
+
+        // Final Reset Password
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value; 
+            const otp = document.getElementById('resetOTP').value;
+            const newPassword = document.getElementById('newPassword').value;
+            
+            const btn = document.getElementById('btnResetPass');
+            const txt = document.getElementById('textResetPass');
+            const spin = document.getElementById('spinResetPass');
+
+            hideAlert();
+            btn.classList.add('btn-disabled');
+            txt.innerText = 'Updating...';
+            spin.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp, newPassword })
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to reset');
+
+                showAlert('Password updated successfully! You can now log in.', 'success');
+                document.getElementById('loginEmail').value = email;
+                
+                // Transition back to login after short delay
+                setTimeout(() => { switchView('view-login'); }, 2500);
+
+            } catch (error) {
+                showAlert(error.message);
+            } finally {
+                btn.classList.remove('btn-disabled');
+                txt.innerText = 'Securely Reset Password';
+                spin.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

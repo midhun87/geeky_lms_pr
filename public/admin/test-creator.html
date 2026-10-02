@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Enterprise Test Creator</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PDF.js for Client-Side Text Extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active { background-color: #f0fdfa; color: #0d9488; border-right: 3px solid #14b8a6; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Form Inputs */
+        .admin-input {
+            width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out; color: #334155;
+        }
+        .admin-input:focus { background-color: #ffffff; border-color: #14b8a6; outline: none; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15); }
+        .admin-input:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.6; }
+
+        /* Specialized Buttons */
+        .q-type-btn {
+            flex: 1; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 0.75rem; font-weight: 600; font-size: 0.875rem; color: #64748b; transition: all 0.2s; background: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; justify-content: center;
+        }
+        .q-type-btn:hover { border-color: #0d9488; color: #0f766e; background: #f0fdfa; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
+        .q-type-btn i { font-size: 1.25rem; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <!-- Mobile Top Navigation Bar -->
+    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
+        <div class="flex items-center gap-2">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
+            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+        </div>
+        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
+                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link active"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-100">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full w-full pt-16 md:pt-0 bg-slate-50 relative z-0">
+        
+        <!-- View: Library -->
+        <div id="view-library" class="flex flex-col h-full overflow-hidden">
+            <div class="p-6 md:p-8 shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-200 bg-white shadow-sm z-10">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Assessment Engine</h2>
+                    <p class="text-sm text-slate-500 mt-1">Design examinations, assign targeted levels, and set rules.</p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <!-- AI Generator Button -->
+                    <input type="file" id="pdf-upload" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
+                    <button id="btn-ai-gen" onclick="document.getElementById('pdf-upload').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate
+                    </button>
+                    <!-- Standard New Test -->
+                    <button class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none" onclick="showEditor()">
+                        <i class="fa-solid fa-plus"></i> New Assessment
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/50">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="library-grid">
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i>
+                        <span class="text-sm font-medium">Loading assessments...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Editor -->
+        <div id="view-editor" class="hidden flex-col h-full overflow-hidden bg-white">
+            
+            <!-- Editor Header -->
+            <div class="border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between sm:items-center bg-white shadow-sm z-20 shrink-0 gap-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="hideEditor()" class="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center justify-center transition text-slate-500">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 tracking-tight" id="editor-title-display">New Assessment Protocol</h2>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg transition-colors shadow-sm text-sm" onclick="saveTest('draft')">Save Draft</button>
+                    <button class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-5 rounded-lg transition-colors shadow-sm text-sm" onclick="saveTest('published')">Publish Live</button>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-slate-50">
+                
+                <!-- LEFT: Main Questions Canvas -->
+                <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+                    
+                    <!-- Title Configuration -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
+                        <input type="hidden" id="edit-test-id">
+                        <label class="block text-xs font-bold text-brand-600 uppercase tracking-wider mb-2">Assessment Title</label>
+                        <input type="text" id="testTitle" class="w-full text-xl md:text-2xl font-bold border-none bg-transparent outline-none placeholder-slate-300 text-slate-900" placeholder="e.g., Final Examination: Cellular Pathology">
+                    </div>
+
+                    <!-- Dynamic Questions Container -->
+                    <div id="questions-container" class="space-y-6 mb-6"></div>
+                    
+                    <!-- Append Question UI -->
+                    <div class="bg-white rounded-xl border-2 border-dashed border-slate-300 p-6 flex flex-col md:flex-row gap-6 justify-center items-center">
+                        <span class="font-bold text-slate-600 text-sm whitespace-nowrap"><i class="fa-solid fa-plus-circle text-slate-400 mr-2"></i> Add Question Type:</span>
+                        <div class="flex w-full md:w-auto gap-3 flex-1">
+                            <button onclick="addQuestion('mcq')" class="q-type-btn !flex-row !p-3">
+                                <i class="fa-regular fa-circle-dot text-brand-500"></i> <span class="hidden sm:inline">Single Correct</span><span class="sm:hidden">MCQ</span>
+                            </button>
+                            <button onclick="addQuestion('msq')" class="q-type-btn !flex-row !p-3">
+                                <i class="fa-solid fa-check-double text-blue-500"></i> <span class="hidden sm:inline">Multiple Correct</span><span class="sm:hidden">MSQ</span>
+                            </button>
+                            <button onclick="addQuestion('fib')" class="q-type-btn !flex-row !p-3">
+                                <i class="fa-solid fa-pen-clip text-amber-500"></i> <span class="hidden sm:inline">Short Answer</span><span class="sm:hidden">FIB</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Configuration Sidebar -->
+                <div class="w-full lg:w-[320px] xl:w-[350px] shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-slate-200 bg-white p-6 space-y-6 lg:shadow-[-4px_0_15px_rgba(0,0,0,0.02)]">
+                    
+                    <!-- Access & Attempts -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-brand-50 text-brand-600 flex items-center justify-center"><i class="fa-solid fa-users text-xs"></i></div> Target Audience
+                        </h3>
+                        <p class="text-[11px] text-slate-500 mb-3">Set access and max attempts per level.</p>
+                        
+                        <div id="levelCheckboxes" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Scheduler -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-blue-50 text-blue-500 flex items-center justify-center"><i class="fa-solid fa-calendar-alt text-xs"></i></div> Availability
+                        </h3>
+                        <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">Leave blank to make available instantly. Test concludes automatically when the user's access duration expires.</p>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Commences (Starts)</label>
+                                <input type="datetime-local" id="testStartTime" class="admin-input !py-2 !text-xs mt-1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exam Rules -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-amber-50 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-scale-balanced text-xs"></i></div> Rules
+                        </h3>
+                        <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-semibold text-slate-700">Duration (Mins)</label>
+                                <input type="number" id="testTimeLimit" class="admin-input !w-20 !py-1 text-center font-bold text-brand-600 bg-white" value="60" min="1">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-semibold text-slate-700">Passing Mark (%)</label>
+                                <input type="number" id="testPassingScore" class="admin-input !w-20 !py-1 text-center font-bold text-brand-600 bg-white" value="50" min="1" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post-Exam Rules -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-emerald-50 text-emerald-500 flex items-center justify-center"><i class="fa-solid fa-eye text-xs"></i></div> Post-Submission
+                        </h3>
+                        <div class="space-y-3">
+                            <label class="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                                <input type="checkbox" id="testReleaseResults" class="mt-0.5 text-brand-600 rounded" checked> 
+                                <span class="text-xs text-slate-700 font-medium leading-tight">Display score instantly after submission</span>
+                            </label>
+                            <label class="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
+                                <input type="checkbox" id="testShowAnswers" class="mt-0.5 text-brand-600 rounded" checked> 
+                                <span class="text-xs text-slate-700 font-medium leading-tight">Reveal correct answer key in review</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fa-solid fa-trash-can text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900">Delete Assessment</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500">Are you sure you want to permanently delete this assessment? This action cannot be undone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                    <button type="button" id="confirm-delete-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                        Delete Assessment
+                    </button>
+                    <button type="button" onclick="closeDeleteModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[70] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Setup PDF.js Worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        const API_BASE_URL = '/api';
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        let qCounter = 0; 
+        let testLibrary = [];
+        let allLevels = [];
+        let testToDelete = null;
+
+        if (!token || !user || user.role !== 'admin') { localStorage.clear(); window.location.href = '../login.html'; }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); 
+            } else {
+                sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-white border-l-4 border-emerald-500' : 'bg-white border-l-4 border-red-500';
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : type === 'info' ? '<i class="fa-solid fa-spinner fa-spin text-blue-500"></i>' : '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            toast.className = `${bg} shadow-lg rounded px-4 py-3 text-sm text-slate-700 flex items-center gap-3 animate-slide-in-right pointer-events-auto min-w-[250px]`;
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, type === 'info' ? 5000 : 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => { 
+            await fetchLevels(); 
+            await fetchLibrary(); 
+        });
+
+        /* --- Dynamic Question Numbering Engine --- */
+        window.updateQuestionNumbers = function() {
+            const blocks = document.querySelectorAll('.question-block');
+            blocks.forEach((block, index) => {
+                const display = block.querySelector('.q-number-display');
+                if (display) {
+                    display.innerText = `Q${index + 1}`;
+                }
+            });
+        };
+
+        /* --- PDF to Test AI Generation Logic --- */
+        async function handlePdfUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const btn = document.getElementById('btn-ai-gen');
+            const originalBtnHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Reading PDF...`;
+            btn.disabled = true;
+
+            try {
+                // 1. Extract text via PDF.js locally
+                showToast("Extracting text from PDF...", "info");
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                let fullText = '';
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+
+                if (!fullText.trim()) throw new Error("No readable text found in this PDF.");
+
+                // 2. Send text to backend AI generator
+                btn.innerHTML = `<i class="fa-solid fa-brain fa-fade"></i> AI Generating...`;
+                showToast("Analyzing text and formatting questions...", "info");
+
+                const response = await fetch(`${API_BASE_URL}/admin/generate-questions-from-text`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ text: fullText })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to generate questions from server.");
+                }
+
+                const data = await response.json();
+                if (!data.questions || data.questions.length === 0) throw new Error("AI returned empty results.");
+
+                // 3. Inject into Editor
+                showEditor(true);
+                document.getElementById('testTitle').value = `${file.name.replace('.pdf', '')} - Auto-Generated Test`;
+                
+                // Clear default empty question
+                document.getElementById('questions-container').innerHTML = '';
+                qCounter = 0;
+                
+                // Parse AI questions and map them to UI
+                data.questions.forEach((aiQ) => {
+                    const formattedData = {
+                        text: aiQ.text,
+                        type: aiQ.type, // 'mcq', 'msq', or 'fib'
+                        options: aiQ.options || [],
+                        correctOptions: aiQ.correctOptions || [], // Should be array of indices like ["0"] or ["Exact Answer"]
+                        positiveMarks: 1,
+                        negativeMarks: 0.3
+                    };
+                    addQuestion(aiQ.type, formattedData);
+                });
+
+                showToast(`Success! Generated ${data.questions.length} questions. Please review and Save.`, "success");
+
+            } catch (error) {
+                console.error("PDF Processing Error:", error);
+                showToast(error.message || "Failed to process PDF.", "error");
+            } finally {
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+                event.target.value = ''; // Reset input to allow re-upload
+            }
+        }
+
+
+        /* --- Level-Based Attempts UI Logic --- */
+        async function fetchLevels() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/levels`, { headers: { 'Authorization': `Bearer ${token}` } });
+                allLevels = await res.json();
+                const container = document.getElementById('levelCheckboxes');
+                
+                let html = `
+                    <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg mb-2">
+                        <label class="flex items-center gap-2 cursor-pointer flex-1">
+                            <input type="checkbox" id="selectAllLevels" value="All Levels" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="toggleAllLevels(this)">
+                            <span class="font-bold text-xs text-slate-800">Global Audience</span>
+                        </label>
+                        <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-slate-200">
+                            <span class="text-[10px] text-slate-400 font-semibold uppercase">Max:</span>
+                            <input type="number" id="attempts-All-Levels" oninput="syncGlobalAttempts(this)" class="admin-input !w-12 !py-0.5 !px-1 text-center !text-xs font-bold !bg-transparent !border-none !shadow-none p-0" value="1" min="1" disabled>
+                        </div>
+                    </div>
+                `;
+                
+                allLevels.forEach(lvl => {
+                    const safeId = lvl.levelName.replace(/\s+/g, '-');
+                    html += `
+                        <div class="flex items-center justify-between gap-2 p-2 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-lg transition">
+                            <label class="flex items-center gap-2 cursor-pointer flex-1">
+                                <input type="checkbox" value="${lvl.levelName}" class="level-cb w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="toggleLevelInput(this)">
+                                <span class="text-xs text-slate-700 font-medium">${lvl.levelName}</span>
+                            </label>
+                            <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">
+                                <span class="text-[10px] text-slate-400 font-semibold uppercase">Max:</span>
+                                <input type="number" id="attempts-${safeId}" class="admin-input !w-12 !py-0.5 !px-1 text-center !text-xs font-bold !bg-transparent !border-none !shadow-none p-0" value="1" min="1" disabled>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch(e) {
+                showToast("Failed to connect to level registry.", "error");
+            }
+        }
+
+        window.syncGlobalAttempts = function(input) {
+            const val = input.value;
+            document.querySelectorAll('.level-cb:checked').forEach(cb => {
+                const safeId = cb.value.replace(/\s+/g, '-');
+                const childInput = document.getElementById(`attempts-${safeId}`);
+                if (childInput) childInput.value = val;
+            });
+        };
+
+        function toggleLevelInput(cb) {
+            const safeId = cb.value.replace(/\s+/g, '-');
+            const input = document.getElementById(`attempts-${safeId}`);
+            if(input) {
+                input.disabled = !cb.checked;
+                if(!cb.checked) input.value = 1;
+            }
+            updateAllLevelsCheckboxState();
+        }
+
+        function toggleAllLevels(selectAllCb) {
+            const checkboxes = document.querySelectorAll('.level-cb');
+            checkboxes.forEach(cb => { cb.checked = selectAllCb.checked; toggleLevelInput(cb); });
+            const allInput = document.getElementById('attempts-All-Levels');
+            if(allInput) {
+                allInput.disabled = !selectAllCb.checked;
+                if (selectAllCb.checked) syncGlobalAttempts(allInput);
+            }
+        }
+
+        function updateAllLevelsCheckboxState() {
+            const checkboxes = document.querySelectorAll('.level-cb');
+            const selectAllCb = document.getElementById('selectAllLevels');
+            const allInput = document.getElementById('attempts-All-Levels');
+            if(selectAllCb) {
+                const allChecked = Array.from(checkboxes).length > 0 && Array.from(checkboxes).every(cb => cb.checked);
+                selectAllCb.checked = allChecked;
+                if (allInput) allInput.disabled = !allChecked;
+            }
+        }
+
+        function populateEditorLevels(savedLevels, savedAttempts) {
+            const checkboxes = document.querySelectorAll('.level-cb');
+            const selectAllCb = document.getElementById('selectAllLevels');
+            
+            checkboxes.forEach(cb => { cb.checked = false; toggleLevelInput(cb); });
+            if(selectAllCb) { selectAllCb.checked = false; document.getElementById('attempts-All-Levels').disabled = true; }
+
+            if (!savedLevels || savedLevels.length === 0) return;
+
+            if (savedLevels.includes('All Levels')) {
+                if(selectAllCb) {
+                    selectAllCb.checked = true;
+                    const input = document.getElementById('attempts-All-Levels');
+                    input.disabled = false;
+                    input.value = (savedAttempts && savedAttempts['All Levels']) ? savedAttempts['All Levels'] : 1;
+                }
+                checkboxes.forEach(cb => {
+                    cb.checked = true;
+                    toggleLevelInput(cb);
+                    const safeId = cb.value.replace(/\s+/g, '-');
+                    const input = document.getElementById(`attempts-${safeId}`);
+                    if (input) {
+                        if (savedAttempts && savedAttempts[cb.value]) {
+                            input.value = savedAttempts[cb.value];
+                        } else if (savedAttempts && savedAttempts['All Levels']) {
+                            input.value = savedAttempts['All Levels'];
+                        }
+                    }
+                });
+            } else {
+                checkboxes.forEach(cb => {
+                    if (savedLevels.includes(cb.value)) {
+                        cb.checked = true;
+                        toggleLevelInput(cb);
+                        const safeId = cb.value.replace(/\s+/g, '-');
+                        const input = document.getElementById(`attempts-${safeId}`);
+                        if (input && savedAttempts && savedAttempts[cb.value]) { input.value = savedAttempts[cb.value]; }
+                    }
+                });
+            }
+        }
+        /* -------------------------------------- */
+
+        async function fetchLibrary() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
+                testLibrary = await res.json();
+                renderLibrary();
+            } catch (err) { showToast("Data sync failure.", "error"); }
+        }
+
+        function renderLibrary() {
+            const grid = document.getElementById('library-grid');
+            grid.innerHTML = '';
+            
+            if(testLibrary.length === 0) { 
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
+                        <i class="fa-solid fa-box-open text-4xl mb-4 opacity-50"></i>
+                        <span class="text-sm font-medium">Repository is empty. Create your first assessment.</span>
+                    </div>`; 
+                return; 
+            }
+            
+            testLibrary.forEach(test => {
+                const qCount = test.questions ? test.questions.length : 0;
+                let badge = test.status === 'published' 
+                    ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Published</span>`
+                    : `<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Draft</span>`;
+                
+                let levelsDisplay = 'Unassigned';
+                if (test.levels && test.levels.length > 0) {
+                     levelsDisplay = test.levels.includes('All Levels') ? 'Global Audience' : test.levels.join(', ');
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group">
+                        <div class="flex justify-between items-start mb-4">
+                            ${badge}
+                            <span class="text-[10px] font-semibold text-slate-400 truncate max-w-[100px] flex items-center gap-1" title="${levelsDisplay}"><i class="fa-solid fa-users"></i> ${levelsDisplay}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-4 leading-tight line-clamp-2" title="${test.title}">${test.title}</h3>
+                        
+                        <div class="flex gap-2 mb-5 mt-auto">
+                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-list text-brand-500 mr-1"></i> ${qCount} Items</span>
+                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-stopwatch text-amber-500 mr-1"></i> ${test.timeLimit || 60}m</span>
+                        </div>
+
+                        <div class="flex gap-2 pt-4 border-t border-slate-100">
+                            <button onclick="editTest('${test.id}')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium py-1.5 rounded-lg text-xs transition shadow-sm">Edit</button>
+                            <button onclick="promptDelete('${test.id}')" class="w-9 h-auto bg-white border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center rounded-lg transition shadow-sm" title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function promptDelete(id) {
+            testToDelete = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+            document.getElementById('confirm-delete-btn').onclick = () => executeDelete();
+        }
+
+        function closeDeleteModal() {
+            testToDelete = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        async function executeDelete() {
+            if(!testToDelete) return;
+            const id = testToDelete;
+            const btn = document.getElementById('confirm-delete-btn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Deleting...`;
+            btn.disabled = true;
+
+            try { 
+                const res = await fetch(`${API_BASE_URL}/admin/tests/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
+                if(res.ok) {
+                    showToast('Assessment deleted successfully.');
+                    fetchLibrary();
+                    closeDeleteModal();
+                } else {
+                    showToast('Failed to delete assessment.', 'error');
+                }
+            } catch(e) {
+                showToast("Network error during deletion.", 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                closeDeleteModal();
+            }
+        }
+
+        function showEditor(isNew = true) {
+            document.getElementById('view-library').classList.add('hidden');
+            document.getElementById('view-editor').classList.remove('hidden');
+            document.getElementById('view-editor').classList.add('flex');
+            
+            if(isNew) {
+                document.getElementById('edit-test-id').value = ''; 
+                document.getElementById('testTitle').value = '';
+                populateEditorLevels([], {}); 
+                
+                document.getElementById('testStartTime').value = '';
+                document.getElementById('testTimeLimit').value = '60';
+                document.getElementById('testPassingScore').value = '50';
+                document.getElementById('testReleaseResults').checked = true;
+                document.getElementById('testShowAnswers').checked = true;
+
+                document.getElementById('questions-container').innerHTML = ''; 
+                document.getElementById('editor-title-display').innerText = 'New Assessment Protocol';
+                qCounter = 0; 
+                addQuestion('mcq');
+            }
+        }
+
+        function hideEditor() {
+            document.getElementById('view-library').classList.remove('hidden'); 
+            document.getElementById('view-editor').classList.add('hidden'); 
+            document.getElementById('view-editor').classList.remove('flex');
+        }
+
+        function editTest(id) {
+            const test = testLibrary.find(t => t.id === id); 
+            if(!test) return;
+            
+            showEditor(false);
+            
+            document.getElementById('edit-test-id').value = test.id; 
+            document.getElementById('testTitle').value = test.title; 
+            
+            populateEditorLevels(test.levels || [], test.levelAttempts || {});
+            
+            const formatForInput = (isoString) => {
+                if(!isoString) return '';
+                const date = new Date(isoString);
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                return date.toISOString().slice(0,16);
+            };
+
+            document.getElementById('testStartTime').value = formatForInput(test.startTime);
+            document.getElementById('testTimeLimit').value = test.timeLimit || 60;
+            document.getElementById('testPassingScore').value = test.passingScore || 50;
+            document.getElementById('testReleaseResults').checked = test.releaseResults !== false;
+            document.getElementById('testShowAnswers').checked = test.showAnswersImmediately !== false;
+
+            document.getElementById('editor-title-display').innerText = 'Editing Assessment';
+            
+            document.getElementById('questions-container').innerHTML = ''; 
+            qCounter = 0;
+            test.questions.forEach(q => addQuestion(q.type, q));
+        }
+
+        function addQuestion(type, data = null) {
+            qCounter++; 
+            const id = `q_${qCounter}`; 
+            const container = document.getElementById('questions-container');
+            const div = document.createElement('div');
+            
+            let label, borderCol, icon;
+            if (type === 'mcq') { label = 'Single Correct (MCQ)'; borderCol = 'border-l-brand-500'; icon = 'fa-circle-dot'; } 
+            else if (type === 'msq') { label = 'Multiple Correct (MSQ)'; borderCol = 'border-l-blue-500'; icon = 'fa-check-double'; } 
+            else { label = 'Short Answer'; borderCol = 'border-l-amber-500'; icon = 'fa-pen-clip'; }
+
+            div.className = `question-block bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 ${borderCol} mb-4 relative`;
+            div.dataset.type = type;
+            
+            let optionsHtml = '';
+            if (type === 'mcq' || type === 'msq') {
+                const inputType = type === 'mcq' ? 'radio' : 'checkbox';
+                let optionsLength = data && data.options ? data.options.length : 4;
+                
+                optionsHtml += `<div class="options-list space-y-3" id="options_${id}">`;
+                for(let i=0; i<optionsLength; i++) {
+                    const isChecked = data && data.correctOptions && data.correctOptions.includes(i.toString()) ? 'checked' : '';
+                    const optVal = data && data.options[i] ? data.options[i].replace(/"/g, '&quot;') : '';
+                    optionsHtml += `
+                        <div class="flex items-center gap-3 option-row">
+                            <input type="${inputType}" name="ans_${id}" value="${i}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 cursor-pointer border-slate-300 rounded${inputType === 'radio' ? '-full' : ''}" ${isChecked}>
+                            <input type="text" class="opt-input admin-input flex-1 !py-1.5" placeholder="Option ${i+1}" value="${optVal}">
+                            <button type="button" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition" onclick="removeOption(this)" title="Remove Option"><i class="fa-solid fa-times"></i></button>
+                        </div>`;
+                }
+                optionsHtml += `</div>
+                <div class="mt-4 flex">
+                    <button type="button" class="text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5" onclick="addNewOption('${id}', '${type}')">
+                        <i class="fa-solid fa-plus"></i> Add Option
+                    </button>
+                </div>`;
+            } else {
+                const ans = data && data.correctOptions && data.correctOptions[0] ? data.correctOptions[0].replace(/"/g, '&quot;') : '';
+                optionsHtml = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-slate-600">Exact Answer:</span>
+                        <input type="text" class="fib-ans admin-input flex-1 font-bold" placeholder="e.g. Mitochondria" value="${ans}">
+                    </div>
+                `;
+            }
+
+            const imgUrl = data && data.imageUrl ? data.imageUrl : '';
+            const textVal = data && data.text ? data.text.replace(/"/g, '&quot;') : '';
+            const posMarksVal = data && data.positiveMarks !== undefined ? data.positiveMarks : 1;
+            const negMarksVal = data && data.negativeMarks !== undefined ? data.negativeMarks : 0.3;
+
+            div.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4 border-b border-slate-100 pb-3">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+                        <span class="q-number-display bg-brand-50 text-brand-600 px-2 py-0.5 rounded text-[11px]">Q${document.querySelectorAll('.question-block').length + 1}</span>
+                        <i class="fa-solid ${icon} text-slate-400 ml-1"></i> ${label}
+                    </span>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest pl-1">Pos:</span>
+                            <input type="number" class="q-pos-marks admin-input !w-14 !py-0.5 !px-1 text-center text-xs font-bold bg-white" value="${posMarksVal}" min="0" step="0.1" title="Positive Marks">
+                            <span class="text-slate-300 mx-1">|</span>
+                            <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Neg:</span>
+                            <input type="number" class="q-neg-marks admin-input !w-14 !py-0.5 !px-1 text-center text-xs font-bold bg-white" value="${negMarksVal}" min="0" step="0.1" title="Negative Marks">
+                        </div>
+                        <button onclick="this.closest('.question-block').remove(); updateQuestionNumbers();" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center transition" title="Delete Question">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-5 mb-5">
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Question Text</label>
+                        <textarea class="q-text admin-input min-h-[100px] resize-y" placeholder="Enter question text here...">${textVal}</textarea>
+                    </div>
+                    <div class="shrink-0 w-full md:w-48 relative group">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1 text-center">Reference Image</label>
+                        <div class="h-[100px] bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative">
+                            ${imgUrl ? `<img src="${imgUrl}" class="q-img-preview w-full h-full object-cover">` : `<span class="q-img-preview text-[10px] font-semibold text-slate-400 uppercase tracking-widest">No Image</span>`}
+                            <label class="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+                                <i class="fa-solid fa-cloud-arrow-up text-lg mb-1"></i> Upload
+                                <input type="file" accept="image/*" class="hidden" onchange="uploadQuestionImage(this, this.closest('.question-block'))">
+                            </label>
+                        </div>
+                        <input type="hidden" class="q-img-url" value="${imgUrl}">
+                        ${imgUrl ? `<button class="absolute top-6 -right-2 bg-white text-red-500 border border-red-200 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-50 z-10" onclick="removeQuestionImage(this.closest('.question-block'))"><i class="fa-solid fa-times text-[10px]"></i></button>` : ''}
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200/60">
+                    <label class="block text-xs font-semibold text-slate-600 mb-3">Options & Answer Key</label>
+                    ${optionsHtml}
+                </div>
+            `;
+            container.appendChild(div);
+            updateQuestionNumbers(); // Ensure accurate numbering when added
+        }
+
+        window.addNewOption = function(qId, type) {
+            const list = document.getElementById(`options_${qId}`);
+            if(!list) return;
+            const inputType = type === 'mcq' ? 'radio' : 'checkbox';
+            const rowCount = list.querySelectorAll('.option-row').length;
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'flex items-center gap-3 option-row';
+            newRow.innerHTML = `
+                <input type="${inputType}" name="ans_${qId}" value="${rowCount}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 cursor-pointer border-slate-300 rounded${inputType === 'radio' ? '-full' : ''}">
+                <input type="text" class="opt-input admin-input flex-1 !py-1.5" placeholder="Option ${rowCount + 1}">
+                <button type="button" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition" onclick="removeOption(this)" title="Remove Option"><i class="fa-solid fa-times"></i></button>
+            `;
+            list.appendChild(newRow);
+        };
+
+        window.removeOption = function(btn) {
+            const list = btn.closest('.options-list');
+            if (list.querySelectorAll('.option-row').length <= 2) {
+                showToast('A question must have at least 2 options.', 'error');
+                return;
+            }
+            btn.closest('.option-row').remove();
+            
+            list.querySelectorAll('.option-row').forEach((row, index) => {
+                const input = row.querySelector('.opt-input');
+                if (!input.value) { input.placeholder = `Option ${index + 1}`; }
+                // Also update the radio/checkbox value so indices don't break
+                const radioOrCheckbox = row.querySelector(`input[type="radio"], input[type="checkbox"]`);
+                if(radioOrCheckbox) radioOrCheckbox.value = index;
+            });
+        };
+
+        async function uploadQuestionImage(inputElem, block) {
+            const file = inputElem.files[0]; if(!file) return;
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) });
+                const data = await res.json(); 
+                await fetch(data.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                
+                const previewContainer = block.querySelector('.q-img-preview');
+                if (previewContainer.tagName === 'SPAN') {
+                    const img = document.createElement('img');
+                    img.className = 'q-img-preview w-full h-full object-cover';
+                    img.src = data.readUrl;
+                    previewContainer.replaceWith(img);
+                } else {
+                    previewContainer.src = data.readUrl; 
+                }
+                
+                block.querySelector('.q-img-url').value = data.readUrl;
+                
+                if(!block.querySelector('.fa-times')) {
+                    const btn = document.createElement('button');
+                    btn.className = "absolute top-6 -right-2 bg-white text-red-500 border border-red-200 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-50 z-10";
+                    btn.innerHTML = `<i class="fa-solid fa-times text-[10px]"></i>`;
+                    btn.onclick = () => removeQuestionImage(block);
+                    block.querySelector('.relative.group').appendChild(btn);
+                }
+            } catch(e) { showToast('Image upload failed.', 'error'); }
+        }
+
+        function removeQuestionImage(block) {
+            const preview = block.querySelector('.q-img-preview');
+            const span = document.createElement('span');
+            span.className = 'q-img-preview text-[10px] font-semibold text-slate-400 uppercase tracking-widest';
+            span.innerText = 'No Image';
+            preview.replaceWith(span);
+            block.querySelector('.q-img-url').value = '';
+            const btn = block.querySelector('.fa-times');
+            if(btn) btn.closest('button').remove();
+        }
+
+        async function saveTest(status) {
+            const title = document.getElementById('testTitle').value.trim(); 
+            const id = document.getElementById('edit-test-id').value;
+            
+            const levels = [];
+            const levelAttempts = {};
+            
+            const selectAllCb = document.getElementById('selectAllLevels');
+            let hasAllLevels = selectAllCb && selectAllCb.checked;
+
+            // BUG FIX: ALWAYS capture individually checked levels so their specific attempts are saved.
+            document.querySelectorAll('.level-cb:checked').forEach(cb => {
+                levels.push(cb.value);
+                const safeId = cb.value.replace(/\s+/g, '-');
+                const attemptsVal = parseInt(document.getElementById(`attempts-${safeId}`).value) || 1;
+                levelAttempts[cb.value] = attemptsVal;
+            });
+
+            // Include global 'All Levels' flag if the master toggle is active.
+            if (hasAllLevels) {
+                if (!levels.includes('All Levels')) {
+                    levels.push('All Levels');
+                }
+                const attemptsVal = parseInt(document.getElementById('attempts-All-Levels').value) || 1;
+                levelAttempts['All Levels'] = attemptsVal;
+            }
+
+            let startTime = document.getElementById('testStartTime').value;
+            const timeLimit = document.getElementById('testTimeLimit').value;
+            const passingScore = document.getElementById('testPassingScore').value;
+            const releaseResults = document.getElementById('testReleaseResults').checked;
+            const showAnswersImmediately = document.getElementById('testShowAnswers').checked;
+
+            if(!title) return showToast('Assessment Title is required.', 'error');
+            if (levels.length === 0) return showToast('Select at least one Target Audience.', 'error');
+            
+            if (startTime) {
+                 startTime = new Date(startTime).toISOString();
+            } else {
+                 startTime = null; // BUG FIX: Ensure we send null, not empty strings ("")
+            }
+
+            const questions = [];
+            let isValid = true;
+            
+            document.querySelectorAll('.question-block').forEach((block, index) => {
+                const type = block.dataset.type; 
+                const text = block.querySelector('.q-text').value.trim(); 
+                const imageUrl = block.querySelector('.q-img-url').value;
+                const posVal = parseFloat(block.querySelector('.q-pos-marks').value);
+                const negVal = parseFloat(block.querySelector('.q-neg-marks').value);
+                const posMarks = isNaN(posVal) ? 1 : posVal;
+                const negMarks = isNaN(negVal) ? 0.3 : negVal;
+                
+                let options = [], correctOptions = [];
+                if(type === 'mcq' || type === 'msq') {
+                    block.querySelectorAll('.opt-input').forEach(i => options.push(i.value.trim()));
+                    block.querySelectorAll(`input[name^="ans_"]`).forEach((cb, idx) => { 
+                        if(cb.checked) correctOptions.push(idx.toString()); 
+                    });
+                } else { 
+                    const fibVal = block.querySelector('.fib-ans').value.trim();
+                    if(fibVal) correctOptions.push(fibVal); 
+                }
+                
+                if(!text) { showToast(`Q${index+1}: Question text missing.`, 'error'); isValid = false; return; }
+                if(correctOptions.length === 0) { showToast(`Q${index+1}: Correct answer not selected.`, 'error'); isValid = false; return; }
+
+                questions.push({ 
+                    id: `q${index}`, type, text, imageUrl, options, correctOptions, 
+                    positiveMarks: posMarks, negativeMarks: negMarks
+                });
+            });
+
+            if(!isValid) return;
+            if(questions.length === 0) return showToast('At least one question is required.', 'error');
+
+            try {
+                const payload = { 
+                    id, title, levels, levelAttempts, status, questions, 
+                    startTime, timeLimit, passingScore, 
+                    releaseResults, showAnswersImmediately 
+                };
+                
+                const res = await fetch(`${API_BASE_URL}/admin/tests`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                if(res.ok) { 
+                    showToast(`Saved successfully as ${status}.`); 
+                    await fetchLibrary(); 
+                    hideEditor(); 
+                } else {
+                    throw new Error("Server synchronization failed");
+                }
+            } catch (e) { 
+                showToast('Save failed: Network latency or backend issue.', 'error'); 
+            }
+        }
+
+        function logout() { localStorage.clear(); window.location.href = '../login.html'; }
+    </script>
+</body>
+</html>
