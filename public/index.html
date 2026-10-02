@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind Config -->
     <script>
@@ -25,20 +25,18 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Poppins', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
                     },
                     colors: {
-                        primary: {
-                            DEFAULT: '#0066FF', // Vibrant blue from reference image
-                            light: '#3385ff',
-                            dark: '#004fe6',
-                            50: '#f0f5ff',
-                        },
-                        secondary: '#1e293b'
+                        brand: {
+                            DEFAULT: '#0f172a',
+                            accent: '#3b82f6', // Royal blue
+                            primary: '#ea580c', // Bright orange
+                            bg: '#c3ccf1',      // Soft periwinkle background
+                        }
                     },
                     boxShadow: {
-                        'feature': '0 10px 25px -5px rgba(0, 102, 255, 0.4)',
+                        'feature': '0 10px 25px -5px rgba(59, 130, 246, 0.3)',
                     }
                 }
             }
@@ -48,28 +46,41 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+            min-height: 100vh;
+            background-image: radial-gradient(at 40% 20%, hsla(228,100%,74%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 0% 50%, hsla(355,100%,93%,0.1) 0px, transparent 50%);
             overflow-x: hidden;
         }
 
-        /* Blob SVGs styling */
-        .blob-bg {
-            position: absolute;
-            z-index: -1;
+        .premium-card { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(24px); 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); 
         }
 
-        .blob-top-left {
-            top: 0;
-            left: 0;
-            width: 45vw;
-            max-width: 600px;
+        .btn-primary { 
+            background: #ea580c; 
+            color: white; 
+            transition: all 0.2s; 
         }
-
-        .blob-right {
-            top: 10%;
-            right: -5%;
-            width: 50vw;
-            max-width: 700px;
+        .btn-primary:hover { 
+            background: #c2410c;
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4); 
+        }
+        
+        .btn-accent {
+            background: #3b82f6;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-accent:hover {
+            background: #2563eb;
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); 
         }
 
         /* Animations */
@@ -92,21 +103,27 @@
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px dashed #cbd5e1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
     </style>
 </head>
 <body class="antialiased font-sans text-slate-700 relative">
-
-    <!-- Background Blobs -->
-    <svg class="blob-bg blob-top-left" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#0066FF" d="M0,0 L500,0 C500,0 480,120 400,180 C320,240 280,180 200,220 C120,260 80,350 0,400 Z" />
-    </svg>
-
-    <svg class="blob-bg blob-right" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#0066FF" d="M600,0 L600,600 C600,600 450,550 350,450 C250,350 300,250 200,150 C100,50 0,100 0,0 Z" opacity="0.9"/>
-    </svg>
 
     <!-- Navigation -->
     <nav class="w-full z-50 relative pt-4 pb-2">
@@ -114,27 +131,27 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-3 z-10">
-                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" 
-                         alt="Geeky Researcher Logo" 
-                         class="h-10 w-10 object-contain rounded-full bg-white shadow-md border-2 border-white">
-                    <span class="font-heading font-bold text-xl text-white md:text-slate-900 tracking-tight drop-shadow-md md:drop-shadow-none">
-                        Geeky<span class="text-white md:text-primary">Researcher</span>
-                    </span>
+                    <div class="w-10 h-10 bg-gradient-to-tr from-brand-accent to-blue-300 rounded-lg flex items-center justify-center text-white shadow-md transform -rotate-3">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div class="font-bold text-xl leading-tight">
+                        <span class="text-[10px] block font-bold text-brand-accent uppercase tracking-wider -mb-1">Geeky</span>
+                        <span class="text-slate-900 tracking-tight">Researcher</span>
+                    </div>
                 </a>
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8 items-center flex-1 justify-center">
-                    <a href="#" class="text-slate-800 hover:text-primary font-medium text-sm transition">Home</a>
-                    <a href="#curriculum" class="text-slate-800 hover:text-primary font-medium text-sm transition">Syllabus</a>
-                    <a href="#schedule" class="text-slate-800 hover:text-primary font-medium text-sm transition">Timeline</a>
-                    <a href="#contact" class="text-slate-800 hover:text-primary font-medium text-sm transition">Contact</a>
+                    <a href="#" class="text-brand-primary font-semibold text-sm transition">Home</a>
+                    <a href="#curriculum" class="text-slate-600 hover:text-brand-accent font-medium text-sm transition">Syllabus</a>
+                    <a href="#contact" class="text-slate-600 hover:text-brand-accent font-medium text-sm transition">Contact</a>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="hidden md:flex items-center space-x-4">
-                    <a href="/login.html" target="_blank" class="text-primary font-semibold text-sm hover:text-primary-dark transition">Login</a>
-                    <a href="/register.html" target="_blank" class="bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full font-semibold text-sm transition shadow-lg shadow-primary/30">
-                        Sign Up
+                    <a href="login.html" class="text-slate-600 font-semibold text-sm hover:text-brand-accent transition">Sign In</a>
+                    <a href="register.html" class="btn-accent px-6 py-2.5 rounded-xl font-bold text-sm shadow-md">
+                        ENROLL NOW
                     </a>
                 </div>
 
@@ -148,95 +165,71 @@
         </div>
         
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-6 space-y-3 shadow-xl absolute w-full top-20 z-50 rounded-b-2xl border-t border-slate-100">
-            <a href="#" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-md">Home</a>
-            <a href="#curriculum" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-md">Syllabus</a>
-            <a href="#schedule" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-md">Timeline</a>
-            <a href="https://forms.gle/muGnM4Px63nn5RkD7" target="_blank" class="block px-3 py-2 text-primary font-bold bg-primary-50 rounded-md">Sign Up</a>
+        <div id="mobile-menu" class="hidden md:hidden premium-card mx-4 mt-2 p-4 space-y-3 absolute w-[calc(100%-2rem)] z-50 rounded-2xl">
+            <a href="#" class="block px-3 py-2 text-brand-primary font-bold bg-orange-50 rounded-lg">Home</a>
+            <a href="#curriculum" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Syllabus</a>
+            <a href="#contact" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Contact</a>
+            <hr class="my-2 border-slate-200">
+            <a href="login.html" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Sign In</a>
+            <a href="register.html" class="block px-3 py-2 text-center text-white font-bold bg-brand-accent rounded-lg mt-2">ENROLL NOW</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <main class="relative z-10 pt-10 pb-20 lg:pt-20 lg:pb-32 overflow-hidden min-h-[85vh] flex items-center">
+    <main class="relative z-10 pt-10 pb-20 lg:pt-16 lg:pb-32 overflow-hidden min-h-[85vh] flex items-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
-            <div class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            <div class="flex flex-col lg:flex-row gap-12 lg:gap-8 items-center">
                 
                 <!-- Left Content Column -->
-                <div class="lg:col-span-6 text-center lg:text-left z-20">
-                    <p class="fade-in-up text-primary font-medium text-sm md:text-base mb-3 uppercase tracking-wide">
-                        Premier Plant Pathology Learning
-                    </p>
+                <div class="w-full lg:w-1/2 text-center lg:text-left z-20 pt-8 lg:pt-0">
+                    <div class="fade-in-up inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-brand-accent px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wide shadow-sm">
+                        <i class="fa-solid fa-star text-amber-500"></i> Premier Plant Pathology Learning
+                    </div>
                     
-                    <h1 class="fade-in-up delay-100 text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-900 leading-[1.2] mb-6">
-                        The Best <span class="text-primary">Platform</span> For<br> Master Pathology
+                    <h1 class="fade-in-up delay-100 text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1] mb-6 tracking-tight">
+                        Master <br/><span class="text-brand-accent">Pathology</span>
                     </h1>
                     
-                    <p class="fade-in-up delay-200 text-base md:text-lg text-slate-500 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                    <p class="fade-in-up delay-200 text-base md:text-lg text-slate-600 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
                         Comprehensive online coaching for ASRB-NET, ARS, SMS, STO, and SAUs. Working collaboratively to ensure every student achieves academically.
                     </p>
                     
                     <!-- Action Buttons -->
-                    <div class="fade-in-up delay-300 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-16">
-                        <a href="https://forms.gle/muGnM4Px63nn5RkD7" target="_blank" class="bg-primary hover:bg-primary-dark text-white w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold text-base transition shadow-lg shadow-primary/30 text-center">
-                            Get Started
+                    <div class="fade-in-up delay-300 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                        <a href="register.html" class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base shadow-lg text-center">
+                            Start Learning Today
                         </a>
-                        <a href="#curriculum" class="bg-white border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold text-base transition text-center">
-                            Know More
+                        <a href="#curriculum" class="bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base transition shadow-sm text-center">
+                            View Syllabus
                         </a>
-                    </div>
-                    
-                    <!-- 4 Feature Boxes (Reference layout) -->
-                    <div class="fade-in-up delay-300 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto lg:mx-0">
-                        <!-- Box 1 -->
-                        <div class="bg-primary rounded-2xl p-4 text-center shadow-feature hover:-translate-y-1 transition-transform cursor-pointer">
-                            <i class="fa-solid fa-laptop-code text-white text-2xl mb-2"></i>
-                            <p class="text-white text-xs font-semibold leading-tight">Learn<br>Anywhere</p>
-                        </div>
-                        <!-- Box 2 -->
-                        <div class="bg-primary rounded-2xl p-4 text-center shadow-feature hover:-translate-y-1 transition-transform cursor-pointer">
-                            <i class="fa-solid fa-infinity text-white text-2xl mb-2"></i>
-                            <p class="text-white text-xs font-semibold leading-tight">Lifetime<br>Access</p>
-                        </div>
-                        <!-- Box 3 -->
-                        <div class="bg-primary rounded-2xl p-4 text-center shadow-feature hover:-translate-y-1 transition-transform cursor-pointer">
-                            <i class="fa-solid fa-headset text-white text-2xl mb-2"></i>
-                            <p class="text-white text-xs font-semibold leading-tight">24/7<br>Support</p>
-                        </div>
-                        <!-- Box 4 -->
-                        <div class="bg-primary rounded-2xl p-4 text-center shadow-feature hover:-translate-y-1 transition-transform cursor-pointer">
-                            <i class="fa-solid fa-user-graduate text-white text-2xl mb-2"></i>
-                            <p class="text-white text-xs font-semibold leading-tight">Expert<br>Instructor</p>
-                        </div>
                     </div>
                 </div>
                 
                 <!-- Right Image Column -->
-                <div class="lg:col-span-6 relative flex justify-center lg:justify-end items-center z-10 mt-10 lg:mt-0">
+                <div class="w-full lg:w-1/2 relative flex justify-center items-center z-10 mt-10 lg:mt-0">
                     
                     <!-- Image Wrapper -->
                     <div class="relative w-full max-w-md xl:max-w-lg fade-in-up delay-200">
-                        <!-- Using a high-quality relevant educational image -->
-                        <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop" 
-                             alt="Student learning" 
-                             class="relative z-20 w-full h-auto rounded-3xl shadow-2xl object-cover border-8 border-white transform lg:scale-110 origin-bottom">
+                        <!-- Student Image -->
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                             alt="Student smiling" 
+                             class="relative z-20 w-full h-auto rounded-3xl shadow-2xl object-cover border-4 border-white/50">
                              
-                        <!-- Floating Badge -->
-                        <div class="absolute -left-8 top-1/4 bg-white p-3 rounded-xl shadow-xl z-30 flex items-center gap-3 animate-bounce" style="animation-duration: 3s;">
-                            <div class="bg-amber-100 text-amber-500 w-10 h-10 rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-star"></i>
+                        <!-- Floating Stat Card (Reference style) -->
+                        <div class="stat-card absolute -bottom-6 -left-4 sm:-left-12 px-6 py-4 flex items-center gap-4 z-30">
+                            <div class="w-12 h-12 bg-brand-accent rounded-lg flex items-center justify-center text-white text-xl shadow-inner">
+                                <i class="fa-solid fa-calendar-check"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-slate-500 font-semibold">Live Classes</p>
-                                <p class="text-sm font-bold text-slate-800">Start April 1st</p>
+                                <div class="font-bold text-2xl text-slate-900 leading-none">250k+</div>
+                                <div class="text-sm font-medium text-slate-500 mt-1">Assisted Students</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Vertical Slider Dots (Matching Reference) -->
-                    <div class="hidden lg:flex flex-col gap-3 absolute right-0 top-1/2 -translate-y-1/2 translate-x-12">
-                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 cursor-pointer hover:border-primary"></div>
-                        <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_rgba(0,102,255,0.5)] cursor-pointer"></div>
-                        <div class="w-3 h-3 rounded-full border-2 border-slate-300 cursor-pointer hover:border-primary"></div>
+                        <!-- Decorative element -->
+                        <div class="absolute top-1/4 -right-4 sm:-right-8 w-14 h-14 bg-brand-primary rounded-2xl shadow-lg shadow-orange-500/40 flex items-center justify-center text-white text-xl transform rotate-12 z-30 animate-pulse">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
                     </div>
                 </div>
 
@@ -244,101 +237,577 @@
         </div>
     </main>
 
-    <!-- Syllabus Section -->
-    <section class="py-20 relative bg-slate-50" id="curriculum">
+    <!-- Feature Section -->
+    <section class="py-12 relative z-20 -mt-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16 fade-in-up">
-                <h2 class="text-primary font-semibold tracking-wide uppercase text-sm mb-2">Structured Learning</h2>
-                <h3 class="font-heading text-3xl md:text-4xl font-bold text-slate-900">Lecture Segmentation</h3>
-                <p class="mt-4 text-slate-600">A meticulously planned chapter-wise breakdown for complete exam preparation.</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Unit 1 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow fade-in-up">
-                    <div class="w-12 h-12 rounded-full bg-blue-50 text-primary flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-book"></i></div>
-                    <h4 class="font-heading text-lg font-bold text-slate-900 mb-2">History & Principles</h4>
-                    <p class="text-sm text-slate-600 mb-4">Milestones in phytopathology, epidemics, growth, reproduction, and factors influencing infection.</p>
-                    <div class="text-xs font-semibold text-primary bg-primary-50 inline-block px-3 py-1.5 rounded-full">Days 1-14</div>
-                </div>
-
-                <!-- Unit 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow fade-in-up delay-100">
-                    <div class="w-12 h-12 rounded-full bg-blue-50 text-primary flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-microscope"></i></div>
-                    <h4 class="font-heading text-lg font-bold text-slate-900 mb-2">Mycology Basics</h4>
-                    <p class="text-sm text-slate-600 mb-4">Classification of fungi, reproduction, fruiting bodies, taxonomy, and anamorphic fungi.</p>
-                    <div class="text-xs font-semibold text-primary bg-primary-50 inline-block px-3 py-1.5 rounded-full">Days 15-35</div>
-                </div>
-
-                <!-- Unit 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow fade-in-up delay-200">
-                    <div class="w-12 h-12 rounded-full bg-blue-50 text-primary flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-bacterium"></i></div>
-                    <h4 class="font-heading text-lg font-bold text-slate-900 mb-2">Plant Bacteriology</h4>
-                    <p class="text-sm text-slate-600 mb-4">Classification, antibiotics, phytotoxins, general properties of plant viruses, and mechanisms.</p>
-                    <div class="text-xs font-semibold text-primary bg-primary-50 inline-block px-3 py-1.5 rounded-full">Days 35-45</div>
+            <div class="premium-card rounded-3xl p-6 sm:p-10">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <!-- Feature 1 -->
+                    <div class="fade-in-up">
+                        <div class="w-14 h-14 mx-auto bg-blue-100 text-brand-accent rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Learn Anywhere</h4>
+                        <p class="text-xs text-slate-500">Access from any device</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="fade-in-up delay-100">
+                        <div class="w-14 h-14 mx-auto bg-orange-100 text-brand-primary rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-infinity"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Lifetime Access</h4>
+                        <p class="text-xs text-slate-500">Learn at your own pace</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="fade-in-up delay-200">
+                        <div class="w-14 h-14 mx-auto bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">24/7 Support</h4>
+                        <p class="text-xs text-slate-500">Always here to help</p>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="fade-in-up delay-300">
+                        <div class="w-14 h-14 mx-auto bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Expert Instructors</h4>
+                        <p class="text-xs text-slate-500">Learn from the best</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Syllabus Section -->
+    <section class="py-20 relative" id="curriculum">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 fade-in-up">
+                <h2 class="text-brand-accent font-bold tracking-wider uppercase text-sm mb-2">Structured Learning</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Lecture Segmentation</h3>
+                <p class="mt-4 text-slate-600 font-medium">A meticulously planned chapter-wise breakdown for complete exam preparation.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Unit 1 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">History & Principles</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Milestones in phytopathology, epidemics, growth, reproduction, and factors influencing infection.</p>
+                    <div class="text-xs font-bold text-brand-accent bg-blue-50 border border-blue-100 inline-flex px-4 py-2 rounded-xl">Days 1-14</div>
+                </div>
+
+                <!-- Unit 2 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up delay-100 group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-brand-primary flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-microscope"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Mycology Basics</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Classification of fungi, reproduction, fruiting bodies, taxonomy, and anamorphic fungi.</p>
+                    <div class="text-xs font-bold text-brand-primary bg-orange-50 border border-orange-100 inline-flex px-4 py-2 rounded-xl">Days 15-35</div>
+                </div>
+
+                <!-- Unit 3 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up delay-200 group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-emerald-600 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-bacterium"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Plant Bacteriology</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Classification, antibiotics, phytotoxins, general properties of plant viruses, and mechanisms.</p>
+                    <div class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 inline-flex px-4 py-2 rounded-xl">Days 35-45</div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 fade-in-up delay-300">
+                <a href="register.html" class="inline-flex items-center gap-2 text-brand-accent font-bold hover:underline">
+                    View Full Syllabus <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 pt-16 pb-8" id="contact">
+    <footer class="bg-white/50 backdrop-blur-md border-t border-slate-200 pt-16 pb-8 mt-10" id="contact">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-10 mb-12">
                 
                 <!-- Brand Info -->
                 <div class="md:col-span-5">
-                    <a href="#" class="flex items-center gap-3 mb-4">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" 
-                             alt="Geeky Researcher Logo" 
-                             class="h-10 w-10 object-contain rounded border border-slate-200">
-                        <span class="font-heading font-bold text-2xl text-slate-900">Geeky<span class="text-primary">Researcher</span></span>
+                    <a href="#" class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-tr from-brand-accent to-blue-300 rounded-lg flex items-center justify-center text-white shadow-sm transform -rotate-3">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                        <div class="font-bold text-xl leading-tight">
+                            <span class="text-[10px] block font-bold text-brand-accent uppercase tracking-wider -mb-1">Geeky</span>
+                            <span class="text-slate-900 tracking-tight">Researcher</span>
+                        </div>
                     </a>
-                    <p class="text-slate-600 text-sm leading-relaxed mb-6 pr-4">
-                        "Your subscription is a promise, we ensure it's worth every moment and never a missed opportunity." <br><br>
-                        <strong>Guided by N.H. Shankar Reddy.</strong>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-6 pr-4 font-medium italic">
+                        "Your subscription is a promise, we ensure it's worth every moment and never a missed opportunity."
                     </p>
+                    <p class="text-sm font-bold text-slate-800">Guided by N.H. Shankar Reddy.</p>
                 </div>
                 
                 <!-- Quick Links -->
                 <div class="md:col-span-3">
-                    <h4 class="font-heading font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm">Platform</h4>
-                    <ul class="space-y-3 text-sm text-slate-600">
-                        <li><a href="#curriculum" class="hover:text-primary transition">Syllabus Structure</a></li>
-                        <li><a href="https://meet.google.com/kee-uzmd-dmy" target="_blank" class="hover:text-primary transition">Join Demo Class</a></li>
-                        <li><a href="https://forms.gle/muGnM4Px63nn5RkD7" target="_blank" class="text-primary font-semibold hover:underline">Registration Form &rarr;</a></li>
+                    <h4 class="font-bold text-slate-900 mb-4 uppercase tracking-wider text-xs">Platform</h4>
+                    <ul class="space-y-3 text-sm font-medium text-slate-600">
+                        <li><a href="#curriculum" class="hover:text-brand-accent transition">Syllabus Structure</a></li>
+                        <li><a href="#" class="hover:text-brand-accent transition">Join Demo Class</a></li>
+                        <li><a href="register.html" class="text-brand-accent font-bold hover:underline">Enroll Now &rarr;</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact Info -->
                 <div class="md:col-span-4">
-                    <h4 class="font-heading font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm">Contact Us</h4>
-                    <ul class="space-y-4 text-sm text-slate-600">
+                    <h4 class="font-bold text-slate-900 mb-4 uppercase tracking-wider text-xs">Contact Us</h4>
+                    <ul class="space-y-4 text-sm font-medium text-slate-600">
                         <li class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center"><i class="fa-solid fa-envelope"></i></div>
-                            <a href="mailto:researchergeeky@gmail.com" class="hover:text-primary transition font-medium">researchergeeky@gmail.com</a>
+                            <div class="w-8 h-8 rounded-lg bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center"><i class="fa-solid fa-envelope"></i></div>
+                            <a href="mailto:researchergeeky@gmail.com" class="hover:text-brand-accent transition">researchergeeky@gmail.com</a>
                         </li>
                         <li class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center"><i class="fa-solid fa-phone"></i></div>
-                            <a href="tel:+918807862773" class="hover:text-primary transition font-medium">+91 88078 62773</a>
+                            <div class="w-8 h-8 rounded-lg bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center"><i class="fa-solid fa-phone"></i></div>
+                            <a href="tel:+918807862773" class="hover:text-brand-accent transition">+91 88078 62773</a>
                         </li>
                     </ul>
                 </div>
             </div>
             
-            <!-- Bottom Footer bar with Logo Fixed -->
-            <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <!-- Bottom Footer bar -->
+            <div class="border-t border-slate-200/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-sm text-slate-500 font-medium text-center md:text-left">
                     &copy; 2026 Team Geeky Researchers. All rights reserved.
                 </p>
                 
-                <!-- Xeta Tech Solutions Logo (Fixed Background Container) -->
-                <a href="https://xetatechsolutions.com" target="_blank" class="group flex items-center gap-3 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full transition-colors">
-                    <span class="text-xs font-semibold text-slate-600">Designed & Developed by</span>
-                    <div class="bg-white px-2 py-1 rounded shadow-sm flex items-center justify-center">
+                <!-- Xeta Tech Solutions Logo -->
+                <a href="https://xetatechsolutions.com" target="_blank" class="group flex items-center gap-3 bg-white border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl shadow-sm transition-all">
+                    <span class="text-xs font-semibold text-slate-500">Designed & Developed by</span>
+                    <div class="flex items-center justify-center">
                         <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" 
                              alt="Xeta Tech Solutions" 
-                             class="h-4 w-auto object-contain block transition-transform group-hover:scale-105">
+                             class="h-4 w-auto object-contain block transition-transform group-hover:scale-105 opacity-80 group-hover:opacity-100">
+                    </div>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mobile Menu Toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+            
+            // Scroll observer for fade-in animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+            
+            // Apply observer to all elements with fade-in-up
+            const animatedElements = document.querySelectorAll('.fade-in-up');
+            animatedElements.forEach(el => {
+                el.style.animationPlayState = 'paused';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Premier Plant Pathology LMS</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Geeky Researcher offers expert online coaching for Plant Pathology competitive exams including ASRB-NET, ARS, SMS, STO, and SAUs.">
+    <meta name="keywords" content="Plant Pathology, ASRB NET coaching, ARS preparation, SMS, STO, SAUs, N.H. Shankar Reddy, Geeky Researcher, LMS">
+    <meta name="author" content="Geeky Researcher">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            DEFAULT: '#0f172a',
+                            accent: '#3b82f6', // Royal blue
+                            primary: '#ea580c', // Bright orange
+                            bg: '#c3ccf1',      // Soft periwinkle background
+                        }
+                    },
+                    boxShadow: {
+                        'feature': '0 10px 25px -5px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+            min-height: 100vh;
+            background-image: radial-gradient(at 40% 20%, hsla(228,100%,74%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                              radial-gradient(at 0% 50%, hsla(355,100%,93%,0.1) 0px, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        .premium-card { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(24px); 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); 
+        }
+
+        .btn-primary { 
+            background: #ea580c; 
+            color: white; 
+            transition: all 0.2s; 
+        }
+        .btn-primary:hover { 
+            background: #c2410c;
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.4); 
+        }
+        
+        .btn-accent {
+            background: #3b82f6;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-accent:hover {
+            background: #2563eb;
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); 
+        }
+
+        /* Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px dashed #cbd5e1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="antialiased font-sans text-slate-700 relative">
+
+    <!-- Navigation -->
+    <nav class="w-full z-50 relative pt-4 pb-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-3 z-10">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-brand-accent to-blue-300 rounded-lg flex items-center justify-center text-white shadow-md transform -rotate-3">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <div class="font-bold text-xl leading-tight">
+                        <span class="text-[10px] block font-bold text-brand-accent uppercase tracking-wider -mb-1">Geeky</span>
+                        <span class="text-slate-900 tracking-tight">Researcher</span>
+                    </div>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center flex-1 justify-center">
+                    <a href="#" class="text-brand-primary font-semibold text-sm transition">Home</a>
+                    <a href="#curriculum" class="text-slate-600 hover:text-brand-accent font-medium text-sm transition">Syllabus</a>
+                    <a href="#contact" class="text-slate-600 hover:text-brand-accent font-medium text-sm transition">Contact</a>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="login.html" class="text-slate-600 font-semibold text-sm hover:text-brand-accent transition">Sign In</a>
+                    <a href="register.html" class="btn-accent px-6 py-2.5 rounded-xl font-bold text-sm shadow-md">
+                        ENROLL NOW
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center z-10">
+                    <button id="mobile-menu-btn" class="text-slate-800 focus:outline-none p-2 bg-white/80 rounded-md backdrop-blur">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden premium-card mx-4 mt-2 p-4 space-y-3 absolute w-[calc(100%-2rem)] z-50 rounded-2xl">
+            <a href="#" class="block px-3 py-2 text-brand-primary font-bold bg-orange-50 rounded-lg">Home</a>
+            <a href="#curriculum" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Syllabus</a>
+            <a href="#contact" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Contact</a>
+            <hr class="my-2 border-slate-200">
+            <a href="login.html" class="block px-3 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg">Sign In</a>
+            <a href="register.html" class="block px-3 py-2 text-center text-white font-bold bg-brand-accent rounded-lg mt-2">ENROLL NOW</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative z-10 pt-10 pb-20 lg:pt-16 lg:pb-32 overflow-hidden min-h-[85vh] flex items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
+            <div class="flex flex-col lg:flex-row gap-12 lg:gap-8 items-center">
+                
+                <!-- Left Content Column -->
+                <div class="w-full lg:w-1/2 text-center lg:text-left z-20 pt-8 lg:pt-0">
+                    <div class="fade-in-up inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-brand-accent px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wide shadow-sm">
+                        <i class="fa-solid fa-star text-amber-500"></i> Premier Plant Pathology Learning
+                    </div>
+                    
+                    <h1 class="fade-in-up delay-100 text-5xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1] mb-6 tracking-tight">
+                        Master <br/><span class="text-brand-accent">Pathology</span>
+                    </h1>
+                    
+                    <p class="fade-in-up delay-200 text-base md:text-lg text-slate-600 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
+                        Comprehensive online coaching for ASRB-NET, ARS, SMS, STO, and SAUs. Working collaboratively to ensure every student achieves academically.
+                    </p>
+                    
+                    <!-- Action Buttons -->
+                    <div class="fade-in-up delay-300 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                        <a href="register.html" class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base shadow-lg text-center">
+                            Start Learning Today
+                        </a>
+                        <a href="#curriculum" class="bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base transition shadow-sm text-center">
+                            View Syllabus
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Image Column -->
+                <div class="w-full lg:w-1/2 relative flex justify-center items-center z-10 mt-10 lg:mt-0">
+                    
+                    <!-- Image Wrapper -->
+                    <div class="relative w-full max-w-md xl:max-w-lg fade-in-up delay-200">
+                        <!-- Student Image -->
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                             alt="Student smiling" 
+                             class="relative z-20 w-full h-auto rounded-3xl shadow-2xl object-cover border-4 border-white/50">
+                             
+                        <!-- Floating Stat Card (Reference style) -->
+                        <div class="stat-card absolute -bottom-6 -left-4 sm:-left-12 px-6 py-4 flex items-center gap-4 z-30">
+                            <div class="w-12 h-12 bg-brand-accent rounded-lg flex items-center justify-center text-white text-xl shadow-inner">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-2xl text-slate-900 leading-none">250k+</div>
+                                <div class="text-sm font-medium text-slate-500 mt-1">Assisted Students</div>
+                            </div>
+                        </div>
+
+                        <!-- Decorative element -->
+                        <div class="absolute top-1/4 -right-4 sm:-right-8 w-14 h-14 bg-brand-primary rounded-2xl shadow-lg shadow-orange-500/40 flex items-center justify-center text-white text-xl transform rotate-12 z-30 animate-pulse">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Feature Section -->
+    <section class="py-12 relative z-20 -mt-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="premium-card rounded-3xl p-6 sm:p-10">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <!-- Feature 1 -->
+                    <div class="fade-in-up">
+                        <div class="w-14 h-14 mx-auto bg-blue-100 text-brand-accent rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Learn Anywhere</h4>
+                        <p class="text-xs text-slate-500">Access from any device</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="fade-in-up delay-100">
+                        <div class="w-14 h-14 mx-auto bg-orange-100 text-brand-primary rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-infinity"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Lifetime Access</h4>
+                        <p class="text-xs text-slate-500">Learn at your own pace</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="fade-in-up delay-200">
+                        <div class="w-14 h-14 mx-auto bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">24/7 Support</h4>
+                        <p class="text-xs text-slate-500">Always here to help</p>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="fade-in-up delay-300">
+                        <div class="w-14 h-14 mx-auto bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-4 transform transition hover:-translate-y-1 hover:shadow-md">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">Expert Instructors</h4>
+                        <p class="text-xs text-slate-500">Learn from the best</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Syllabus Section -->
+    <section class="py-20 relative" id="curriculum">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16 fade-in-up">
+                <h2 class="text-brand-accent font-bold tracking-wider uppercase text-sm mb-2">Structured Learning</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Lecture Segmentation</h3>
+                <p class="mt-4 text-slate-600 font-medium">A meticulously planned chapter-wise breakdown for complete exam preparation.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Unit 1 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">History & Principles</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Milestones in phytopathology, epidemics, growth, reproduction, and factors influencing infection.</p>
+                    <div class="text-xs font-bold text-brand-accent bg-blue-50 border border-blue-100 inline-flex px-4 py-2 rounded-xl">Days 1-14</div>
+                </div>
+
+                <!-- Unit 2 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up delay-100 group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-brand-primary flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-microscope"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Mycology Basics</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Classification of fungi, reproduction, fruiting bodies, taxonomy, and anamorphic fungi.</p>
+                    <div class="text-xs font-bold text-brand-primary bg-orange-50 border border-orange-100 inline-flex px-4 py-2 rounded-xl">Days 15-35</div>
+                </div>
+
+                <!-- Unit 3 -->
+                <div class="premium-card p-8 rounded-3xl hover:shadow-xl transition-shadow fade-in-up delay-200 group">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm border border-slate-100 text-emerald-600 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-bacterium"></i></div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Plant Bacteriology</h4>
+                    <p class="text-sm text-slate-600 mb-6 leading-relaxed">Classification, antibiotics, phytotoxins, general properties of plant viruses, and mechanisms.</p>
+                    <div class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 inline-flex px-4 py-2 rounded-xl">Days 35-45</div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 fade-in-up delay-300">
+                <a href="register.html" class="inline-flex items-center gap-2 text-brand-accent font-bold hover:underline">
+                    View Full Syllabus <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/50 backdrop-blur-md border-t border-slate-200 pt-16 pb-8 mt-10" id="contact">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10 mb-12">
+                
+                <!-- Brand Info -->
+                <div class="md:col-span-5">
+                    <a href="#" class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-tr from-brand-accent to-blue-300 rounded-lg flex items-center justify-center text-white shadow-sm transform -rotate-3">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                        <div class="font-bold text-xl leading-tight">
+                            <span class="text-[10px] block font-bold text-brand-accent uppercase tracking-wider -mb-1">Geeky</span>
+                            <span class="text-slate-900 tracking-tight">Researcher</span>
+                        </div>
+                    </a>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-6 pr-4 font-medium italic">
+                        "Your subscription is a promise, we ensure it's worth every moment and never a missed opportunity."
+                    </p>
+                    <p class="text-sm font-bold text-slate-800">Guided by N.H. Shankar Reddy.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="md:col-span-3">
+                    <h4 class="font-bold text-slate-900 mb-4 uppercase tracking-wider text-xs">Platform</h4>
+                    <ul class="space-y-3 text-sm font-medium text-slate-600">
+                        <li><a href="#curriculum" class="hover:text-brand-accent transition">Syllabus Structure</a></li>
+                        <li><a href="#" class="hover:text-brand-accent transition">Join Demo Class</a></li>
+                        <li><a href="register.html" class="text-brand-accent font-bold hover:underline">Enroll Now &rarr;</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="md:col-span-4">
+                    <h4 class="font-bold text-slate-900 mb-4 uppercase tracking-wider text-xs">Contact Us</h4>
+                    <ul class="space-y-4 text-sm font-medium text-slate-600">
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center"><i class="fa-solid fa-envelope"></i></div>
+                            <a href="mailto:researchergeeky@gmail.com" class="hover:text-brand-accent transition">researchergeeky@gmail.com</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-white shadow-sm border border-slate-100 text-brand-accent flex items-center justify-center"><i class="fa-solid fa-phone"></i></div>
+                            <a href="tel:+918807862773" class="hover:text-brand-accent transition">+91 88078 62773</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bottom Footer bar -->
+            <div class="border-t border-slate-200/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-sm text-slate-500 font-medium text-center md:text-left">
+                    &copy; 2026 Team Geeky Researchers. All rights reserved.
+                </p>
+                
+                <!-- Xeta Tech Solutions Logo -->
+                <a href="https://xetatechsolutions.com" target="_blank" class="group flex items-center gap-3 bg-white border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl shadow-sm transition-all">
+                    <span class="text-xs font-semibold text-slate-500">Designed & Developed by</span>
+                    <div class="flex items-center justify-center">
+                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" 
+                             alt="Xeta Tech Solutions" 
+                             class="h-4 w-auto object-contain block transition-transform group-hover:scale-105 opacity-80 group-hover:opacity-100">
                     </div>
                 </a>
             </div>
