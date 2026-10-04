@@ -59,16 +59,16 @@
             -moz-osx-font-smoothing: grayscale;
             
             /* Aggressive Mobile Copy/Save Prevention */
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-user-drag: none !important;
             overscroll-behavior-y: none;
         }
 
         /* HARD BLOCK PRINTING / SAVE AS PDF */
         @media print {
-            body { display: none !important; }
-            html { background-color: #000000; }
+            html, body { display: none !important; width: 0; height: 0; opacity: 0; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -102,16 +102,17 @@
         .watermark-overlay {
             position: absolute; inset: 0; pointer-events: none; z-index: 50; overflow: hidden;
             display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around;
-            opacity: 0.20; mix-blend-mode: overlay;
+            opacity: 0.15; mix-blend-mode: overlay;
         }
         .watermark-text {
-            font-size: 14px; font-weight: 800; color: #ffffff; white-space: nowrap; user-select: none;
+            font-size: 15px; font-weight: 800; color: #ffffff; white-space: nowrap; user-select: none;
             padding: 50px; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); animation: watermarkDrift 25s linear infinite alternate;
         }
 
         .reader-paper { transition: all 0.5s ease; border-radius: 1.25rem; }
         #main-video-player { transition: filter 0.6s ease, transform 0.3s ease; }
         
+        /* Advanced Eye Care Themes */
         .theme-light { background-color: #ffffff; color: #334155; }
         .theme-light h1, .theme-light h2, .theme-light h3 { color: #0f172a; }
         .video-theme-light { filter: none; }
@@ -128,18 +129,31 @@
         .theme-dark h1, .theme-dark h2, .theme-dark h3 { color: #f8fafc; }
         .video-theme-dark { filter: brightness(0.7) contrast(1.05); }
 
+        .theme-bluelight { background-color: #FFF3E0; color: #4E342E; border: 1px solid #FFE0B2; }
+        .theme-bluelight h1, .theme-bluelight h2, .theme-bluelight h3 { color: #3E2723; }
+        .video-theme-bluelight { filter: sepia(0.5) hue-rotate(-15deg) contrast(0.95) brightness(0.85); }
+
+        .theme-eink { background-color: #F5F5F5; color: #333333; border: 1px solid #E0E0E0; }
+        .theme-eink h1, .theme-eink h2, .theme-eink h3 { color: #111111; }
+        .video-theme-eink { filter: grayscale(100%) contrast(1.1) brightness(0.9); }
+
+        .theme-hcdark { background-color: #000000; color: #FFFF00; border: 1px solid #333333; }
+        .theme-hcdark h1, .theme-hcdark h2, .theme-hcdark h3 { color: #FFFFFF; }
+        .video-theme-hcdark { filter: invert(0.9) grayscale(100%) contrast(1.5); }
+
         .rich-content { font-family: 'Lora', serif; font-size: 1.15rem; line-height: 1.85; max-width: 70ch; margin: 0 auto; }
         .rich-content h1, .rich-content h2, .rich-content h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; margin-top: 2rem; margin-bottom: 1rem; line-height: 1.3; }
         @media (max-width: 768px) { .rich-content { font-size: 1.05rem; } .rich-content h1, .rich-content h2 { margin-top: 1.5rem; margin-bottom: 0.75rem; } }
         .rich-content p { margin-bottom: 1.5rem; }
         .rich-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
 
+        /* INSTANT PRIVACY BLUR - MAX Z-INDEX */
         #privacy-blur-layer {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
-            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.99); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            z-index: 2147483647; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: none; 
         }
-        #privacy-blur-layer.active { opacity: 1; pointer-events: auto; }
+        #privacy-blur-layer.active { opacity: 1; pointer-events: all !important; }
         
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
         .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
@@ -167,13 +181,13 @@
 
 <body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
 
+    <!-- Security Blackout Shield -->
     <div id="privacy-blur-layer">
         <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-brand-200 shadow-2xl">
             <i class="fa-solid fa-shield-halved"></i>
         </div>
         <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Protected Stream</h2>
-        <p class="text-surface-400 text-sm font-medium px-4 text-center">Recording or screen-capturing is strictly prohibited.</p>
-        <button onclick="document.getElementById('privacy-blur-layer').classList.remove('active')" class="mt-6 px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold transition text-sm">Return to Video</button>
+        <p class="text-surface-400 text-[15px] font-medium px-4 text-center">Content hidden to protect scholarly intellectual property.</p>
     </div>
 
     <!-- Desktop Sidebar -->
@@ -303,7 +317,8 @@
                             </button>
                             
                             <div id="theme-menu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-surface-200 rounded-2xl shadow-float overflow-hidden py-1.5 z-[60] transform origin-top-right transition-all">
-                                <div class="px-4 py-2 mb-1 border-b border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Environment Filters</div>
+                                <div class="px-4 py-2 mb-1 border-b border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Environment</div>
+                                
                                 <button type="button" onclick="setTheme('light')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
                                     <div class="w-6 h-6 rounded-md bg-surface-100 flex items-center justify-center border border-surface-200"><i class="fa-solid fa-sun text-[12px] text-surface-500"></i></div> Daylight
                                 </button>
@@ -315,6 +330,18 @@
                                 </button>
                                 <button type="button" onclick="setTheme('dark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
                                     <div class="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center border border-slate-700"><i class="fa-solid fa-moon text-[12px] text-slate-300"></i></div> Night Slate
+                                </button>
+
+                                <div class="px-4 py-2 mt-1 mb-1 border-y border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Advanced Protection</div>
+                                
+                                <button type="button" onclick="setTheme('bluelight')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-orange-100 flex items-center justify-center border border-orange-200"><i class="fa-solid fa-glasses text-[12px] text-orange-700"></i></div> Blue Light Shield
+                                </button>
+                                <button type="button" onclick="setTheme('eink')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-gray-200 flex items-center justify-center border border-gray-300"><i class="fa-solid fa-tablet-screen-button text-[12px] text-gray-700"></i></div> E-Ink Grayscale
+                                </button>
+                                <button type="button" onclick="setTheme('hcdark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-black flex items-center justify-center border border-gray-700"><i class="fa-solid fa-circle-half-stroke text-[12px] text-yellow-400"></i></div> High Contrast
                                 </button>
                             </div>
                         </div>
@@ -344,10 +371,11 @@
                             <!-- Video Loader Indicator -->
                             <div id="video-loader" class="hidden absolute inset-0 flex-col items-center justify-center bg-black z-15">
                                 <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
-                                <p class="text-sm font-medium text-slate-400">Decrypting stream...</p>
+                                <p class="text-sm font-medium text-slate-400" id="video-loader-text">Loading secure stream...</p>
                             </div>
 
-                            <video id="main-video-player" class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload" oncanplay="document.getElementById('video-loader').classList.replace('flex', 'hidden')"></video>
+                            <!-- IMPORTANT: preload="metadata" helps huge S3 videos stream smoothly without crashing browser memory -->
+                            <video id="main-video-player" preload="metadata" class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload" oncanplay="document.getElementById('video-loader').classList.replace('flex', 'hidden')"></video>
                         </div>
 
                         <!-- Horizontal Scrollable Control Chips -->
@@ -425,54 +453,82 @@
             localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', email: 'scholar@agri.edu', level: 'PG Research' }));
         }
 
-        /* --- HARDCORE SECURITY --- */
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        /* --- EXTREME ANTI-SCREENSHOT & SECURITY --- */
+        const privacyLayer = document.getElementById('privacy-blur-layer');
+        let blackoutTimeout;
         
+        function triggerBlackout() {
+            privacyLayer.classList.add('active');
+            clearTimeout(blackoutTimeout);
+            blackoutTimeout = setTimeout(() => privacyLayer.classList.remove('active'), 2500);
+        }
+
+        // Block right-click entirely
+        document.addEventListener('contextmenu', e => { 
+            e.preventDefault(); 
+            triggerBlackout(); 
+        });
+        
+        // Hijack copy/cut events
         document.addEventListener('copy', (e) => {
             e.preventDefault();
-            if (e.clipboardData) e.clipboardData.setData('text/plain', 'Content protected by Geeky Researcher Portal.');
-            triggerPrivacyWarning();
+            if (e.clipboardData) e.clipboardData.setData('text/plain', 'Security Policy: Action Blocked.');
+            triggerBlackout();
         });
+        document.addEventListener('cut', (e) => { e.preventDefault(); triggerBlackout(); });
 
+        // Aggressive key blocking (PrintScreen, Mac Shortcuts, DevTools, Save)
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
-                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
-                e.preventDefault(); triggerPrivacyWarning(); return false;
+            if (
+                e.key === 'PrintScreen' || 
+                e.keyCode === 44 || 
+                (e.metaKey && e.shiftKey) || // Mac & Windows screenshot combos
+                (e.ctrlKey && e.key === 'p') || // Print
+                (e.ctrlKey && e.key === 's') || // Save
+                e.key === 'F12' || // DevTools
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J'))
+            ) {
+                e.preventDefault(); 
+                triggerBlackout(); 
+                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
+                return false;
             }
         });
         
+        // Secondary catch for releasing the PrintScreen key
         document.addEventListener('keyup', (e) => {
-            if (e.key === 'PrintScreen' || e.keyCode === 44) {
-                try { navigator.clipboard.writeText(''); } catch(err) {} 
-                triggerPrivacyWarning();
+            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
+                triggerBlackout();
+                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
             }
         });
 
+        // Trigger blackout if user switches tabs (BUT ALLOW PIP TO CONTINUE)
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'hidden') {
+            if (document.hidden) {
                 const player = document.getElementById('main-video-player');
-                if(player && !player.paused) player.pause(); 
-                document.getElementById('privacy-blur-layer').classList.add('active');
+                // IMPORTANT PIP FIX: Only pause the video if Picture-in-Picture is NOT active
+                if(player && !player.paused && !document.pictureInPictureElement) {
+                    player.pause(); 
+                }
+                privacyLayer.classList.add('active');
             } else {
-                document.getElementById('privacy-blur-layer').classList.remove('active');
+                privacyLayer.classList.remove('active');
             }
         });
 
         window.addEventListener('blur', () => {
             const player = document.getElementById('main-video-player');
-            if(player && !player.paused) player.pause(); 
-            document.getElementById('privacy-blur-layer').classList.add('active');
+            // IMPORTANT PIP FIX: Only pause the video if Picture-in-Picture is NOT active
+            if(player && !player.paused && !document.pictureInPictureElement) {
+                player.pause(); 
+            }
+            privacyLayer.classList.add('active');
         });
-        window.addEventListener('focus', () => document.getElementById('privacy-blur-layer').classList.remove('active'));
+        
+        window.addEventListener('focus', () => privacyLayer.classList.remove('active'));
 
-        function triggerPrivacyWarning() {
-            const layer = document.getElementById('privacy-blur-layer');
-            layer.classList.add('active');
-            setTimeout(() => layer.classList.remove('active'), 2000);
-        }
-
-        // Reduced DOM Nodes for smooth performance
+        // Watermark Generation
         function getWatermarkHTML() {
             let user = { email: 'scholar@agri.edu' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
@@ -501,7 +557,8 @@
                 document.getElementById('syllabus-panel').classList.remove('mobile-hide');
                 document.getElementById('reader-panel-wrapper').classList.add('mobile-hide');
                 const player = document.getElementById('main-video-player');
-                if(player && !player.paused) player.pause(); 
+                // Only pause if returning to syllabus while not in PiP
+                if(player && !player.paused && !document.pictureInPictureElement) player.pause(); 
             }
         }
 
@@ -532,12 +589,12 @@
         function setTheme(themeName) {
             const paper = document.getElementById('notes-paper');
             if(paper) {
-                paper.classList.remove('theme-light', 'theme-sepia', 'theme-sage', 'theme-dark');
+                paper.classList.remove('theme-light', 'theme-sepia', 'theme-sage', 'theme-dark', 'theme-bluelight', 'theme-eink', 'theme-hcdark');
                 paper.classList.add(`theme-${themeName}`);
             }
             const video = document.getElementById('main-video-player');
             if(video) {
-                video.classList.remove('video-theme-light', 'video-theme-sepia', 'video-theme-sage', 'video-theme-dark');
+                video.classList.remove('video-theme-light', 'video-theme-sepia', 'video-theme-sage', 'video-theme-dark', 'video-theme-bluelight', 'video-theme-eink', 'video-theme-hcdark');
                 video.classList.add(`video-theme-${themeName}`);
             }
             localStorage.setItem('reader-theme', themeName); 
@@ -561,7 +618,7 @@
                 case ' ': case 'k': e.preventDefault(); player.paused ? player.play() : player.pause(); break;
                 case 'arrowright': case 'l': e.preventDefault(); skipVideo(10); break;
                 case 'arrowleft': case 'j': e.preventDefault(); skipVideo(-10); break;
-                case 'f': e.preventDefault(); if (!document.fullscreenElement) { player.requestFullscreen().catch(err=>console.log(err)); } else { document.exitFullscreen(); } break;
+                case 'f': e.preventDefault(); toggleTheaterMode(); break;
                 case 'm': e.preventDefault(); player.muted = !player.muted; break;
             }
         });
@@ -573,6 +630,21 @@
 
         document.getElementById('main-video-player').addEventListener('timeupdate', function() {
             if (currentVideoId && this.currentTime > 5) localStorage.setItem(`video_progress_${currentVideoId}`, this.currentTime);
+        });
+
+        // Massive Video Error Handling
+        document.getElementById('main-video-player').addEventListener('error', function(e) {
+            const loader = document.getElementById('video-loader');
+            const loaderText = document.getElementById('video-loader-text');
+            loader.classList.remove('hidden'); loader.classList.add('flex');
+            
+            // Swap icon to error
+            loader.innerHTML = `
+                <i class="fa-solid fa-triangle-exclamation text-3xl text-rose-500 mb-3"></i>
+                <p class="text-sm font-bold text-rose-400">Stream interrupted.</p>
+                <p class="text-[11px] font-medium text-slate-500 mt-1 max-w-xs text-center">Network connection dropped or URL expired. Please refresh the page.</p>
+                <button onclick="window.location.reload()" class="mt-4 px-4 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold transition">Reload Page</button>
+            `;
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -706,6 +778,12 @@
                 player.classList.remove('hidden');
                 loader.classList.remove('hidden'); loader.classList.add('flex');
                 
+                // Reset loader UI in case it previously errored
+                loader.innerHTML = `
+                    <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
+                    <p class="text-sm font-medium text-slate-400" id="video-loader-text">Loading secure stream...</p>
+                `;
+                
                 setTimeout(() => {
                     player.src = video.mediaUrl;
                     const savedTime = localStorage.getItem(`video_progress_${id}`);
@@ -716,7 +794,7 @@
                     if(window.innerWidth < 1024) { 
                         setTimeout(() => document.getElementById('reader-viewport').scrollTo({ top: 0, behavior: 'smooth' }), 100);
                     }
-                    player.play().catch(e => console.log("Auto-play restricted."));
+                    player.play().catch(e => console.log("Auto-play restricted by browser."));
                 }, 50);
             } else {
                 player.classList.add('hidden'); placeholder.classList.remove('hidden');
