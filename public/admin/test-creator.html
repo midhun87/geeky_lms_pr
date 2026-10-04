@@ -262,6 +262,35 @@
         </div>
     </main>
 
+    <!-- Immersive AI Loading Overlay -->
+    <div id="ai-loading-overlay" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-md hidden flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center relative overflow-hidden">
+            <!-- Decorative abstract background -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="relative z-10">
+                <div class="w-20 h-20 mx-auto bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-indigo-100">
+                    <i class="fa-solid fa-wand-magic-sparkles text-4xl text-indigo-500 animate-pulse"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Proctorix AI Engine</h3>
+                <p id="ai-status-text" class="text-sm font-medium text-slate-500 mb-8 h-10 flex items-center justify-center leading-snug">Initializing sequence...</p>
+                
+                <div class="space-y-4 text-left">
+                    <div id="ai-step-1" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Reading Document Data</span>
+                    </div>
+                    <div id="ai-step-2" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Extracting Knowledge Graph</span>
+                    </div>
+                    <div id="ai-step-3" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Generating Assessment Items</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
@@ -335,6 +364,17 @@
             await fetchLibrary(); 
         });
 
+        /* --- STREAMING_CHUNK:Utility Functions --- */
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         /* --- Dynamic Question Numbering Engine --- */
         window.updateQuestionNumbers = function() {
             const blocks = document.querySelectorAll('.question-block');
@@ -346,19 +386,26 @@
             });
         };
 
-        /* --- PDF to Test AI Generation Logic --- */
+        /* --- AI GENERATION WITH IMMERSIVE UI --- */
         async function handlePdfUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            const btn = document.getElementById('btn-ai-gen');
-            const originalBtnHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Reading PDF...`;
-            btn.disabled = true;
+            const overlay = document.getElementById('ai-loading-overlay');
+            const statusText = document.getElementById('ai-status-text');
+            const s1 = document.getElementById('ai-step-1');
+            const s2 = document.getElementById('ai-step-2');
+            const s3 = document.getElementById('ai-step-3');
+
+            // Reset UI states
+            overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            s1.className = "flex items-center gap-3 text-sm font-bold text-indigo-600 transition-colors duration-300";
+            s2.className = "flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300";
+            s3.className = "flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300";
 
             try {
-                // 1. Extract text via PDF.js locally
-                showToast("Extracting text from PDF...", "info");
+                // Step 1: Read PDF
+                statusText.innerText = "Parsing PDF Document locally...";
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
                 let fullText = '';
@@ -372,9 +419,11 @@
 
                 if (!fullText.trim()) throw new Error("No readable text found in this PDF.");
 
-                // 2. Send text to backend AI generator
-                btn.innerHTML = `<i class="fa-solid fa-brain fa-fade"></i> AI Generating...`;
-                showToast("Analyzing text and formatting questions...", "info");
+                // Step 2: Transmit to AI
+                s1.classList.replace('text-indigo-600', 'text-emerald-500');
+                s2.classList.replace('text-slate-400', 'text-indigo-600');
+                s2.classList.replace('font-semibold', 'font-bold');
+                statusText.innerText = "AI Engine is analyzing the text and structuring questions. This may take up to a minute for large files...";
 
                 const response = await fetch(`${API_BASE_URL}/admin/generate-questions-from-text`, {
                     method: 'POST',
@@ -390,7 +439,14 @@
                 const data = await response.json();
                 if (!data.questions || data.questions.length === 0) throw new Error("AI returned empty results.");
 
-                // 3. Inject into Editor
+                // Step 3: Render to UI
+                s2.classList.replace('text-indigo-600', 'text-emerald-500');
+                s3.classList.replace('text-slate-400', 'text-indigo-600');
+                s3.classList.replace('font-semibold', 'font-bold');
+                statusText.innerText = `Success! Structuring ${data.questions.length} questions into the editor...`;
+
+                await new Promise(r => setTimeout(r, 1000)); // Small delay for UX feel
+
                 showEditor(true);
                 document.getElementById('testTitle').value = `${file.name.replace('.pdf', '')} - Auto-Generated Test`;
                 
@@ -398,28 +454,34 @@
                 document.getElementById('questions-container').innerHTML = '';
                 qCounter = 0;
                 
-                // Parse AI questions and map them to UI
+                // Use DocumentFragment for massive performance boost when rendering 100+ questions
+                const fragment = document.createDocumentFragment();
+
+                /* --- STREAMING_CHUNK:Parse AI questions and map them to UI --- */
                 data.questions.forEach((aiQ) => {
                     const formattedData = {
-                        text: aiQ.text,
-                        type: aiQ.type, // 'mcq', 'msq', or 'fib'
-                        options: aiQ.options || [],
-                        correctOptions: aiQ.correctOptions || [], // Should be array of indices like ["0"] or ["Exact Answer"]
+                        text: aiQ.text || aiQ.question || '', // Fallback just in case
+                        type: aiQ.type || 'mcq',
+                        options: Array.isArray(aiQ.options) ? aiQ.options : [],
+                        correctOptions: Array.isArray(aiQ.correctOptions) ? aiQ.correctOptions.map(String) : [], 
                         positiveMarks: 1,
                         negativeMarks: 0.3
                     };
-                    addQuestion(aiQ.type, formattedData);
+                    addQuestion(formattedData.type, formattedData, fragment);
                 });
 
-                showToast(`Success! Generated ${data.questions.length} questions. Please review and Save.`, "success");
+                // Inject all questions into the DOM at once to prevent layout thrashing
+                document.getElementById('questions-container').appendChild(fragment);
+                updateQuestionNumbers();
+
+                showToast(`Successfully extracted ${data.questions.length} questions.`, "success");
 
             } catch (error) {
-                console.error("PDF Processing Error:", error);
-                showToast(error.message || "Failed to process PDF.", "error");
+                console.error("AI Generation Error:", error);
+                showToast(error.message || "Failed to process document.", "error");
             } finally {
-                btn.innerHTML = originalBtnHTML;
-                btn.disabled = false;
-                event.target.value = ''; // Reset input to allow re-upload
+                overlay.classList.add('hidden'); overlay.classList.remove('flex');
+                event.target.value = ''; // Reset input
             }
         }
 
@@ -685,7 +747,7 @@
             const formatForInput = (isoString) => {
                 if(!isoString) return '';
                 const date = new Date(isoString);
-                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                date.setMinutes(date.getMinutes() - date.getTimeOffset());
                 return date.toISOString().slice(0,16);
             };
 
@@ -699,13 +761,22 @@
             
             document.getElementById('questions-container').innerHTML = ''; 
             qCounter = 0;
-            test.questions.forEach(q => addQuestion(q.type, q));
+            
+            /* --- STREAMING_CHUNK:Safely Rendering Historical Tests --- */
+            const fragment = document.createDocumentFragment();
+            if (test.questions && Array.isArray(test.questions)) {
+                test.questions.forEach(q => addQuestion(q.type, q, fragment));
+            } else {
+                addQuestion('mcq', null, fragment);
+            }
+            document.getElementById('questions-container').appendChild(fragment);
+            updateQuestionNumbers();
         }
 
-        function addQuestion(type, data = null) {
+        function addQuestion(type, data = null, targetContainer = null) {
             qCounter++; 
             const id = `q_${qCounter}`; 
-            const container = document.getElementById('questions-container');
+            const container = targetContainer || document.getElementById('questions-container');
             const div = document.createElement('div');
             
             let label, borderCol, icon;
@@ -716,15 +787,16 @@
             div.className = `question-block bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 ${borderCol} mb-4 relative`;
             div.dataset.type = type;
             
+            /* --- STREAMING_CHUNK:Safe Input Generation --- */
             let optionsHtml = '';
             if (type === 'mcq' || type === 'msq') {
                 const inputType = type === 'mcq' ? 'radio' : 'checkbox';
-                let optionsLength = data && data.options ? data.options.length : 4;
+                let optionsLength = data && Array.isArray(data.options) && data.options.length > 0 ? data.options.length : 4;
                 
                 optionsHtml += `<div class="options-list space-y-3" id="options_${id}">`;
                 for(let i=0; i<optionsLength; i++) {
-                    const isChecked = data && data.correctOptions && data.correctOptions.includes(i.toString()) ? 'checked' : '';
-                    const optVal = data && data.options[i] ? data.options[i].replace(/"/g, '&quot;') : '';
+                    const isChecked = data && Array.isArray(data.correctOptions) && data.correctOptions.includes(i.toString()) ? 'checked' : '';
+                    const optVal = data && Array.isArray(data.options) && data.options[i] !== undefined ? escapeHTML(data.options[i]) : '';
                     optionsHtml += `
                         <div class="flex items-center gap-3 option-row">
                             <input type="${inputType}" name="ans_${id}" value="${i}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 cursor-pointer border-slate-300 rounded${inputType === 'radio' ? '-full' : ''}" ${isChecked}>
@@ -739,7 +811,7 @@
                     </button>
                 </div>`;
             } else {
-                const ans = data && data.correctOptions && data.correctOptions[0] ? data.correctOptions[0].replace(/"/g, '&quot;') : '';
+                const ans = data && Array.isArray(data.correctOptions) && data.correctOptions[0] !== undefined ? escapeHTML(data.correctOptions[0]) : '';
                 optionsHtml = `
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-semibold text-slate-600">Exact Answer:</span>
@@ -748,10 +820,10 @@
                 `;
             }
 
-            const imgUrl = data && data.imageUrl ? data.imageUrl : '';
-            const textVal = data && data.text ? data.text.replace(/"/g, '&quot;') : '';
-            const posMarksVal = data && data.positiveMarks !== undefined ? data.positiveMarks : 1;
-            const negMarksVal = data && data.negativeMarks !== undefined ? data.negativeMarks : 0.3;
+            const imgUrl = data && data.imageUrl ? escapeHTML(data.imageUrl) : '';
+            const textVal = data && data.text ? escapeHTML(data.text) : (data && data.question ? escapeHTML(data.question) : '');
+            const posMarksVal = data && data.positiveMarks !== undefined ? Number(data.positiveMarks) : 1;
+            const negMarksVal = data && data.negativeMarks !== undefined ? Number(data.negativeMarks) : 0.3;
 
             div.innerHTML = `
                 <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4 border-b border-slate-100 pb-3">
@@ -798,7 +870,11 @@
                 </div>
             `;
             container.appendChild(div);
-            updateQuestionNumbers(); // Ensure accurate numbering when added
+            
+            // Only trigger full DOM recalculation if we are appending directly to the live container
+            if (!targetContainer) {
+                updateQuestionNumbers();
+            }
         }
 
         window.addNewOption = function(qId, type) {
