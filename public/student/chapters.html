@@ -13,6 +13,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- PDF.js Library for Secure Canvas Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
     <script>
@@ -59,17 +65,16 @@
             -moz-osx-font-smoothing: grayscale;
             
             /* Aggressive Mobile Copy/Save Prevention */
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-user-drag: none;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-user-drag: none !important;
             overscroll-behavior-y: none;
         }
 
         /* HARD BLOCK PRINTING / SAVE AS PDF */
         @media print {
-            body { display: none !important; }
-            html { background-color: #000000; }
+            html, body { display: none !important; width: 0; height: 0; opacity: 0; }
         }
 
         /* Clean Scrollbar */
@@ -96,25 +101,27 @@
 
         .reader-paper { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; border-radius: 1.25rem; }
         
-        /* THEME STYLES (Native Iframe Filtering) */
+        /* THEME STYLES */
+        .pdf-page-canvas, iframe { transition: filter 0.4s ease; }
+        
         .theme-light { background-color: #ffffff; color: #334155; border: 1px solid #e2e8f0; }
         .theme-light h1, .theme-light h2, .theme-light h3 { color: #0f172a; }
-        .theme-light iframe { filter: none; }
+        .theme-light .pdf-page-canvas, .theme-light iframe { filter: none; }
         
         .theme-sepia { background-color: #FBF0D9; color: #5F4B32; border: 1px solid #EADAB8; }
         .theme-sepia h1, .theme-sepia h2, .theme-sepia h3 { color: #3E2D1A; }
         .theme-sepia blockquote { background: rgba(95, 75, 50, 0.05); border-left-color: #8C704D; }
-        .theme-sepia iframe { filter: sepia(0.4) contrast(0.95); }
+        .theme-sepia .pdf-page-canvas, .theme-sepia iframe { filter: sepia(0.4) contrast(0.95) brightness(0.95); }
         
         .theme-sage { background-color: #E6EFE9; color: #2C4C3B; border: 1px solid #C4D9CD; }
         .theme-sage h1, .theme-sage h2, .theme-sage h3 { color: #152B20; }
         .theme-sage blockquote { background: rgba(44, 76, 59, 0.05); border-left-color: #4A7C62; }
-        .theme-sage iframe { filter: sepia(0.2) hue-rotate(90deg) contrast(0.95); }
+        .theme-sage .pdf-page-canvas, .theme-sage iframe { filter: sepia(0.2) hue-rotate(90deg) contrast(0.95) brightness(0.95); }
 
         .theme-dark { background-color: #0f172a; color: #94a3b8; border: 1px solid #1e293b; }
         .theme-dark h1, .theme-dark h2, .theme-dark h3 { color: #f8fafc; }
         .theme-dark blockquote { background: rgba(255,255,255,0.03); border-left-color: #38bdf8; }
-        .theme-dark iframe { filter: invert(0.92) hue-rotate(180deg) contrast(1.05) brightness(0.95); }
+        .theme-dark .pdf-page-canvas, .theme-dark iframe { filter: invert(0.92) hue-rotate(180deg) contrast(1.05) brightness(0.9); }
 
         .rich-content { font-family: 'Lora', serif; font-size: 1.15rem; line-height: 1.85; max-width: 70ch; margin: 0 auto; }
         .rich-content h1, .rich-content h2, .rich-content h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; margin-top: 3rem; margin-bottom: 1.25rem; line-height: 1.3; letter-spacing: -0.02em; }
@@ -126,15 +133,13 @@
         .rich-content li { margin-bottom: 0.5rem; }
         .rich-content blockquote { border-left: 4px solid #10b981; padding: 1.5rem; margin: 2.5rem 0; font-style: italic; background: rgba(16, 185, 129, 0.05); border-radius: 0 1rem 1rem 0; }
 
-        /* FLOATING SECURITY WATERMARK OVER NATIVE IFRAME */
+        /* FLOATING SECURITY WATERMARK OVER CONTENT */
         .watermark-overlay {
             position: absolute; inset: 0; pointer-events: none; z-index: 100; overflow: hidden;
             display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around;
-            /* Drastically reduced opacity so it does not distract reading */
             opacity: 0.04; 
             mix-blend-mode: multiply;
         }
-        /* Slightly higher opacity for dark mode due to screen blend mode */
         .theme-dark .watermark-overlay { mix-blend-mode: screen; opacity: 0.06; color: white !important; }
         
         .watermark-text { 
@@ -143,17 +148,25 @@
             animation: watermarkDrift 20s linear infinite alternate;
         }
 
-        /* INSTANT PRIVACY BLUR */
+        /* INSTANT PRIVACY BLUR - Z-index set to max to beat fullscreen */
         #privacy-blur-layer {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.99); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); z-index: 9999;
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.99); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); 
+            z-index: 2147483647; /* MAX Z-INDEX */
             display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; 
             transition: none; /* INSTANT BLACKOUT */
         }
-        #privacy-blur-layer.active { opacity: 1; pointer-events: auto; }
+        #privacy-blur-layer.active { opacity: 1; pointer-events: all !important; }
         
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
         .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
         .pb-safe-offset { padding-bottom: calc(env(safe-area-inset-bottom, 1rem) + 0.5rem); }
+
+        /* EXPANDED MODE STYLES (In-App Fullscreen) */
+        body.expanded-mode > aside { display: none !important; }
+        body.expanded-mode header { display: none !important; }
+        body.expanded-mode #syllabus-panel { display: none !important; }
+        body.expanded-mode #workspace { padding: 0 !important; gap: 0 !important; }
+        body.expanded-mode #reader-panel { border-radius: 0 !important; border: none !important; margin: 0 !important; }
 
         @media (max-width: 1023px) {
             .mobile-hide { display: none !important; }
@@ -164,6 +177,7 @@
 
 <body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
 
+    <!-- Privacy Shield Layer -->
     <div id="privacy-blur-layer">
         <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-brand-200 shadow-lg">
             <i class="fa-solid fa-shield-halved"></i>
@@ -247,9 +261,6 @@
                     <i class="fa-solid fa-magnifying-glass text-surface-400 text-[14px]"></i>
                     <input type="text" placeholder="Search modules..." class="bg-transparent border-none outline-none text-[14px] ml-2 w-full text-surface-700 placeholder:text-surface-400 font-medium">
                 </div>
-                <button class="w-10 h-10 flex items-center justify-center text-surface-600 hover:text-surface-900 bg-white border border-surface-200 rounded-full shadow-sm transition-all hover:shadow relative">
-                    <i class="fa-regular fa-bell text-[16px]"></i>
-                </button>
             </div>
         </header>
 
@@ -276,7 +287,6 @@
                 <div class="absolute top-2 lg:top-4 inset-x-2 lg:inset-x-6 z-30 flex items-center justify-between pointer-events-none">
                     
                     <div class="flex items-center gap-2 pointer-events-auto">
-                        <!-- Mobile Back Button -->
                         <button type="button" onclick="showMobileSyllabus()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/95 backdrop-blur-xl border border-surface-200 text-surface-600 shadow-sm">
                             <i class="fa-solid fa-arrow-left"></i>
                         </button>
@@ -324,14 +334,17 @@
                     <div id="reading-progress" class="h-full bg-brand-500 w-0 transition-all duration-150 rounded-r-full shadow-[0_0_8px_#22c55e]"></div>
                 </div>
 
-                <div id="reader-viewport" class="flex-1 overflow-y-auto w-full relative pt-16 lg:pt-24 pb-8 lg:pb-32 px-2 lg:px-12 scroll-smooth hide-scrollbar lg:bg-transparent">
+                <!-- Main Viewer Area -->
+                <div id="reader-viewport" class="flex-1 overflow-y-auto w-full relative pt-16 lg:pt-24 pb-8 lg:pb-32 px-2 lg:px-8 scroll-smooth hide-scrollbar lg:bg-transparent">
                     
-                    <div id="content-reader" class="reader-paper theme-light p-5 sm:p-8 lg:p-16 w-full min-h-full max-w-4xl mx-auto relative shadow-sm lg:shadow-card bg-white">
+                    <!-- Increased Max-Width for Better Viewing -->
+                    <div id="content-reader" class="reader-paper theme-light p-5 sm:p-8 lg:p-12 w-full min-h-full max-w-6xl mx-auto relative shadow-sm lg:shadow-card bg-white">
                         <div class="flex h-full min-h-[50vh] items-center justify-center flex-col py-12 text-center opacity-50">
                             <i class="fa-solid fa-book-open text-4xl text-surface-300 mb-4"></i>
                             <h2 class="text-lg font-bold text-surface-900 mb-2">No Material Selected</h2>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -371,45 +384,64 @@
             localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', email: 'scholar@agri.edu', level: 'PG Research' }));
         }
 
-        /* --- HARDCORE SECURITY & ANTI-PIRACY --- */
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        /* --- STREAMING_CHUNK:EXTREME ANTI-SCREENSHOT & ANTI-PIRACY LOGIC --- */
+        const privacyLayer = document.getElementById('privacy-blur-layer');
+        let blackoutTimeout;
         
-        document.addEventListener('copy', (e) => {
-            e.preventDefault();
-            if (e.clipboardData) e.clipboardData.setData('text/plain', 'Content protected by Geeky Researcher Portal.');
-            triggerPrivacyWarning();
-        });
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
-                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
-                e.preventDefault(); triggerPrivacyWarning(); return false;
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'PrintScreen' || e.keyCode === 44) {
-                try { navigator.clipboard.writeText(''); } catch(err) {} 
-                triggerPrivacyWarning();
-            }
-        });
-
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'hidden') document.getElementById('privacy-blur-layer').classList.add('active');
-            else document.getElementById('privacy-blur-layer').classList.remove('active');
-        });
-
-        window.addEventListener('blur', () => document.getElementById('privacy-blur-layer').classList.add('active'));
-        window.addEventListener('focus', () => document.getElementById('privacy-blur-layer').classList.remove('active'));
-
-        function triggerPrivacyWarning() {
-            const layer = document.getElementById('privacy-blur-layer');
-            layer.classList.add('active');
-            setTimeout(() => layer.classList.remove('active'), 1500);
+        function triggerBlackout() {
+            privacyLayer.classList.add('active');
+            clearTimeout(blackoutTimeout);
+            blackoutTimeout = setTimeout(() => privacyLayer.classList.remove('active'), 2500);
         }
 
-        // Reduced watermark opacity to prevent distraction
+        // Block right-click entirely
+        document.addEventListener('contextmenu', e => { 
+            e.preventDefault(); 
+            triggerBlackout(); 
+        });
+        
+        // Hijack copy/cut events
+        document.addEventListener('copy', (e) => {
+            e.preventDefault();
+            if (e.clipboardData) e.clipboardData.setData('text/plain', 'Security Policy: Action Blocked.');
+            triggerBlackout();
+        });
+        document.addEventListener('cut', (e) => { e.preventDefault(); triggerBlackout(); });
+
+        // Aggressive key blocking (PrintScreen, Mac Shortcuts, DevTools, Save)
+        document.addEventListener('keydown', e => {
+            if (
+                e.key === 'PrintScreen' || 
+                e.keyCode === 44 || 
+                (e.metaKey && e.shiftKey) || // Mac & Windows screenshot combos
+                (e.ctrlKey && e.key === 'p') || // Print
+                (e.ctrlKey && e.key === 's') || // Save
+                e.key === 'F12' || // DevTools
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J'))
+            ) {
+                e.preventDefault(); 
+                triggerBlackout(); 
+                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
+                return false;
+            }
+        });
+        
+        // Secondary catch for releasing the PrintScreen key
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
+                triggerBlackout();
+                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
+            }
+        });
+
+        // Trigger blackout if user switches tabs or focuses away from window (Anti-Screen Record)
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) privacyLayer.classList.add('active');
+            else privacyLayer.classList.remove('active');
+        });
+        window.addEventListener('blur', () => privacyLayer.classList.add('active'));
+        window.addEventListener('focus', () => privacyLayer.classList.remove('active'));
+
         function getWatermarkHTML(count = 20) {
             let user = { email: 'scholar@agri.edu' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
@@ -420,7 +452,7 @@
             return html;
         }
 
-        /* --- MOBILE UX WORKSPACE TOGGLING --- */
+        /* --- STREAMING_CHUNK:MOBILE UX WORKSPACE TOGGLING --- */
         function showMobileReader() {
             if(window.innerWidth < 1024) {
                 document.getElementById('syllabus-panel').classList.add('mobile-hide');
@@ -446,25 +478,23 @@
             }
         });
 
-        /* --- FULLSCREEN & THEMES --- */
+        /* --- STREAMING_CHUNK:Theme & UI Interactions... --- */
         function toggleFullScreen() {
-            const readerPanel = document.getElementById('reader-panel'); 
-            if (!document.fullscreenElement) {
-                if (readerPanel.requestFullscreen) readerPanel.requestFullscreen().catch(e => console.log(e));
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-            }
-        }
-
-        document.addEventListener('fullscreenchange', () => {
+            // Toggles an in-app expanded view instead of native browser fullscreen
+            const body = document.body;
+            body.classList.toggle('expanded-mode');
+            
             const icon = document.getElementById('fullscreen-icon');
             const text = document.getElementById('fullscreen-text');
-            if (document.fullscreenElement) {
-                icon.className = 'fa-solid fa-compress text-brand-500'; text.textContent = 'Exit';
+            
+            if (body.classList.contains('expanded-mode')) {
+                icon.className = 'fa-solid fa-compress text-brand-500'; 
+                text.textContent = 'Collapse';
             } else {
-                icon.className = 'fa-solid fa-expand text-brand-500'; text.textContent = 'Expand';
+                icon.className = 'fa-solid fa-expand text-brand-500'; 
+                text.textContent = 'Expand';
             }
-        });
+        }
 
         function toggleThemeMenu(e) {
             e.stopPropagation();
@@ -486,6 +516,7 @@
             localStorage.setItem('reader-theme', themeName);
         }
 
+        /* --- STREAMING_CHUNK:Data Fetching & Tree Building... --- */
         document.addEventListener('DOMContentLoaded', () => {
             let user = { name: 'Scholar', level: 'Portal', paymentPlan: '100' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
@@ -501,9 +532,8 @@
 
         async function loadCurriculum() {
             const treeContainer = document.getElementById('tree-container');
-            
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2500);
+            const timeoutId = setTimeout(() => controller.abort(), 8000); 
 
             try {
                 const response = await fetch(`${API_BASE_URL}/student/content`, { 
@@ -575,6 +605,66 @@
             }
         }
 
+        /* --- STREAMING_CHUNK:Custom Canvas Renderer Logic --- */
+        async function loadSecurePDF(url, containerId) {
+            const container = document.getElementById(containerId);
+            const loader = document.getElementById('doc-loader');
+            
+            try {
+                const loadingTask = pdfjsLib.getDocument(url);
+                const pdf = await loadingTask.promise;
+                loader.style.display = 'none'; // Hide loader
+                
+                // Render every page of the PDF securely onto a canvas
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    
+                    const containerWidth = container.clientWidth;
+                    const unscaledViewport = page.getViewport({ scale: 1.0 });
+                    const scale = Math.min(2.5, containerWidth / unscaledViewport.width); 
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'relative mb-6 mx-auto shadow-md bg-white overflow-hidden';
+                    wrapper.style.width = viewport.width + 'px';
+                    wrapper.style.height = viewport.height + 'px';
+
+                    const canvas = document.createElement('canvas');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    canvas.className = 'absolute inset-0 w-full h-full pdf-page-canvas';
+                    
+                    const protectionLayer = document.createElement('div');
+                    protectionLayer.className = 'absolute inset-0 z-10 bg-transparent';
+                    protectionLayer.style.webkitTouchCallout = 'none';
+
+                    wrapper.appendChild(canvas);
+                    wrapper.appendChild(protectionLayer);
+                    container.appendChild(wrapper);
+
+                    const renderContext = {
+                        canvasContext: canvas.getContext('2d'),
+                        viewport: viewport
+                    };
+                    await page.render(renderContext).promise;
+                }
+            } catch (error) {
+                console.error("PDF Load Error: ", error);
+                loader.style.display = 'none';
+                
+                // INJECT FALLBACK: If S3 CORS blocks the canvas engine, fallback to a standard iframe
+                // so the user is never stuck with an empty/broken screen.
+                container.innerHTML = `
+                    <div class="bg-rose-50 border-b border-rose-200 p-3 text-center shrink-0 flex flex-col items-center justify-center">
+                        <p class="text-[12px] text-rose-700 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Secure Canvas Engine Blocked by AWS S3 CORS Policy</p>
+                        <p class="text-[10px] text-rose-600 mt-1 max-w-lg">Please add CORS rules to your S3 bucket. Falling back to the basic document viewer for now.</p>
+                    </div>
+                    <iframe src="${url}#toolbar=0&navpanes=0" class="w-full h-[800px] flex-1 border-none bg-slate-50 relative z-0"></iframe>
+                `;
+            }
+        }
+
+        /* --- STREAMING_CHUNK:Content Display Logic... --- */
         function readContent(id, element) {
             document.querySelectorAll('.tree-node').forEach(el => el.classList.remove('active-node'));
             element.classList.add('active-node');
@@ -588,46 +678,72 @@
             let contentHtml = '';
             const textData = item.textContent || item.content || item.notes || item.body || item.description || '';
 
-            // 1. Render Media File using Native Iframe with Glass Shields
             if (item.mediaUrl) {
                 const urlWithoutQuery = item.mediaUrl.split('?')[0].toLowerCase();
                 const isOfficeDoc = urlWithoutQuery.match(/\.(ppt|pptx|doc|docx|xls|xlsx)$/);
-                let finalEmbedUrl = item.mediaUrl;
+                
+                // Identify true PDFs so they go through the ultra-secure Canvas Engine
+                const isPdf = (urlWithoutQuery.endsWith('.pdf') || item.type === 'document') && !isOfficeDoc;
+                
+                if (isPdf) {
+                    contentHtml += `
+                        <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-surface-100 min-h-[75vh]">
+                            <div class="p-2 md:p-3 bg-surface-50 border-b border-surface-200 flex justify-between items-center z-20 shadow-soft-inner shrink-0 sticky top-0">
+                                <span class="font-bold text-surface-800 text-[11px] md:text-[13px] flex items-center"><i class="fa-solid fa-shield-halved text-brand-600 mr-1.5 md:mr-2"></i> Canvas Engine (Secured)</span>
+                                <span class="text-[9px] md:text-[10px] font-bold tracking-wider uppercase text-surface-500 bg-white px-2 py-1 rounded border border-surface-200 shadow-sm">Protected</span>
+                            </div>
+                            
+                            <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
+                                ${getWatermarkHTML(30)}
+                            </div>
 
-                if (isOfficeDoc) {
-                    finalEmbedUrl = `https://docs.google.com/gview?url=${encodeURIComponent(item.mediaUrl)}&embedded=true`;
+                            <div id="doc-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-surface-50 z-10">
+                                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
+                                <span class="text-sm font-medium text-slate-500">Decrypting & Drawing Document...</span>
+                            </div>
+
+                            <div id="pdf-viewer-container" class="w-full flex-1 p-2 md:p-4 overflow-y-auto bg-surface-100 relative z-0 hide-scrollbar"></div>
+                        </div>
+                    `;
+                    // Trigger async render
+                    setTimeout(() => loadSecurePDF(item.mediaUrl, 'pdf-viewer-container'), 100);
+
+                } else if (isOfficeDoc) {
+                    
+                    // Switch to Microsoft Office Viewer for vastly better PPT/Office support
+                    const embedUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.mediaUrl)}`;
+                    
+                    contentHtml += `
+                        <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-slate-100 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] min-h-[500px]">
+                            
+                            <div class="p-2 md:p-3 bg-surface-50 border-b border-surface-200 flex justify-between items-center z-20 shadow-soft-inner shrink-0">
+                                <span class="font-bold text-surface-800 text-[11px] md:text-[13px] flex items-center"><i class="fa-solid fa-shield-halved text-brand-600 mr-1.5 md:mr-2"></i> Secure Office Viewer</span>
+                                <span class="text-[9px] md:text-[10px] font-bold tracking-wider uppercase text-surface-500 bg-white px-2 py-1 rounded border border-surface-200 shadow-sm">Protected</span>
+                            </div>
+
+                            <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
+                                ${getWatermarkHTML(20)}
+                            </div>
+                            
+                            <!-- GLASS SHIELDS TO BLOCK MICROSOFT VIEWER DOWNLOAD/PRINT BUTTONS (Bottom Right) -->
+                            <div class="absolute bottom-0 right-0 w-48 h-12 bg-transparent z-[60]" title="Protected"></div>
+
+                            <iframe src="${embedUrl}" class="w-full flex-1 border-none bg-slate-50 pointer-events-auto relative z-0"></iframe>
+                        </div>
+                    `;
                 } else {
-                    finalEmbedUrl = `${item.mediaUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+                    // Standard native Iframe fallback
+                    contentHtml += `
+                        <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-slate-100 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] min-h-[500px]">
+                            <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
+                                ${getWatermarkHTML(20)}
+                            </div>
+                            <iframe src="${item.mediaUrl}#toolbar=0" class="w-full flex-1 border-none bg-slate-50 pointer-events-auto relative z-0"></iframe>
+                        </div>
+                    `;
                 }
-
-                contentHtml += `
-                    <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 group bg-slate-100 h-[calc(100vh-14rem)] md:h-[calc(100vh-16rem)] min-h-[500px]">
-                        <div class="p-2 md:p-3 bg-surface-50 border-b border-surface-200 flex justify-between items-center z-20 shadow-soft-inner shrink-0">
-                            <span class="font-bold text-surface-800 text-[11px] md:text-[13px] flex items-center"><i class="fa-solid fa-shield-halved text-brand-600 mr-1.5 md:mr-2"></i> Secure Viewer</span>
-                            <span class="text-[9px] md:text-[10px] font-bold tracking-wider uppercase text-surface-500 bg-white px-2 py-1 rounded border border-surface-200 shadow-sm">Protected</span>
-                        </div>
-                        
-                        <!-- HIGH DENSITY WATERMARK OVER THE IFRAME -->
-                        <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
-                            ${getWatermarkHTML(20)}
-                        </div>
-                        
-                        <!-- GLASS SHIELDS TO BLOCK CHROME DOWNLOAD HOVERS -->
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-transparent z-[60]" title="Protected"></div>
-                        <div class="absolute bottom-0 right-0 w-24 h-24 bg-transparent z-[60]" title="Protected"></div>
-                        <div class="absolute bottom-0 left-0 w-full h-12 bg-transparent z-[60]" title="Protected"></div>
-
-                        <div id="doc-loader" class="absolute inset-0 top-[40px] flex flex-col items-center justify-center bg-slate-50 z-10">
-                            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
-                            <span class="text-sm font-medium text-slate-500">Loading Document...</span>
-                        </div>
-
-                        <iframe src="${finalEmbedUrl}" onload="document.getElementById('doc-loader').style.display='none'" class="w-full flex-1 border-none bg-slate-50 pointer-events-auto relative z-0" title="${item.title}"></iframe>
-                    </div>
-                `;
             }
 
-            // 2. Render Text Content IF exists
             if (textData.trim() !== '') {
                 contentHtml += `
                     <div class="relative z-10 mt-6 md:mt-8 ${item.mediaUrl ? 'pt-6 md:pt-8 border-t border-slate-200' : ''}">
@@ -641,7 +757,6 @@
                 `;
             }
 
-            // 3. Render Empty State if NEITHER exists
             if (!item.mediaUrl && textData.trim() === '') {
                 contentHtml = `
                     <div class="mt-8 p-6 md:p-8 bg-surface-50/50 text-surface-500 rounded-xl border-2 border-dashed border-surface-200 text-center py-16 md:py-20 relative z-10">
@@ -654,7 +769,6 @@
                 `;
             }
 
-            // Inject into DOM
             reader.innerHTML = `
                 <div class="mb-2 font-sans animate-slide-in-right relative z-10">
                     <span class="inline-flex items-center px-2.5 md:px-3 py-1 bg-brand-50 border border-brand-100 text-brand-700 text-[9px] md:text-[10px] font-bold tracking-widest uppercase rounded-full mb-3 shadow-sm">${item.type}</span>
