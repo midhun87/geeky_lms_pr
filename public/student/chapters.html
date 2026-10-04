@@ -388,10 +388,10 @@
         const privacyLayer = document.getElementById('privacy-blur-layer');
         let blackoutTimeout;
         
-        function triggerBlackout() {
+        function triggerBlackout(duration = 2500) {
             privacyLayer.classList.add('active');
             clearTimeout(blackoutTimeout);
-            blackoutTimeout = setTimeout(() => privacyLayer.classList.remove('active'), 2500);
+            blackoutTimeout = setTimeout(() => privacyLayer.classList.remove('active'), duration);
         }
 
         // Block right-click entirely
@@ -410,9 +410,15 @@
 
         // Aggressive key blocking (PrintScreen, Mac Shortcuts, DevTools, Save)
         document.addEventListener('keydown', e => {
+            // Block PrintScreen specifically
+            if (e.key === 'PrintScreen' || e.keyCode === 44) {
+                e.preventDefault();
+                navigator.clipboard.writeText('Security Policy: Action Blocked.').catch(()=>true);
+                triggerBlackout(5000); // Longer blackout for explicit screenshot attempt
+                return false;
+            }
+
             if (
-                e.key === 'PrintScreen' || 
-                e.keyCode === 44 || 
                 (e.metaKey && e.shiftKey) || // Mac & Windows screenshot combos
                 (e.ctrlKey && e.key === 'p') || // Print
                 (e.ctrlKey && e.key === 's') || // Save
@@ -421,7 +427,6 @@
             ) {
                 e.preventDefault(); 
                 triggerBlackout(); 
-                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
                 return false;
             }
         });
@@ -429,8 +434,8 @@
         // Secondary catch for releasing the PrintScreen key
         document.addEventListener('keyup', (e) => {
             if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
-                triggerBlackout();
-                try { navigator.clipboard.writeText('Security Policy: Action Blocked.'); } catch(err) {}
+                triggerBlackout(5000);
+                navigator.clipboard.writeText('Security Policy: Action Blocked.').catch(()=>true);
             }
         });
 
@@ -439,8 +444,36 @@
             if (document.hidden) privacyLayer.classList.add('active');
             else privacyLayer.classList.remove('active');
         });
-        window.addEventListener('blur', () => privacyLayer.classList.add('active'));
+
+        // ONLY blackout on blur if the user is NOT clicking on an iframe (like PPT)
+        window.addEventListener('blur', () => {
+            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                // Focus shifted to the iframe content (user is clicking slides/pdf). Do not block.
+                return;
+            }
+            privacyLayer.classList.add('active');
+        });
+        
         window.addEventListener('focus', () => privacyLayer.classList.remove('active'));
+
+        // --- NEW: Mobile/Device Native Screen Capture Detection ---
+        // 1. Detect rapid changes in viewport size (often happens when screenshot UI pops up on mobile)
+        let lastHeight = window.innerHeight;
+        window.addEventListener('resize', () => {
+            // If height changes by less than 150px rapidly, it might be a screenshot overlay
+            if (Math.abs(lastHeight - window.innerHeight) > 20 && Math.abs(lastHeight - window.innerHeight) < 150) {
+                 triggerBlackout(3000);
+            }
+            lastHeight = window.innerHeight;
+        });
+
+        // 2. Continually clear clipboard to prevent capturing text via OS tools
+        setInterval(() => {
+            if (document.hidden || privacyLayer.classList.contains('active')) {
+                navigator.clipboard.writeText('').catch(()=>true); 
+            }
+        }, 2000);
+        // --------------------------------------------------------
 
         function getWatermarkHTML(count = 20) {
             let user = { email: 'scholar@agri.edu' };
