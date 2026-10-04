@@ -251,6 +251,66 @@
         </div>
     </main>
 
+    <!-- Edit Level Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeEditModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
+                <form onsubmit="handleEditLevel(event)">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="flex items-center gap-3 mb-5 border-b border-slate-100 pb-4">
+                            <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg leading-6 font-semibold text-slate-900">Edit Level</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Update details or change the QR code.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Level Name <span class="text-xs text-slate-400 font-normal">(Cannot be changed)</span></label>
+                                <input type="text" id="edit-lvl-name" disabled class="input-field bg-slate-100 text-slate-500 cursor-not-allowed">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">₹</span>
+                                        <input type="number" id="edit-lvl-fee" required class="input-field pl-7">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Duration</label>
+                                    <div class="relative">
+                                        <input type="number" id="edit-lvl-duration" required class="input-field pr-16">
+                                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 text-sm pointer-events-none">Months</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Update Payment QR Image <span class="text-slate-400 font-normal">(Optional)</span></label>
+                                <input type="file" id="edit-lvl-qr-file" accept="image/*" class="text-sm text-slate-500 w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer border border-slate-200 rounded-lg bg-slate-50 p-1">
+                                <p class="text-[11px] text-slate-500 mt-1">Leave this empty if you want to keep the current QR code.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
+                        <button type="submit" id="edit-lvl-btn" class="w-full inline-flex justify-center items-center gap-2 rounded-lg border border-transparent shadow-sm px-4 py-2 bg-brand-600 text-base font-medium text-white hover:bg-brand-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
+                            <i class="fa-solid fa-check"></i> Save Changes
+                        </button>
+                        <button type="button" onclick="closeEditModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
@@ -297,6 +357,7 @@
 
         let currentLevels = [];
         let levelToDelete = null;
+        let levelToEdit = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             fetchMetrics();
@@ -338,6 +399,24 @@
                 toast.style.transition = 'all 0.3s ease-out';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        function promptEdit(name) {
+            const level = currentLevels.find(l => (l.levelName || l.name) === name);
+            if (!level) return;
+            
+            levelToEdit = level;
+            document.getElementById('edit-lvl-name').value = name;
+            document.getElementById('edit-lvl-fee').value = level.fee || '';
+            document.getElementById('edit-lvl-duration').value = level.durationMonths || '';
+            document.getElementById('edit-lvl-qr-file').value = ''; // Reset file input
+            
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            levelToEdit = null;
+            document.getElementById('edit-modal').classList.add('hidden');
         }
 
         function promptDelete(name) {
@@ -417,11 +496,16 @@
                 list.innerHTML += `
                     <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col relative group">
                         
-                        <button onclick="promptDelete('${levelName}')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none">
-                            <i class="fa-solid fa-trash-can text-sm"></i>
-                        </button>
+                        <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                            <button onclick="promptEdit('${levelName}')" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-brand-600 hover:bg-brand-50 flex items-center justify-center transition-colors focus:outline-none" title="Edit Level">
+                                <i class="fa-solid fa-pen text-sm"></i>
+                            </button>
+                            <button onclick="promptDelete('${levelName}')" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors focus:outline-none" title="Delete Level">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
                         
-                        <div class="font-bold text-slate-800 text-lg pr-8 leading-tight">${levelName}</div>
+                        <div class="font-bold text-slate-800 text-lg pr-20 leading-tight">${levelName}</div>
                         
                         <div class="mt-4 grid grid-cols-2 gap-4">
                             <div class="bg-slate-50 rounded p-2">
@@ -451,7 +535,6 @@
             const duration = document.getElementById('new-lvl-duration').value;
             const qrFile = document.getElementById('new-lvl-qr-file').files[0];
 
-            // Loading state
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...'; 
             btn.disabled = true;
             btn.classList.add('opacity-75', 'cursor-not-allowed');
@@ -459,11 +542,9 @@
             try {
                 let finalQrUrl = '';
 
-                // Handle Image Upload if a file is selected
                 if (qrFile) {
                     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Uploading Image...';
                     
-                    // 1. Get pre-signed URL from our new endpoint
                     const urlRes = await fetch(`${API_BASE_URL}/admin/levels/upload-url`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -473,7 +554,6 @@
                     if (!urlRes.ok) throw new Error('Failed to retrieve secure upload URL.');
                     const { uploadUrl, readUrl } = await urlRes.json();
 
-                    // 2. Upload file directly to S3
                     const uploadRes = await fetch(uploadUrl, {
                         method: 'PUT',
                         headers: { 'Content-Type': qrFile.type },
@@ -482,7 +562,7 @@
                     
                     if (!uploadRes.ok) throw new Error('Failed to upload image to AWS S3.');
                     
-                    finalQrUrl = readUrl; // Save the public read URL
+                    finalQrUrl = readUrl; 
                 }
 
                 btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving Level...';
@@ -512,8 +592,79 @@
                 console.error(error);
                 showToast(`Error: ${error.message || 'Network error while creating level.'}`, 'error');
             } finally {
-                // Reset button UI
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> Save New Level'; 
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        async function handleEditLevel(e) {
+            e.preventDefault();
+            if (!levelToEdit) return;
+
+            const btn = document.getElementById('edit-lvl-btn');
+            const name = document.getElementById('edit-lvl-name').value;
+            const fee = document.getElementById('edit-lvl-fee').value;
+            const duration = document.getElementById('edit-lvl-duration').value;
+            const qrFile = document.getElementById('edit-lvl-qr-file').files[0];
+
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...'; 
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                let finalQrUrl = null; // Stays null if file is not updated
+
+                if (qrFile) {
+                    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Uploading...';
+                    
+                    const urlRes = await fetch(`${API_BASE_URL}/admin/levels/upload-url`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ fileName: qrFile.name, fileType: qrFile.type })
+                    });
+                    
+                    if (!urlRes.ok) throw new Error('Failed to retrieve secure upload URL.');
+                    const { uploadUrl, readUrl } = await urlRes.json();
+
+                    const uploadRes = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': qrFile.type },
+                        body: qrFile
+                    });
+                    
+                    if (!uploadRes.ok) throw new Error('Failed to upload image to AWS S3.');
+                    
+                    finalQrUrl = readUrl; 
+                }
+
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Updating...';
+
+                const payload = {
+                    fee: fee,
+                    durationMonths: duration
+                };
+                if (finalQrUrl) payload.qrCodeUrl = finalQrUrl;
+
+                const res = await fetch(`${API_BASE_URL}/admin/levels/${encodeURIComponent(name)}`, {
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                
+                if(res.ok) { 
+                    closeEditModal();
+                    fetchLevels(); 
+                    fetchMetrics(); 
+                    showToast(`Level "${name}" updated successfully.`);
+                } else {
+                    showToast(`Failed to update level.`, 'error');
+                }
+            } catch(error) {
+                console.error(error);
+                showToast(`Error: ${error.message || 'Network error while updating level.'}`, 'error');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Changes'; 
                 btn.disabled = false;
                 btn.classList.remove('opacity-75', 'cursor-not-allowed');
             }
