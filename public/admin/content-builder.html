@@ -92,7 +92,6 @@
 </head>
 <body class="antialiased w-full h-screen flex overflow-hidden">
 
-    <!-- Mobile Top Navigation Bar -->
     <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
         <div class="flex items-center gap-2">
             <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
@@ -106,7 +105,6 @@
     <!-- Mobile Menu Overlay -->
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- Sidebar (Desktop & Mobile Drawer) -->
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
         <!-- Logo Area -->
         <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
@@ -137,7 +135,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 overflow-hidden flex flex-col h-full bg-slate-50 relative pt-16 md:pt-0 w-full">
         <!-- Header -->
         <div class="px-4 md:px-8 py-5 border-b border-slate-200 bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 shadow-sm z-10">
@@ -175,11 +172,25 @@
                 
                 <form id="contentForm" onsubmit="handleFormSubmit(event)" class="max-w-4xl mx-auto pb-20">
                     
-                    <!-- S3 Upload Overlay -->
-                    <div id="upload-overlay" class="absolute inset-0 bg-white/90 z-50 hidden flex-col items-center justify-center backdrop-blur-sm rounded-xl border border-slate-200 m-4">
-                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-brand-500 mb-4 animate-bounce"></i>
+                    <div id="upload-overlay" class="absolute inset-0 bg-white/95 z-50 hidden flex-col items-center justify-center backdrop-blur-sm rounded-xl border border-slate-200 m-4">
+                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-brand-500 mb-4 animate-bounce" id="upload-spinner"></i>
                         <h3 class="font-bold text-slate-800 text-xl">Uploading Secure Asset...</h3>
-                        <p class="text-sm font-medium text-slate-500 mt-2" id="upload-status-text">Please wait, pushing to AWS S3. Do not close this window.</p>
+                        <p class="text-sm font-medium text-slate-500 mt-2 text-center px-4" id="upload-status-text">Please wait, pushing to AWS S3. Do not close this window.</p>
+                        
+                        <!-- Progress Bar Container -->
+                        <div class="w-full max-w-md mt-6 px-4">
+                            <div class="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                <span>Progress</span>
+                                <span id="upload-percentage">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                                <div id="upload-progress-bar" class="bg-brand-500 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between mt-2">
+                                <p class="text-xs text-slate-400 font-medium" id="upload-size-text">0 MB / 0 MB</p>
+                                <p class="text-xs text-brand-600 font-bold" id="upload-speed-text">-- MB/s</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4 mb-6">
@@ -285,7 +296,7 @@
                             <!-- Default Dropzone -->
                             <div id="upload-dropzone" class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 text-center transition hover:border-purple-400 group">
                                 <i class="fa-solid fa-file-shield text-4xl text-purple-200 mb-3 group-hover:text-purple-300 transition-colors" id="upload-icon"></i>
-                                <p class="text-sm text-slate-600 mb-4 max-w-sm">Select your file. It will be securely stored in AWS S3 and streamed to prevent unauthorized access.</p>
+                                <p class="text-sm text-slate-600 mb-4 max-w-sm">Select your file. It will be securely stored in AWS S3 and streamed to prevent unauthorized access. (Supports large files up to 5GB)</p>
                                 <input type="file" id="standaloneFile" class="text-sm border border-slate-300 rounded-md p-2 bg-white cursor-pointer w-full max-w-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                             </div>
 
@@ -328,7 +339,6 @@
 
     <!-- Preview Modal -->
     <div id="preview-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <!-- ... (Existing modal content remains exactly the same) ... -->
         <div class="bg-white w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl rounded-2xl border border-slate-200 animate-fade-in">
             <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-3">
@@ -414,6 +424,38 @@
             });
         }
 
+        // This function replaces 'fetch' to allow the browser to report upload progress, preventing page unresponsiveness.
+        function uploadToS3WithProgress(url, file, progressCallback) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', url, true);
+                xhr.setRequestHeader('Content-Type', file.type);
+
+                // Track Progress to keep UI thread alive and inform user
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        progressCallback(percentComplete, event.loaded, event.total);
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        resolve(xhr.response);
+                    } else {
+                        reject(new Error(`Upload failed with status ${xhr.status}`));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error("Network error during upload"));
+                xhr.send(file);
+            });
+        }
+
+        function formatBytesToMB(bytes) {
+            return (bytes / (1024 * 1024)).toFixed(2);
+        }
+
         function selectLocalMedia(type) {
             const input = document.createElement('input');
             input.setAttribute('type', 'file'); input.setAttribute('accept', type === 'image' ? 'image/*' : 'video/mp4,video/webm');
@@ -421,18 +463,45 @@
             input.onchange = async () => {
                 const file = input.files[0];
                 if (!file) return;
+                
                 const overlay = document.getElementById('upload-overlay');
                 overlay.classList.remove('hidden'); overlay.classList.add('flex');
                 document.getElementById('upload-status-text').innerText = `Uploading inline ${type} securely to S3...`;
+                
+                // Reset Progress UI
+                document.getElementById('upload-percentage').innerText = `0%`;
+                document.getElementById('upload-progress-bar').style.width = `0%`;
+                document.getElementById('upload-size-text').innerText = `0 MB / ${formatBytesToMB(file.size)} MB`;
+                document.getElementById('upload-speed-text').innerText = `-- MB/s`;
+
+                let startTime = Date.now();
+
                 try {
                     const res = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
                         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) 
                     });
                     const data = await res.json();
-                    await fetch(data.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    
+                    // Use new XHR engine instead of blocking fetch
+                    await uploadToS3WithProgress(data.uploadUrl, file, (percent, loaded, total) => {
+                        document.getElementById('upload-percentage').innerText = `${Math.round(percent)}%`;
+                        document.getElementById('upload-progress-bar').style.width = `${percent}%`;
+                        document.getElementById('upload-size-text').innerText = `${formatBytesToMB(loaded)} MB / ${formatBytesToMB(total)} MB`;
+
+                        let durationInSeconds = (Date.now() - startTime) / 1000;
+                        if (durationInSeconds > 0) {
+                            let mbps = (loaded / durationInSeconds) / (1024 * 1024);
+                            document.getElementById('upload-speed-text').innerText = `${mbps.toFixed(2)} MB/s`;
+                        }
+                    });
+
                     const range = quill.getSelection(true);
                     quill.insertEmbed(range.index, type, data.readUrl); quill.setSelection(range.index + 1);
-                } catch (err) { showToast('S3 Media Upload failed.', 'error'); } finally { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }
+                } catch (err) { 
+                    showToast('S3 Media Upload failed.', 'error'); 
+                } finally { 
+                    overlay.classList.add('hidden'); overlay.classList.remove('flex'); 
+                }
             };
         }
 
@@ -528,7 +597,6 @@
             
             validParents.forEach(p => parentSelect.innerHTML += `<option value="${p.id}">${p.title} (${p.type})</option>`);
             
-            // Retain selected parent if it still exists in the new options list
             if (currentValue && Array.from(parentSelect.options).some(opt => opt.value === currentValue)) {
                 parentSelect.value = currentValue;
             }
@@ -552,12 +620,10 @@
             } catch (e) { document.getElementById('hierarchy-tree').innerHTML = '<p class="text-red-500 text-center py-4 text-sm">Failed to load repository.</p>'; }
         }
 
-        // CORRECTED RENDER TREE LOGIC (Strict Hierarchy)
         function renderTree() {
             const tree = document.getElementById('hierarchy-tree');
             tree.innerHTML = '';
             
-            // Only pull strict root chapters
             const chapters = allContent.filter(c => c.type === 'chapter');
             if(chapters.length === 0) { 
                 tree.innerHTML = '<div class="text-center text-slate-400 py-10 flex flex-col items-center"><i class="fa-solid fa-folder-open text-3xl mb-3 opacity-50 text-slate-300"></i><span class="text-sm font-medium">Repository is empty.</span></div>'; 
@@ -569,13 +635,11 @@
                 html += buildNodeHtml(folder, 'fa-book', 'text-brand-500', true);
                 html += `<div class="tree-children border-l-2 border-slate-100 ml-3.5 pl-3 mt-1.5 space-y-1 mb-4">`;
                 
-                // Get strictly subchapters inside this folder
                 const subfolders = allContent.filter(c => c.parentId === folder.id && c.type === 'subchapter');
                 subfolders.forEach(sub => {
                     html += buildNodeHtml(sub, 'fa-folder-open', 'text-blue-500', false);
                     html += `<div class="tree-children border-l border-slate-100 ml-3 pl-3 mt-1 space-y-1 mb-3">`;
                     
-                    // Get files strictly inside this subchapter
                     const files = allContent.filter(c => c.parentId === sub.id && (c.type === 'document' || c.type === 'video'));
                     files.forEach(file => {
                         const icon = file.type === 'document' ? 'fa-file-pdf' : 'fa-circle-play';
@@ -585,7 +649,6 @@
                     html += `</div>`; 
                 });
                 
-                // Get files directly inside the main folder
                 const directFiles = allContent.filter(c => c.parentId === folder.id && (c.type === 'document' || c.type === 'video'));
                 directFiles.forEach(file => {
                     const icon = file.type === 'document' ? 'fa-file-pdf' : 'fa-circle-play';
@@ -607,7 +670,6 @@
             const padding = isRoot ? 'p-2.5 mt-2 rounded-lg' : 'py-1.5 px-2 rounded-md';
             const titleClass = isRoot ? 'font-bold text-sm text-slate-800' : (isFile ? 'font-medium text-xs text-slate-600' : 'font-semibold text-[13px] text-slate-700');
 
-            // Add Child Button (Only for folders)
             const addChildBtn = !isFile ? `<button type="button" onclick="prepareAddChild('${node.id}', '${node.type}'); event.stopPropagation();" class="text-slate-400 hover:text-brand-600 transition w-6 h-6 flex items-center justify-center rounded hover:bg-slate-50" title="Add Item Inside"><i class="fa-solid fa-plus text-[10px]"></i></button>` : '';
 
             return `
@@ -627,7 +689,6 @@
                 </div>`;
         }
         
-        // NEW HELPER: Set Form up to create a child directly inside a specific parent
         function prepareAddChild(parentId, parentType) {
             resetForm(); 
             let childType = parentType === 'chapter' ? 'subchapter' : 'document';
@@ -636,7 +697,7 @@
             setTimeout(() => {
                 const parentSelect = document.getElementById('parentNode');
                 if(parentSelect) parentSelect.value = parentId;
-            }, 50); // delay allows UI to repopulate dropdown
+            }, 50); 
             
             document.getElementById('contentForm').scrollIntoView({ behavior: 'smooth' });
             showToast(`Ready to add item inside folder.`, 'success');
@@ -675,7 +736,7 @@
             document.getElementById('editContentId').value = item.id;
             document.getElementById('contentTitle').value = item.title;
             
-            selectEntryType(item.type); // selectEntryType triggers toggleFormMode which locks type cards because editContentId is set
+            selectEntryType(item.type);
             setSelectedLevels(item.levels || []);
 
             if (item.parentId) { document.getElementById('parentNode').value = item.parentId; }
@@ -740,7 +801,6 @@
             const textContent = quill.root.innerHTML;
             const fileInput = document.getElementById('standaloneFile');
             
-            // Allow empty levels for nested items to rely on inherited permissions!
             if (type === 'chapter' && levels.length === 0) return showToast("Please select at least one Target Audience level for Main Course Units.", "error");
             if (type !== 'chapter' && !parentId) return showToast('Please select a Parent Folder.', "error");
             
@@ -752,13 +812,21 @@
             try {
                 let s3Key = null;
                 
-                // Handle S3 Upload
+                // --- XHR Upload Logic Starts Here ---
                 if ((type === 'video' || type === 'document') && fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const overlay = document.getElementById('upload-overlay');
-                    overlay.classList.remove('hidden'); overlay.classList.add('flex');
-                    document.getElementById('upload-status-text').innerText = `Uploading ${file.name}... Please do not refresh.`;
+                    
+                    // Reset UI Progress Tracker
+                    document.getElementById('upload-percentage').innerText = `0%`;
+                    document.getElementById('upload-progress-bar').style.width = `0%`;
+                    document.getElementById('upload-size-text').innerText = `0 MB / ${formatBytesToMB(file.size)} MB`;
+                    document.getElementById('upload-speed-text').innerText = `-- MB/s`;
 
+                    overlay.classList.remove('hidden'); overlay.classList.add('flex');
+                    document.getElementById('upload-status-text').innerText = `Uploading ${file.name}... Please do not refresh or close.`;
+
+                    // 1. Get AWS Presigned URL
                     const urlRes = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
                         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) 
                     });
@@ -768,13 +836,28 @@
                     const urlData = await urlRes.json();
                     s3Key = urlData.s3Key;
                     
-                    await fetch(urlData.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    let startTime = Date.now();
+
+                    // 2. Upload using XHR Promise engine to track progress natively
+                    await uploadToS3WithProgress(urlData.uploadUrl, file, (percent, loaded, total) => {
+                        document.getElementById('upload-percentage').innerText = `${Math.round(percent)}%`;
+                        document.getElementById('upload-progress-bar').style.width = `${percent}%`;
+                        document.getElementById('upload-size-text').innerText = `${formatBytesToMB(loaded)} MB / ${formatBytesToMB(total)} MB`;
+
+                        let durationInSeconds = (Date.now() - startTime) / 1000;
+                        if (durationInSeconds > 0) {
+                            let mbps = (loaded / durationInSeconds) / (1024 * 1024);
+                            document.getElementById('upload-speed-text').innerText = `${mbps.toFixed(2)} MB/s`;
+                        }
+                    });
+                    
                     overlay.classList.add('hidden'); overlay.classList.remove('flex');
                 } else if ((type === 'video' || type === 'document') && !id && fileInput.files.length === 0) {
                     submitBtn.innerHTML = originalText; submitBtn.disabled = false;
                     return showToast("Please select a file to upload for a new asset entry.", "error");
                 }
 
+                // 3. Save to Database
                 const payload = { title, type, parentId, levels, textContent, status: statusAction };
                 if (id) payload.id = id;
                 if (s3Key) payload.s3Key = s3Key;
@@ -789,7 +872,7 @@
                 resetForm();
                 fetchContentTree();
             } catch (err) { 
-                showToast('Save failed.', 'error'); 
+                showToast('Save failed or network was interrupted.', 'error'); 
                 document.getElementById('upload-overlay').classList.add('hidden'); document.getElementById('upload-overlay').classList.remove('flex');
             } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
         }
