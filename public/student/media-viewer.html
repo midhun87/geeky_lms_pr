@@ -187,7 +187,7 @@
             <i class="fa-solid fa-shield-halved"></i>
         </div>
         <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Protected Stream</h2>
-        <p class="text-surface-400 text-[15px] font-medium px-4 text-center">Content hidden to protect scholarly intellectual property.</p>
+        <p class="text-surface-400 text-[15px] font-medium px-4 text-center">Recording or screen-capturing is strictly prohibited.</p>
     </div>
 
     <!-- Desktop Sidebar -->
@@ -375,7 +375,7 @@
                             </div>
 
                             <!-- IMPORTANT: preload="metadata" helps huge S3 videos stream smoothly without crashing browser memory -->
-                            <video id="main-video-player" preload="metadata" class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload" oncanplay="document.getElementById('video-loader').classList.replace('flex', 'hidden')"></video>
+                            <video id="main-video-player" preload="metadata" playsinline class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload" oncanplay="document.getElementById('video-loader').classList.replace('flex', 'hidden')"></video>
                         </div>
 
                         <!-- Horizontal Scrollable Control Chips -->
@@ -453,7 +453,7 @@
             localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', email: 'scholar@agri.edu', level: 'PG Research' }));
         }
 
-        /* --- EXTREME ANTI-SCREENSHOT & SECURITY --- */
+        /* --- INSTANT PRIVACY BLUR - MAX Z-INDEX --- */
         const privacyLayer = document.getElementById('privacy-blur-layer');
         let blackoutTimeout;
         
@@ -503,13 +503,13 @@
             }
         });
 
-        // Trigger blackout if user switches tabs (BUT ALLOW PIP TO CONTINUE)
+        // Trigger blackout if user switches tabs or focuses away from window
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) {
                 const player = document.getElementById('main-video-player');
-                // IMPORTANT PIP FIX: Only pause the video if Picture-in-Picture is NOT active
-                if(player && !player.paused && !document.pictureInPictureElement) {
-                    player.pause(); 
+                // FIX: DO NOT pause if Picture-in-Picture is active!
+                if (player && !player.paused && !document.pictureInPictureElement) {
+                    player.pause();
                 }
                 privacyLayer.classList.add('active');
             } else {
@@ -519,16 +519,18 @@
 
         window.addEventListener('blur', () => {
             const player = document.getElementById('main-video-player');
-            // IMPORTANT PIP FIX: Only pause the video if Picture-in-Picture is NOT active
-            if(player && !player.paused && !document.pictureInPictureElement) {
-                player.pause(); 
+            // FIX: DO NOT pause if Picture-in-Picture is active!
+            if (player && !player.paused && !document.pictureInPictureElement) {
+                player.pause();
             }
             privacyLayer.classList.add('active');
         });
-        
-        window.addEventListener('focus', () => privacyLayer.classList.remove('active'));
 
-        // Watermark Generation
+        window.addEventListener('focus', () => {
+            privacyLayer.classList.remove('active');
+        });
+
+        // Reduced DOM Nodes for smooth performance
         function getWatermarkHTML() {
             let user = { email: 'scholar@agri.edu' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
@@ -557,7 +559,6 @@
                 document.getElementById('syllabus-panel').classList.remove('mobile-hide');
                 document.getElementById('reader-panel-wrapper').classList.add('mobile-hide');
                 const player = document.getElementById('main-video-player');
-                // Only pause if returning to syllabus while not in PiP
                 if(player && !player.paused && !document.pictureInPictureElement) player.pause(); 
             }
         }
@@ -631,8 +632,7 @@
         document.getElementById('main-video-player').addEventListener('timeupdate', function() {
             if (currentVideoId && this.currentTime > 5) localStorage.setItem(`video_progress_${currentVideoId}`, this.currentTime);
         });
-
-        // Massive Video Error Handling
+        
         document.getElementById('main-video-player').addEventListener('error', function(e) {
             const loader = document.getElementById('video-loader');
             const loaderText = document.getElementById('video-loader-text');
@@ -781,7 +781,7 @@
                 // Reset loader UI in case it previously errored
                 loader.innerHTML = `
                     <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
-                    <p class="text-sm font-medium text-slate-400" id="video-loader-text">Loading secure stream...</p>
+                    <p class="text-sm font-medium text-slate-400" id="video-loader-text">Decrypting stream...</p>
                 `;
                 
                 setTimeout(() => {
