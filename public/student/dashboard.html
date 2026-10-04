@@ -643,16 +643,18 @@
 
         async function loadDashboardData() {
             try {
-                const [contentRes, testsRes] = await Promise.all([
+                const [contentRes, testsRes, recordingsRes] = await Promise.all([
                     fetch(`${API_BASE_URL}/student/content`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                    fetch(`${API_BASE_URL}/student/tests`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    fetch(`${API_BASE_URL}/student/tests`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                    fetch(`${API_BASE_URL}/student/recordings`, { headers: { 'Authorization': `Bearer ${token}` } })
                 ]);
 
                 const content = await contentRes.json();
                 const tests = await testsRes.json();
+                const recordings = await recordingsRes.json();
 
-                const videosCount = content.filter(c => c.type === 'video').length;
-                const readingCount = content.length - videosCount;
+                const readingCount = content.filter(c => c.type === 'document').length;
+                const videosCount = recordings.filter(c => c.type === 'video').length;
                 
                 document.getElementById('stat-materials').textContent = readingCount;
                 document.getElementById('stat-videos').textContent = videosCount;
@@ -661,7 +663,9 @@
                 const listContainer = document.getElementById('recent-content-list');
                 listContainer.innerHTML = '';
                 
-                if (content.length === 0) {
+                const allCurriculum = [...content.filter(c => c.type === 'document'), ...recordings.filter(r => r.type === 'video')];
+
+                if (allCurriculum.length === 0) {
                     listContainer.innerHTML = `
                         <div class="px-6 py-12 text-center bg-white">
                             <div class="w-16 h-16 mx-auto bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
@@ -673,7 +677,7 @@
                     return;
                 }
 
-                const sortedContent = content.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+                const sortedContent = allCurriculum.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 5);
                 
                 sortedContent.forEach((item, index) => {
                     let icon, iconBg, iconColor, link;
@@ -694,7 +698,7 @@
                         link = 'chapters.html'; 
                     }
 
-                    const date = new Date(item.createdAt).toLocaleDateString('en-US', dateOptions);
+                    const date = new Date(item.createdAt || Date.now()).toLocaleDateString('en-US', dateOptions);
                     const isLast = index === sortedContent.length - 1;
                     const borderClass = isLast ? '' : 'border-b border-surface-100';
 
