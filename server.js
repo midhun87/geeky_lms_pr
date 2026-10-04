@@ -447,9 +447,9 @@ app.post('/api/auth/login', async (req, res) => {
             }
         }
 
-        // --- SINGLE DEVICE LOGIN LOGIC ---
-        // If an active session exists and user hasn't explicitly clicked "logout other device"
-        if (user.activeSessionId && !forceLogin) {
+        // --- SINGLE DEVICE LOGIN LOGIC (Admins bypass this check) ---
+        // If an active session exists, user is a student, and user hasn't explicitly clicked "logout other device"
+        if (user.role !== 'admin' && user.activeSessionId && !forceLogin) {
             return res.status(409).json({
                 error: 'ACTIVE_SESSION',
                 message: 'You are already logged in on another device.',
@@ -494,7 +494,6 @@ app.post('/api/auth/login', async (req, res) => {
         res.status(500).json({ error: 'Login failed due to a server error.' });
     }
 });
-
 app.get('/api/auth/status', async (req, res) => {
     try {
         const { email } = req.query;
@@ -974,6 +973,53 @@ app.delete('/api/admin/levels/:name', authenticateToken, isAdmin, async (req, re
         res.json({ message: 'Level deleted successfully.' });
     } catch (error) { res.status(500).json({ error: 'Failed to delete level' }); }
 });
+app.put('/api/admin/levels/:name', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const levelName = decodeURIComponent(req.params.name);
+        const { fee, durationMonths, qrCodeUrl } = req.body;
+        
+        // Fetch existing level first to ensure it exists and clean up old QR code if updated
+        const existing = await dynamoDB.get({ TableName: TABLE_LEVELS, Key: { levelName } }).promise();
+        if (!existing.Item) return res.status(404).json({ error: 'Level not found' });
+
+        let updateExpression = 'set fee = :f, durationMonths = :d';
+        let expressionAttributeValues = {
+            ':f': fee !== undefined ? fee : existing.Item.fee,
+            ':d': durationMonths !== undefined ? durationMonths : existing.Item.durationMonths
+        };
+
+        // If a new QR code is provided, update it and attempt to delete the old one from S3
+        if (qrCodeUrl) {
+            updateExpression += ', qrCodeUrl = :q';
+            expressionAttributeValues[':q'] = qrCodeUrl;
+            
+            // Cleanup the old S3 object safely using its prefix
+            if (existing.Item.qrCodeUrl) {
+                try {
+                    const bucketPrefix = `https://${process.env.S3_BUCKET_NAME || 'geeky-researcher-assets'}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+                    if (existing.Item.qrCodeUrl.startsWith(bucketPrefix)) {
+                        const oldS3Key = decodeURIComponent(existing.Item.qrCodeUrl.replace(bucketPrefix, ''));
+                        await deleteS3ObjectSafely(oldS3Key);
+                    }
+                } catch(cleanupError) {
+                    console.error("Failed to clean up old QR code from S3:", cleanupError);
+                }
+            }
+        }
+
+        await dynamoDB.update({
+            TableName: TABLE_LEVELS,
+            Key: { levelName },
+            UpdateExpression: updateExpression,
+            ExpressionAttributeValues: expressionAttributeValues
+        }).promise();
+
+        res.json({ message: 'Level updated successfully.' });
+    } catch (error) { 
+        console.error("Edit Level Error:", error);
+        res.status(500).json({ error: 'Failed to update level' }); 
+    }
+});
 
 /* ==========================================================================
    ADMIN CONTENT & S3 UPLOADS
@@ -982,7 +1028,9 @@ app.post('/api/admin/content/upload-url', authenticateToken, isAdmin, async (req
     try {
         const { fileName, fileType } = req.body;
         const fileKey = `assets/${uuidv4()}-${fileName.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-        // 3. Extend expiration to 3 hours (10800 seconds) to ensure 1.2GB videos don't time out mid-upload
+        
+        // Expiration is set to 3 hours (10800 seconds) 
+        // This ensures 1.5GB videos don't time out mid-upload on slower internet connections.
         const params = { Bucket: S3_BUCKET, Key: fileKey, Expires: 10800, ContentType: fileType };
         
         const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
@@ -1449,25 +1497,30 @@ app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, 
             return res.status(500).json({ error: 'OpenRouter API key is not configured in the environment.' });
         }
 
-        // Limit string to prevent overflowing LLM context limits (adjust if using massive contexts)
-        const safeText = text.substring(0, 50000); 
+        // Expanded string limit to capture massive documents
+        const safeText = text.substring(0, 80000); 
 
         const prompt = `
-        Analyze the following text extracted from a document and generate test questions based on the content.
-        Classify each question into one of exactly three types:
-        1. 'mcq' (Single correct option)
-        2. 'msq' (Multiple correct options)
-        3. 'fib' (Fill in the blanks / Short exact answer)
+        You are an expert AI examination parser.
+        Analyze the following text extracted from a document. The text likely contains a massive list of existing test questions, options, and an answer key at the bottom.
 
-        Output exactly and ONLY a JSON array of objects. Do not include markdown formatting tags like \`\`\`json.
-        Format each object strictly as follows:
-        {
-            "type": "mcq", // must be "mcq", "msq", or "fib"
-            "text": "The question text here",
-            "options": ["Option A", "Option B", "Option C", "Option D"], // Provide 4 options for mcq/msq. Leave empty [] for fib.
-            "correctOptions": ["0"] // Array of STRINGS representing the 0-based indices of the correct options. For fib, provide the exact text answer, e.g. ["Exact Answer String"].
-        }
-        
+        YOUR MISSION:
+        1. Extract EVERY SINGLE question found in the text. If there are 110 questions, you MUST extract all 110. Do not stop early.
+        2. Accurately map the correct answer for each question using the answer key provided in the text.
+        3. If the text is just plain study material (no existing questions found), GENERATE 20 high-quality questions covering the core concepts.
+
+        Classify each question into one of exactly three types:
+        - 'mcq' (Single correct option)
+        - 'msq' (Multiple correct options)
+        - 'fib' (Fill in the blanks / Short exact answer)
+
+        IMPORTANT: Your output MUST strictly follow the JSON schema provided.
+        Each object MUST have the following keys:
+        - "text" (string): The question text.
+        - "type" (string): 'mcq', 'msq', or 'fib'.
+        - "options" (array of strings): Options for mcq/msq. Empty [] for fib.
+        - "correctOptions" (array of strings): 0-based indices as strings (e.g. ["0", "2"]). For fib, the exact answer string.
+
         Text to analyze:
         """
         ${safeText}
@@ -1481,8 +1534,38 @@ app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, 
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "openai/gpt-4o-mini", // Reliable, fast, and structured for JSON output
-                messages: [{ role: "user", content: prompt }]
+                model: "openai/gpt-4o-mini", 
+                messages: [{ role: "user", content: prompt }],
+                response_format: {
+                    type: "json_schema",
+                    json_schema: {
+                        name: "exam_parser",
+                        strict: true,
+                        schema: {
+                            type: "object",
+                            properties: {
+                                questions: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            text: { type: "string" },
+                                            type: { type: "string", enum: ["mcq", "msq", "fib"] },
+                                            options: { type: "array", items: { type: "string" } },
+                                            correctOptions: { type: "array", items: { type: "string" } }
+                                        },
+                                        required: ["text", "type", "options", "correctOptions"],
+                                        additionalProperties: false
+                                    }
+                                }
+                            },
+                            required: ["questions"],
+                            additionalProperties: false
+                        }
+                    }
+                },
+                max_tokens: 16000, 
+                temperature: 0.1 
             })
         });
 
@@ -1492,6 +1575,11 @@ app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, 
         }
 
         const data = await response.json();
+        
+        if (data.choices[0].finish_reason === 'length') {
+            console.warn("AI response hit max_tokens length limit. Output may be truncated.");
+        }
+
         let aiText = data.choices[0].message.content.trim();
         
         // Scrub markdown code block tags if the AI ignores instructions
@@ -1499,12 +1587,16 @@ app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, 
         if (aiText.startsWith('```')) aiText = aiText.slice(3);
         if (aiText.endsWith('```')) aiText = aiText.slice(0, -3);
 
-        const questions = JSON.parse(aiText.trim());
+        const parsed = JSON.parse(aiText.trim());
+        
+        // Ensure the response matches our expected structure even if schema partially failed
+        const questions = Array.isArray(parsed.questions) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
+
         res.json({ questions });
 
     } catch (error) {
         console.error("AI Question Generation Error:", error);
-        res.status(500).json({ error: 'Failed to generate questions. Ensure the text format is clear.' });
+        res.status(500).json({ error: 'Failed to parse AI output. The document may be too large or the format too complex.' });
     }
 });
 
