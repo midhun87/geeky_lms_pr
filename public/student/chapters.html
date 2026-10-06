@@ -102,7 +102,16 @@
         .reader-paper { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; border-radius: 1.25rem; }
         
         /* THEME STYLES */
-        .pdf-page-canvas, iframe { transition: filter 0.4s ease; }
+        .pdf-page-canvas, iframe { 
+            transition: filter 0.4s ease; 
+            -webkit-transform: translateZ(0); /* Hardware acceleration for smoother mobile viewing */
+            transform: translateZ(0);
+        }
+        .pdf-page-canvas { 
+            image-rendering: -webkit-optimize-contrast; /* Safari crisp text */
+            image-rendering: crisp-edges; 
+            image-rendering: high-quality; 
+        }
         
         .theme-light { background-color: #ffffff; color: #334155; border: 1px solid #e2e8f0; }
         .theme-light h1, .theme-light h2, .theme-light h3 { color: #0f172a; }
@@ -454,7 +463,8 @@
 
         // 2. Detect when user pulls down the Control Center / Notification Shade on Mobile
         document.addEventListener('pointerleave', (e) => {
-            if (e.pointerType === 'touch' || e.clientY <= 0) {
+            // FIX: Removed e.pointerType === 'touch' because it triggers on EVERY single tap release on mobile!
+            if (e.pointerType === 'mouse' && e.clientY <= 0) {
                 triggerBlackout(2500);
             }
         });
@@ -471,15 +481,11 @@
         }, 2000);
 
         function getWatermarkHTML(count = 20) {
-            let user = { email: 'scholar@agri.edu' };
-            try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
-            let html = '';
-            for(let i=0; i<count; i++) {
-                html += `<div class="watermark-text">${user.email} • IP Protected</div>`;
-            }
-            return html;
+            // Watermark completely removed to improve student reading concentration
+            return '';
         }
 
+        /* --- MOBILE UX WORKSPACE TOGGLING --- */
         function showMobileReader() {
             if(window.innerWidth < 1024) {
                 document.getElementById('syllabus-panel').classList.add('mobile-hide');
@@ -640,8 +646,8 @@
                 const pdf = await loadingTask.promise;
                 loader.style.display = 'none'; 
                 
-                // PRODUCTION FIX: Forcefully multiply retina display ratio by 2.5x for ULTRA-CRISP rendering
-                const outputScale = (window.devicePixelRatio || 1) * 2.5; 
+                // PRODUCTION FIX: Bumped multiplier to 3.0x for ultimate clarity, securely capped at 5 to prevent mobile RAM crashes
+                const outputScale = Math.min((window.devicePixelRatio || 1) * 3.0, 5); 
                 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
