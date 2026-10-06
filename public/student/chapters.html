@@ -177,6 +177,7 @@
         body.expanded-mode #workspace { padding: 0 !important; gap: 0 !important; }
         body.expanded-mode #reader-panel { border-radius: 0 !important; border: none !important; margin: 0 !important; }
         body.expanded-mode #mobile-bottom-dock { display: none !important; }
+        body.expanded-mode #zoom-controls { bottom: 1.5rem !important; }
 
         @media (max-width: 1023px) {
             .mobile-hide { display: none !important; }
@@ -329,11 +330,18 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
+                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all flex">
                             <i class="fa-solid fa-expand text-brand-500" id="fullscreen-icon"></i> 
                             <span class="hidden lg:inline text-[13px] font-semibold" id="fullscreen-text">Expand</span>
                         </button>
                     </div>
+                </div>
+
+                <!-- Floating Zoom Controls (Mobile & Desktop) -->
+                <div id="zoom-controls" class="hidden absolute bottom-24 lg:bottom-8 right-4 lg:right-8 z-40 bg-white/95 backdrop-blur-xl border border-surface-200 shadow-float rounded-full flex items-center p-1.5 transition-all">
+                    <button type="button" onclick="changeZoom(-0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-minus text-[14px]"></i></button>
+                    <span id="zoom-level-text" class="text-[12px] font-bold text-surface-700 w-12 text-center font-mono">100%</span>
+                    <button type="button" onclick="changeZoom(0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-plus text-[14px]"></i></button>
                 </div>
 
                 <!-- Sticky Reading Progress -->
@@ -812,6 +820,12 @@
             document.getElementById('reader-breadcrumbs').innerHTML = item.title;
             const reader = document.getElementById('content-reader');
             
+            // Show & Reset Zoom Controls
+            document.getElementById('zoom-controls').classList.remove('hidden');
+            currentZoom = 1;
+            reader.style.zoom = currentZoom;
+            document.getElementById('zoom-level-text').innerText = '100%';
+
             let contentHtml = '';
             const textData = item.textContent || item.content || item.notes || item.body || item.description || '';
 
@@ -916,6 +930,17 @@
                 if (scrollHeight <= 0) { progressBar.style.width = '100%'; return; }
                 progressBar.style.width = ((scrollTop / scrollHeight) * 100) + '%';
             });
+        }
+
+        let currentZoom = 1;
+        function changeZoom(delta) {
+            currentZoom += delta;
+            // Cap zoom limits between 50% and 300%
+            if (currentZoom < 0.5) currentZoom = 0.5;
+            if (currentZoom > 3.0) currentZoom = 3.0;
+            
+            document.getElementById('content-reader').style.zoom = currentZoom;
+            document.getElementById('zoom-level-text').innerText = Math.round(currentZoom * 100) + '%';
         }
 
         function logout() { localStorage.clear(); window.location.href = '../login.html'; }
