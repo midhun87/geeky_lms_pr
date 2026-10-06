@@ -177,7 +177,6 @@
 
 <body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
 
-    <!-- Privacy Shield Layer -->
     <div id="privacy-blur-layer">
         <div class="w-20 h-20 bg-brand-50 text-brand-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-brand-200 shadow-lg">
             <i class="fa-solid fa-shield-halved"></i>
@@ -186,7 +185,6 @@
         <p class="text-surface-400 text-[15px] font-medium px-6 text-center">Content hidden to protect scholarly intellectual property.</p>
     </div>
 
-    <!-- Desktop Sidebar -->
     <aside class="w-[280px] hidden lg:flex flex-col shrink-0 z-30 bg-white border-r border-surface-200">
         <div class="h-full flex flex-col overflow-hidden">
             <div class="h-20 flex items-center px-6 gap-3 z-10 pt-safe">
@@ -264,7 +262,6 @@
             </div>
         </header>
 
-        <!-- Dynamic Workspace -->
         <div id="workspace" class="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 p-0 lg:p-6 overflow-hidden">
             
             <!-- PANEL 1: SYLLABUS -->
@@ -350,7 +347,6 @@
         </div>
     </main>
 
-    <!-- Mobile Bottom Dock -->
     <div class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
         <nav class="bg-white/95 backdrop-blur-xl border border-surface-200/60 shadow-glass rounded-2xl flex justify-around items-center px-2 py-2 pb-safe-offset transition-transform duration-300 relative overflow-hidden">
             <a href="dashboard.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
@@ -384,7 +380,6 @@
             localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', email: 'scholar@agri.edu', level: 'PG Research' }));
         }
 
-        /* --- STREAMING_CHUNK:EXTREME ANTI-SCREENSHOT & ANTI-PIRACY LOGIC --- */
         const privacyLayer = document.getElementById('privacy-blur-layer');
         let blackoutTimeout;
         
@@ -394,13 +389,11 @@
             blackoutTimeout = setTimeout(() => privacyLayer.classList.remove('active'), duration);
         }
 
-        // Block right-click entirely
         document.addEventListener('contextmenu', e => { 
             e.preventDefault(); 
             triggerBlackout(); 
         });
         
-        // Hijack copy/cut events
         document.addEventListener('copy', (e) => {
             e.preventDefault();
             if (e.clipboardData) e.clipboardData.setData('text/plain', 'Security Policy: Action Blocked.');
@@ -408,21 +401,19 @@
         });
         document.addEventListener('cut', (e) => { e.preventDefault(); triggerBlackout(); });
 
-        // Aggressive key blocking (PrintScreen, Mac Shortcuts, DevTools, Save)
         document.addEventListener('keydown', e => {
-            // Block PrintScreen specifically
             if (e.key === 'PrintScreen' || e.keyCode === 44) {
                 e.preventDefault();
                 navigator.clipboard.writeText('Security Policy: Action Blocked.').catch(()=>true);
-                triggerBlackout(5000); // Longer blackout for explicit screenshot attempt
+                triggerBlackout(5000); 
                 return false;
             }
 
             if (
-                (e.metaKey && e.shiftKey) || // Mac & Windows screenshot combos
-                (e.ctrlKey && e.key === 'p') || // Print
-                (e.ctrlKey && e.key === 's') || // Save
-                e.key === 'F12' || // DevTools
+                (e.metaKey && e.shiftKey) || 
+                (e.ctrlKey && e.key === 'p') || 
+                (e.ctrlKey && e.key === 's') || 
+                e.key === 'F12' || 
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J'))
             ) {
                 e.preventDefault(); 
@@ -431,7 +422,6 @@
             }
         });
         
-        // Secondary catch for releasing the PrintScreen key
         document.addEventListener('keyup', (e) => {
             if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
                 triggerBlackout(5000);
@@ -439,41 +429,46 @@
             }
         });
 
-        // Trigger blackout if user switches tabs or focuses away from window (Anti-Screen Record)
+        // App switcher / screen record detection
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) privacyLayer.classList.add('active');
             else privacyLayer.classList.remove('active');
         });
 
-        // ONLY blackout on blur if the user is NOT clicking on an iframe (like PPT)
         window.addEventListener('blur', () => {
-            if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                // Focus shifted to the iframe content (user is clicking slides/pdf). Do not block.
-                return;
-            }
+            // Do nothing if they are simply clicking inside an iframe
+            if (document.activeElement && document.activeElement.tagName === 'IFRAME') return;
             privacyLayer.classList.add('active');
         });
         
         window.addEventListener('focus', () => privacyLayer.classList.remove('active'));
 
-        // --- NEW: Mobile/Device Native Screen Capture Detection ---
-        // 1. Detect rapid changes in viewport size (often happens when screenshot UI pops up on mobile)
-        let lastHeight = window.innerHeight;
-        window.addEventListener('resize', () => {
-            // If height changes by less than 150px rapidly, it might be a screenshot overlay
-            if (Math.abs(lastHeight - window.innerHeight) > 20 && Math.abs(lastHeight - window.innerHeight) < 150) {
-                 triggerBlackout(3000);
+        // --- NEW AGGRESSIVE MOBILE SCREENSHOT / RECORDING PROTECTIONS ---
+        
+        // 1. Detect 3-finger or 4-finger swipes (Common mobile screenshot gestures)
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length > 2) {
+                triggerBlackout(4000);
             }
-            lastHeight = window.innerHeight;
         });
 
-        // 2. Continually clear clipboard to prevent capturing text via OS tools
+        // 2. Detect when user pulls down the Control Center / Notification Shade on Mobile
+        document.addEventListener('pointerleave', (e) => {
+            if (e.pointerType === 'touch' || e.clientY <= 0) {
+                triggerBlackout(2500);
+            }
+        });
+
+        // 3. Catch strict backgrounding on iOS/Android (App Switcher)
+        window.addEventListener('pagehide', () => privacyLayer.classList.add('active'));
+        
+        // ----------------------------------------------------------------
+
         setInterval(() => {
             if (document.hidden || privacyLayer.classList.contains('active')) {
                 navigator.clipboard.writeText('').catch(()=>true); 
             }
         }, 2000);
-        // --------------------------------------------------------
 
         function getWatermarkHTML(count = 20) {
             let user = { email: 'scholar@agri.edu' };
@@ -485,7 +480,6 @@
             return html;
         }
 
-        /* --- STREAMING_CHUNK:MOBILE UX WORKSPACE TOGGLING --- */
         function showMobileReader() {
             if(window.innerWidth < 1024) {
                 document.getElementById('syllabus-panel').classList.add('mobile-hide');
@@ -511,9 +505,7 @@
             }
         });
 
-        /* --- STREAMING_CHUNK:Theme & UI Interactions... --- */
         function toggleFullScreen() {
-            // Toggles an in-app expanded view instead of native browser fullscreen
             const body = document.body;
             body.classList.toggle('expanded-mode');
             
@@ -549,7 +541,6 @@
             localStorage.setItem('reader-theme', themeName);
         }
 
-        /* --- STREAMING_CHUNK:Data Fetching & Tree Building... --- */
         document.addEventListener('DOMContentLoaded', () => {
             let user = { name: 'Scholar', level: 'Portal', paymentPlan: '100' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
@@ -580,6 +571,7 @@
                 allContent = data.filter(c => c.type !== 'video');
                 if (allContent.length === 0) throw new Error("Empty curriculum");
             } catch (error) {
+                console.warn("Failed to fetch syllabus.", error);
                 allContent = [];
             }
 
@@ -638,7 +630,7 @@
             }
         }
 
-        /* --- STREAMING_CHUNK:Custom Canvas Renderer Logic --- */
+        /* --- CUSTOM CANVAS RENDERER FOR PDF FILES --- */
         async function loadSecurePDF(url, containerId) {
             const container = document.getElementById(containerId);
             const loader = document.getElementById('doc-loader');
@@ -646,25 +638,36 @@
             try {
                 const loadingTask = pdfjsLib.getDocument(url);
                 const pdf = await loadingTask.promise;
-                loader.style.display = 'none'; // Hide loader
+                loader.style.display = 'none'; 
                 
-                // Render every page of the PDF securely onto a canvas
+                // PRODUCTION FIX: Forcefully multiply retina display ratio by 2.5x for ULTRA-CRISP rendering
+                const outputScale = (window.devicePixelRatio || 1) * 2.5; 
+                
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
                     
-                    const containerWidth = container.clientWidth;
+                    // Subtract padding to ensure perfect fit without horizontal scrolling
+                    const containerWidth = container.clientWidth - 32; 
                     const unscaledViewport = page.getViewport({ scale: 1.0 });
-                    const scale = Math.min(2.5, containerWidth / unscaledViewport.width); 
+                    
+                    // Calculate exact scale needed
+                    const scale = containerWidth / unscaledViewport.width; 
                     const viewport = page.getViewport({ scale: scale });
 
                     const wrapper = document.createElement('div');
                     wrapper.className = 'relative mb-6 mx-auto shadow-md bg-white overflow-hidden';
-                    wrapper.style.width = viewport.width + 'px';
-                    wrapper.style.height = viewport.height + 'px';
+                    wrapper.style.width = Math.floor(viewport.width) + 'px';
+                    wrapper.style.height = Math.floor(viewport.height) + 'px';
 
                     const canvas = document.createElement('canvas');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
+                    
+                    // HIGH-FIDELITY FIX: Render massive internal canvas, then use CSS to squish it down cleanly
+                    canvas.width = Math.floor(viewport.width * outputScale);
+                    canvas.height = Math.floor(viewport.height * outputScale);
+                    
+                    // Keep CSS display size identical to the wrapper
+                    canvas.style.width = Math.floor(viewport.width) + 'px';
+                    canvas.style.height = Math.floor(viewport.height) + 'px';
                     canvas.className = 'absolute inset-0 w-full h-full pdf-page-canvas';
                     
                     const protectionLayer = document.createElement('div');
@@ -677,6 +680,7 @@
 
                     const renderContext = {
                         canvasContext: canvas.getContext('2d'),
+                        transform: [outputScale, 0, 0, outputScale, 0, 0],
                         viewport: viewport
                     };
                     await page.render(renderContext).promise;
@@ -697,6 +701,97 @@
             }
         }
 
+        function renderPptViewer(url, containerId, targetEngine) {
+            const container = document.getElementById(containerId);
+            const watermark = getWatermarkHTML(20);
+
+            // Generate iframe URL based on the silently selected engine
+            const embedUrl = targetEngine === 'microsoft' 
+                ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` 
+                : `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+            
+            // Generate the exact glass shield needed to block native pop-out/download buttons based on engine
+            const glassShield = targetEngine === 'microsoft'
+                ? `<div class="absolute bottom-0 right-0 w-[200px] h-[50px] bg-transparent z-[60]" title="Protected Content"></div>`
+                : `<div class="absolute top-0 right-0 w-[60px] h-[60px] bg-transparent z-[60]" title="Protected Content"></div><div class="absolute top-0 left-0 w-full h-[40px] bg-transparent z-[60]" title="Protected Content"></div>`;
+
+            // Note: The UI is clean. It simply says "Presentation Viewer". The student does not know the engine details.
+            container.innerHTML = `
+                <div class="p-2 md:p-3 bg-surface-50 border-b border-surface-200 flex justify-between items-center z-20 shadow-soft-inner shrink-0 sticky top-0">
+                    <span class="font-bold text-surface-800 text-[11px] md:text-[13px] flex items-center">
+                        <i class="fa-solid fa-file-powerpoint text-brand-600 mr-1.5 md:mr-2"></i> Presentation Viewer
+                    </span>
+                    <span class="text-[9px] md:text-[10px] font-bold tracking-wider uppercase text-surface-500 bg-white px-2 py-1 rounded border border-surface-200 shadow-sm ml-1 hidden sm:inline">Protected</span>
+                </div>
+
+                <div class="relative flex-1 w-full h-full bg-slate-100 overflow-hidden">
+                    <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
+                        ${watermark}
+                    </div>
+                    
+                    ${glassShield}
+
+                    <!-- PRODUCTION FIX: Z-Index layered loader. Sits permanently BEHIND the transparent iframe until the document fully renders and covers it. -->
+                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-0">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-500 mb-4"></i>
+                        <span class="text-sm font-bold text-slate-700">Connecting to secure viewer...</span>
+                        <span class="text-xs font-medium text-slate-500 mt-2 text-center px-4">Depending on the file size, this may take a few seconds.</span>
+                        ${targetEngine === 'microsoft' ? '<span class="text-[10px] font-bold text-amber-600 mt-5 max-w-xs text-center border border-amber-200 bg-amber-50 p-2.5 rounded shadow-sm">Note: Microsoft Web Viewer enforces strict size limits. If this spins forever, the presentation is too large and must be requested as a PDF.</span>' : ''}
+                    </div>
+
+                    <!-- Iframe has a transparent background. It will show the loader underneath until the document finishes painting! -->
+                    <iframe src="${embedUrl}" class="w-full h-full absolute inset-0 border-none pointer-events-auto z-10" style="background: transparent;"></iframe>
+                </div>
+            `;
+        }
+
+        async function loadSmartPPT(url, containerId) {
+            const container = document.getElementById(containerId);
+            
+            // Show professional loading spinner immediately for the fast size check
+            container.innerHTML = `
+                <div class="absolute inset-0 flex flex-col items-center justify-center bg-surface-50 z-10">
+                    <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
+                    <span class="text-sm font-medium text-slate-500">Analyzing optimal engine...</span>
+                </div>
+            `;
+
+            // Default fallback to Microsoft as it handles larger sizes better
+            let targetEngine = 'microsoft'; 
+
+            try {
+                // PRODUCTION FIX: Use a safe Byte Range request to check size instead of aborting a GET. 
+                // Aborting GET requests forcefully breaks browser network sockets causing blank iframe screens.
+                const response = await fetch(url, { 
+                    method: 'GET', 
+                    headers: { 'Range': 'bytes=0-0' } 
+                });
+                
+                const contentRange = response.headers.get('content-range');
+                let sizeBytes = 0;
+                
+                if (contentRange) {
+                    // Extracts the total size from "bytes 0-0/15000000"
+                    sizeBytes = parseInt(contentRange.split('/')[1]);
+                } else {
+                    const contentLength = response.headers.get('content-length');
+                    if (contentLength) sizeBytes = parseInt(contentLength);
+                }
+
+                if (sizeBytes > 0) {
+                    const sizeMB = sizeBytes / (1024 * 1024);
+                    // Only use Google if strictly under 12MB (best font quality)
+                    if (sizeMB <= 12) {
+                        targetEngine = 'google';
+                    }
+                }
+            } catch (e) {
+                console.warn("File size check fallback to Microsoft Engine due to AWS CORS.");
+            }
+
+            renderPptViewer(url, containerId, targetEngine);
+        }
+
         /* --- STREAMING_CHUNK:Content Display Logic... --- */
         function readContent(id, element) {
             document.querySelectorAll('.tree-node').forEach(el => el.classList.remove('active-node'));
@@ -715,7 +810,7 @@
                 const urlWithoutQuery = item.mediaUrl.split('?')[0].toLowerCase();
                 const isOfficeDoc = urlWithoutQuery.match(/\.(ppt|pptx|doc|docx|xls|xlsx)$/);
                 
-                // Identify true PDFs so they go through the ultra-secure Canvas Engine
+                // If the admin uploads a PDF directly, use Canvas Engine
                 const isPdf = (urlWithoutQuery.endsWith('.pdf') || item.type === 'document') && !isOfficeDoc;
                 
                 if (isPdf) {
@@ -738,34 +833,21 @@
                             <div id="pdf-viewer-container" class="w-full flex-1 p-2 md:p-4 overflow-y-auto bg-surface-100 relative z-0 hide-scrollbar"></div>
                         </div>
                     `;
-                    // Trigger async render
                     setTimeout(() => loadSecurePDF(item.mediaUrl, 'pdf-viewer-container'), 100);
 
                 } else if (isOfficeDoc) {
-                    
-                    // Switch to Microsoft Office Viewer for vastly better PPT/Office support
-                    const embedUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.mediaUrl)}`;
-                    
+                    const uniqueId = 'ppt-container-' + Date.now();
                     contentHtml += `
-                        <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-slate-100 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] min-h-[500px]">
-                            
-                            <div class="p-2 md:p-3 bg-surface-50 border-b border-surface-200 flex justify-between items-center z-20 shadow-soft-inner shrink-0">
-                                <span class="font-bold text-surface-800 text-[11px] md:text-[13px] flex items-center"><i class="fa-solid fa-shield-halved text-brand-600 mr-1.5 md:mr-2"></i> Secure Office Viewer</span>
-                                <span class="text-[9px] md:text-[10px] font-bold tracking-wider uppercase text-surface-500 bg-white px-2 py-1 rounded border border-surface-200 shadow-sm">Protected</span>
-                            </div>
-
-                            <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
-                                ${getWatermarkHTML(20)}
-                            </div>
-                            
-                            <!-- GLASS SHIELDS TO BLOCK MICROSOFT VIEWER DOWNLOAD/PRINT BUTTONS (Bottom Right) -->
-                            <div class="absolute bottom-0 right-0 w-48 h-12 bg-transparent z-[60]" title="Protected"></div>
-
-                            <iframe src="${embedUrl}" class="w-full flex-1 border-none bg-slate-50 pointer-events-auto relative z-0"></iframe>
+                        <div id="${uniqueId}" class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-slate-100 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] min-h-[500px]">
+                            <!-- Loading state will immediately populate via JS -->
                         </div>
                     `;
+                    
+                    // Trigger async Smart Auto-Routing
+                    setTimeout(() => loadSmartPPT(item.mediaUrl, uniqueId), 100);
+                    
                 } else {
-                    // Standard native Iframe fallback
+                    // Standard native Iframe fallback for other valid media types
                     contentHtml += `
                         <div class="mt-4 md:mt-6 border border-surface-200 rounded-xl overflow-hidden shadow-sm flex flex-col relative z-10 bg-slate-100 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] min-h-[500px]">
                             <div class="absolute inset-0 pointer-events-none z-[100] overflow-hidden flex flex-wrap content-around justify-around watermark-overlay">
