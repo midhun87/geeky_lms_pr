@@ -64,6 +64,19 @@
         }
         .q-type-btn:hover { border-color: #0d9488; color: #0f766e; background: #f0fdfa; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
         .q-type-btn i { font-size: 1.25rem; }
+
+        /* Progress Bar Animation */
+        .progress-bar-striped {
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+        }
+        .animate-stripes {
+            animation: progress-stripes 1s linear infinite;
+        }
+        @keyframes progress-stripes {
+            from { background-position: 1rem 0; }
+            to { background-position: 0 0; }
+        }
     </style>
 </head>
 <body class="antialiased w-full h-screen flex overflow-hidden">
@@ -121,9 +134,13 @@
                     <p class="text-sm text-slate-500 mt-1">Design examinations, assign targeted levels, and set rules.</p>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
+                    <!-- New Folder Button -->
+                    <button class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none" onclick="promptCreateFolder()">
+                        <i class="fa-solid fa-folder-plus text-brand-500"></i> New Folder
+                    </button>
                     <!-- AI Generator Button -->
                     <input type="file" id="pdf-upload" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
-                    <button id="btn-ai-gen" onclick="document.getElementById('pdf-upload').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none">
+                    <button id="btn-ai-gen" onclick="promptForApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate
                     </button>
                     <!-- Standard New Test -->
@@ -134,6 +151,12 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/50">
+                
+                <!-- Breadcrumbs -->
+                <div id="breadcrumb-container" class="mb-5 flex items-center gap-2 text-sm font-semibold text-slate-600 px-1 hidden">
+                    <!-- Populated by JS -->
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="library-grid">
                     <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
                         <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i>
@@ -197,6 +220,18 @@
                 <!-- RIGHT: Configuration Sidebar -->
                 <div class="w-full lg:w-[320px] xl:w-[350px] shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-slate-200 bg-white p-6 space-y-6 lg:shadow-[-4px_0_15px_rgba(0,0,0,0.02)]">
                     
+                    <!-- Folder Placement -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-purple-50 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-folder-tree text-xs"></i></div> Placement
+                        </h3>
+                        <p class="text-[11px] text-slate-500 mb-2">Select the folder to save this assessment into.</p>
+                        <select id="testFolderId" class="admin-input !py-2 !text-xs font-semibold">
+                            <option value="">Root Directory</option>
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+
                     <!-- Access & Attempts -->
                     <div>
                         <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
@@ -262,7 +297,48 @@
         </div>
     </main>
 
-    <!-- Immersive AI Loading Overlay -->
+    <!-- Folder Creation Modal -->
+    <div id="folder-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeFolderModal()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
+            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto p-6 border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600">
+                        <i class="fa-solid fa-folder-plus text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 tracking-tight">Create New Folder</h3>
+                </div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Folder Name</label>
+                <input type="text" id="folderNameInput" class="admin-input w-full mb-6 font-medium text-slate-800" placeholder="e.g., Biology Semester 1">
+                <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
+                    <button onclick="closeFolderModal()" class="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                    <button onclick="saveFolder()" class="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">Save Folder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key Modal -->
+    <div id="api-key-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeApiModal()"></div>
+        <div class="relative bg-white rounded-xl shadow-xl w-full max-w-md p-8 z-10 animate-fade-in mx-4 border border-slate-200">
+            <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+                <i class="fa-solid fa-key text-xl text-indigo-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">OpenRouter API Key Required</h3>
+            <p class="text-sm text-slate-500 mb-6">Please provide your OpenRouter API key to power the AI Generator. Your key is stored securely in your browser's local storage.</p>
+            
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">API Key</label>
+            <input type="password" id="openrouter-api-key-input" class="admin-input w-full mb-6 font-mono text-sm" placeholder="sk-or-v1-...">
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="closeApiModal()" class="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                <button onclick="saveApiKeyAndProceed()" class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-sm">Save & Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW Immersive Percentage-Based AI Loading Overlay -->
     <div id="ai-loading-overlay" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-md hidden flex-col items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center relative overflow-hidden">
             <!-- Decorative abstract background -->
@@ -270,21 +346,44 @@
             <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-500/10 rounded-full blur-2xl"></div>
             
             <div class="relative z-10">
-                <div class="w-20 h-20 mx-auto bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-indigo-100">
-                    <i class="fa-solid fa-wand-magic-sparkles text-4xl text-indigo-500 animate-pulse"></i>
+                <div class="w-20 h-20 mx-auto bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-indigo-100 relative">
+                    <i id="ai-magic-icon" class="fa-solid fa-wand-magic-sparkles text-4xl text-indigo-500 transition-all duration-300"></i>
+                    
+                    <!-- Circular Percentage Display -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="ai-percentage-text" class="text-xl font-bold text-indigo-600 hidden">0%</span>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Proctorix AI Engine</h3>
-                <p id="ai-status-text" class="text-sm font-medium text-slate-500 mb-8 h-10 flex items-center justify-center leading-snug">Initializing sequence...</p>
                 
-                <div class="space-y-4 text-left">
+                <h3 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Proctorix AI Engine</h3>
+                
+                <!-- Dynamic Text Status -->
+                <p id="ai-status-text" class="text-sm font-medium text-indigo-600 mb-6 h-5 flex items-center justify-center leading-snug">Initializing sequence...</p>
+                
+                <!-- Smooth Progress Bar -->
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-8 shadow-inner border border-slate-200/50">
+                    <div id="ai-progress-fill" class="h-full bg-indigo-500 progress-bar-striped animate-stripes transition-all duration-300 ease-out w-0 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
+                </div>
+
+                <!-- Phase Indicators -->
+                <div class="space-y-4 text-left border-t border-slate-100 pt-6">
                     <div id="ai-step-1" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Reading Document Data</span>
+                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-1"></i>
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-1"></i>
+                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-1"></i>
+                        <span>Reading Document Data</span>
                     </div>
                     <div id="ai-step-2" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Extracting Knowledge Graph</span>
+                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-2"></i>
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-2"></i>
+                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-2"></i>
+                        <span>AI Generating Questions (Groq LPU)</span>
                     </div>
                     <div id="ai-step-3" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg"></i> <span>Generating Assessment Items</span>
+                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-3"></i>
+                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-3"></i>
+                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-3"></i>
+                        <span>Structuring Editor Format</span>
                     </div>
                 </div>
             </div>
@@ -299,19 +398,19 @@
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-trash-can text-red-600"></i>
+                            <i class="fa-solid fa-trash-can text-red-600" id="delete-icon"></i>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-semibold text-slate-900">Delete Assessment</h3>
+                            <h3 class="text-lg leading-6 font-semibold text-slate-900" id="delete-title">Delete Assessment</h3>
                             <div class="mt-2">
-                                <p class="text-sm text-slate-500">Are you sure you want to permanently delete this assessment? This action cannot be undone.</p>
+                                <p class="text-sm text-slate-500" id="delete-desc">Are you sure you want to permanently delete this item? This action cannot be undone.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
                     <button type="button" id="confirm-delete-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
-                        Delete Assessment
+                        Delete Permanently
                     </button>
                     <button type="button" onclick="closeDeleteModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
                         Cancel
@@ -332,11 +431,33 @@
         const token = localStorage.getItem('token');
         const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
         let qCounter = 0; 
-        let testLibrary = [];
-        let allLevels = [];
+        
+        // Folder System Variables
+        let currentFolderId = null;
+        let allFolders = [];
+        let allTests = [];
         let testToDelete = null;
+        let isDeletingFolder = false;
+
+        // Progress bar interval variable
+        let aiProgressInterval;
 
         if (!token || !user || user.role !== 'admin') { localStorage.clear(); window.location.href = '../login.html'; }
+
+        // Centralized API Auth Checker to handle 401 (Session conflicts/expirations) gracefully
+        async function checkAuthResponse(res) {
+            if (res.status === 401 || res.status === 403) {
+                let msg = "Session invalid or expired. Logging out...";
+                try {
+                    const data = await res.json();
+                    if (data.message || data.error) msg = data.message || data.error;
+                } catch(e) {}
+                showToast(msg, "error");
+                setTimeout(logout, 2500);
+                throw new Error("AUTH_FAILED");
+            }
+            return res;
+        }
 
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
@@ -364,7 +485,6 @@
             await fetchLibrary(); 
         });
 
-        /* --- STREAMING_CHUNK:Utility Functions --- */
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -386,26 +506,111 @@
             });
         };
 
-        /* --- AI GENERATION WITH IMMERSIVE UI --- */
+        /* --- API KEY MANAGEMENT --- */
+        function promptForApiKey() {
+            const savedKey = localStorage.getItem('openRouterApiKey');
+            if (savedKey) {
+                document.getElementById('openrouter-api-key-input').value = savedKey;
+            }
+            document.getElementById('api-key-modal').classList.remove('hidden');
+            document.getElementById('api-key-modal').classList.add('flex');
+        }
+
+        function closeApiModal() {
+            document.getElementById('api-key-modal').classList.add('hidden');
+            document.getElementById('api-key-modal').classList.remove('flex');
+        }
+
+        function saveApiKeyAndProceed() {
+            const key = document.getElementById('openrouter-api-key-input').value.trim();
+            if (!key) {
+                showToast("API Key is required to proceed.", "error");
+                return;
+            }
+            localStorage.setItem('openRouterApiKey', key);
+            closeApiModal();
+            document.getElementById('pdf-upload').click();
+        }
+
+        /* --- NEW: Smart Percentage UI Updater --- */
+        function updateAiProgressUI(percent, statusMsg, stepNum) {
+            const fill = document.getElementById('ai-progress-fill');
+            const text = document.getElementById('ai-percentage-text');
+            const status = document.getElementById('ai-status-text');
+            const magicIcon = document.getElementById('ai-magic-icon');
+            
+            // Format percentage safely
+            let formattedPercent = Math.min(100, Math.max(0, Math.floor(percent)));
+            
+            fill.style.width = `${formattedPercent}%`;
+            text.innerText = `${formattedPercent}%`;
+            status.innerText = statusMsg;
+
+            // Transition Icon out when showing percentage
+            if(formattedPercent > 0) {
+                magicIcon.classList.add('opacity-0', 'scale-50');
+                text.classList.remove('hidden');
+                text.classList.add('animate-fade-in');
+            }
+
+            // Reset step UI states
+            for(let i=1; i<=3; i++) {
+                const stepRow = document.getElementById(`ai-step-${i}`);
+                const spinner = document.getElementById(`spinner-${i}`);
+                const check = document.getElementById(`check-${i}`);
+                const circle = document.getElementById(`circle-${i}`);
+                
+                stepRow.classList.remove('text-indigo-600', 'text-emerald-500', 'text-slate-400');
+                spinner.classList.add('hidden');
+                check.classList.add('hidden');
+                circle.classList.add('hidden');
+
+                if (i < stepNum) {
+                    // Completed step
+                    stepRow.classList.add('text-emerald-500');
+                    check.classList.remove('hidden');
+                } else if (i === stepNum) {
+                    // Active step
+                    stepRow.classList.add('text-indigo-600', 'font-bold');
+                    spinner.classList.remove('hidden');
+                } else {
+                    // Pending step
+                    stepRow.classList.add('text-slate-400');
+                    circle.classList.remove('hidden');
+                }
+            }
+        }
+
+
+        /* --- AI GENERATION WITH IMMERSIVE PERCENTAGE UI --- */
         async function handlePdfUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            const overlay = document.getElementById('ai-loading-overlay');
-            const statusText = document.getElementById('ai-status-text');
-            const s1 = document.getElementById('ai-step-1');
-            const s2 = document.getElementById('ai-step-2');
-            const s3 = document.getElementById('ai-step-3');
+            const apiKey = localStorage.getItem('openRouterApiKey');
+            if (!apiKey) {
+                showToast("OpenRouter API key is missing. Please provide it.", "error");
+                event.target.value = '';
+                promptForApiKey();
+                return;
+            }
 
-            // Reset UI states
+            const overlay = document.getElementById('ai-loading-overlay');
             overlay.classList.remove('hidden'); overlay.classList.add('flex');
-            s1.className = "flex items-center gap-3 text-sm font-bold text-indigo-600 transition-colors duration-300";
-            s2.className = "flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300";
-            s3.className = "flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300";
+            
+            // Reset Progress UI
+            let currentPercent = 0;
+            updateAiProgressUI(0, "Initiating Local PDF Parser...", 1);
 
             try {
-                // Step 1: Read PDF
-                statusText.innerText = "Parsing PDF Document locally...";
+                // Step 1: Read PDF (Fast Local Step)
+                const parseInterval = setInterval(() => {
+                    if(currentPercent < 15) {
+                        currentPercent += 2;
+                        updateAiProgressUI(currentPercent, "Extracting text layers from PDF...", 1);
+                    }
+                }, 100);
+
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
                 let fullText = '';
@@ -417,19 +622,37 @@
                     fullText += pageText + '\n';
                 }
 
+                clearInterval(parseInterval);
+
                 if (!fullText.trim()) throw new Error("No readable text found in this PDF.");
 
-                // Step 2: Transmit to AI
-                s1.classList.replace('text-indigo-600', 'text-emerald-500');
-                s2.classList.replace('text-slate-400', 'text-indigo-600');
-                s2.classList.replace('font-semibold', 'font-bold');
-                statusText.innerText = "AI Engine is analyzing the text and structuring questions. This may take up to a minute for large files...";
+                // Step 2: Transmit to AI via Backend
+                currentPercent = 20;
+                updateAiProgressUI(currentPercent, "Sending 70B Model request via Groq LPU...", 2);
+
+                aiProgressInterval = setInterval(() => {
+                    if (currentPercent < 90) {
+                        let remaining = 90 - currentPercent;
+                        let increment = Math.max(0.2, Math.random() * (remaining * 0.08)); 
+                        currentPercent += increment;
+                        
+                        let msg = "Structuring extracted knowledge...";
+                        if (currentPercent > 40) msg = "Identifying questions and exact options...";
+                        if (currentPercent > 60) msg = "Mapping accurate answer keys...";
+                        if (currentPercent > 80) msg = "Finalizing JSON payload...";
+                        
+                        updateAiProgressUI(currentPercent, msg, 2);
+                    }
+                }, 400);
 
                 const response = await fetch(`${API_BASE_URL}/admin/generate-questions-from-text`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ text: fullText })
+                    body: JSON.stringify({ text: fullText, apiKey: apiKey })
                 });
+
+                clearInterval(aiProgressInterval);
+                await checkAuthResponse(response);
 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -439,58 +662,247 @@
                 const data = await response.json();
                 if (!data.questions || data.questions.length === 0) throw new Error("AI returned empty results.");
 
-                // Step 3: Render to UI
-                s2.classList.replace('text-indigo-600', 'text-emerald-500');
-                s3.classList.replace('text-slate-400', 'text-indigo-600');
-                s3.classList.replace('font-semibold', 'font-bold');
-                statusText.innerText = `Success! Structuring ${data.questions.length} questions into the editor...`;
+                // Step 3: Render to UI (Final 10%)
+                currentPercent = 95;
+                updateAiProgressUI(currentPercent, `Success! Structuring ${data.questions.length} questions into the editor...`, 3);
 
-                await new Promise(r => setTimeout(r, 1000)); // Small delay for UX feel
+                await new Promise(r => setTimeout(r, 600));
+                
+                currentPercent = 100;
+                updateAiProgressUI(currentPercent, "Complete!", 3);
+                
+                await new Promise(r => setTimeout(r, 600));
 
                 showEditor(true);
                 document.getElementById('testTitle').value = `${file.name.replace('.pdf', '')} - Auto-Generated Test`;
                 
-                // Clear default empty question
                 document.getElementById('questions-container').innerHTML = '';
                 qCounter = 0;
                 
-                // Use DocumentFragment for massive performance boost when rendering 100+ questions
                 const fragment = document.createDocumentFragment();
 
-                /* --- STREAMING_CHUNK:Parse AI questions and map them to UI --- */
                 data.questions.forEach((aiQ) => {
+                    let type = (aiQ.type || 'mcq').toLowerCase();
+                    let options = Array.isArray(aiQ.options) ? aiQ.options : [];
+                    let rawCorrect = Array.isArray(aiQ.correctOptions) ? aiQ.correctOptions : [];
+                    
+                    let correctOptions = [];
+
+                    if (type === 'mcq' || type === 'msq') {
+                        rawCorrect.forEach(val => {
+                            let strVal = String(val).trim();
+                            let parsedIdx = parseInt(strVal, 10);
+                            
+                            if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < options.length && strVal.length === parsedIdx.toString().length) {
+                                correctOptions.push(strVal);
+                            } else {
+                                let foundIdx = options.findIndex(opt => String(opt).trim().toLowerCase() === strVal.toLowerCase());
+                                if (foundIdx === -1 && strVal.length === 1) {
+                                    let charCode = strVal.toUpperCase().charCodeAt(0);
+                                    if (charCode >= 65 && charCode <= 90) foundIdx = charCode - 65;
+                                }
+                                if (foundIdx !== -1 && foundIdx < options.length) correctOptions.push(String(foundIdx));
+                            }
+                        });
+                    } else {
+                        correctOptions = rawCorrect.map(String);
+                    }
+
                     const formattedData = {
-                        text: aiQ.text || aiQ.question || '', // Fallback just in case
-                        type: aiQ.type || 'mcq',
-                        options: Array.isArray(aiQ.options) ? aiQ.options : [],
-                        correctOptions: Array.isArray(aiQ.correctOptions) ? aiQ.correctOptions.map(String) : [], 
+                        text: aiQ.text || aiQ.question || '', 
+                        type: type,
+                        options: options,
+                        correctOptions: correctOptions, 
                         positiveMarks: 1,
                         negativeMarks: 0.3
                     };
                     addQuestion(formattedData.type, formattedData, fragment);
                 });
 
-                // Inject all questions into the DOM at once to prevent layout thrashing
                 document.getElementById('questions-container').appendChild(fragment);
                 updateQuestionNumbers();
 
-                showToast(`Successfully extracted ${data.questions.length} questions.`, "success");
+                showToast(`Successfully processed ${data.questions.length} accurate items.`, "success");
 
             } catch (error) {
+                clearInterval(aiProgressInterval);
                 console.error("AI Generation Error:", error);
+                
+                document.getElementById('ai-progress-fill').classList.replace('bg-indigo-500', 'bg-red-500');
+                document.getElementById('ai-status-text').innerText = "Process Failed!";
+                document.getElementById('ai-status-text').classList.replace('text-indigo-600', 'text-red-500');
+                
+                await new Promise(r => setTimeout(r, 1000));
                 showToast(error.message || "Failed to process document.", "error");
             } finally {
                 overlay.classList.add('hidden'); overlay.classList.remove('flex');
-                event.target.value = ''; // Reset input
+                document.getElementById('ai-magic-icon').classList.remove('opacity-0', 'scale-50');
+                document.getElementById('ai-percentage-text').classList.add('hidden');
+                document.getElementById('ai-progress-fill').classList.replace('bg-red-500', 'bg-indigo-500');
+                document.getElementById('ai-status-text').classList.replace('text-red-500', 'text-indigo-600');
+                event.target.value = ''; 
             }
         }
 
+        /* --- Folder & Library Operations --- */
+        
+        function promptCreateFolder() {
+            document.getElementById('folderNameInput').value = '';
+            document.getElementById('folder-modal').classList.remove('hidden');
+        }
+
+        function closeFolderModal() {
+            document.getElementById('folder-modal').classList.add('hidden');
+        }
+
+        async function saveFolder() {
+            const title = document.getElementById('folderNameInput').value.trim();
+            if(!title) return showToast("Folder name is required.", "error");
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/test-folders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ title, parentId: currentFolderId })
+                });
+                await checkAuthResponse(res);
+                if(res.ok) {
+                    showToast("Folder created successfully.");
+                    closeFolderModal();
+                    await fetchLibrary();
+                } else {
+                    showToast("Failed to create folder.", "error");
+                }
+            } catch(e) {
+                if (e.message !== "AUTH_FAILED") showToast("Network error creating folder.", "error");
+            }
+        }
+
+        function populateFolderDropdown() {
+            const select = document.getElementById('testFolderId');
+            if(!select) return;
+            let html = '<option value="">Root Directory</option>';
+            // Populate globally available folders (can nest logic here if multiple depths are ever needed)
+            allFolders.forEach(f => {
+                html += `<option value="${f.id}">${escapeHTML(f.title)}</option>`;
+            });
+            select.innerHTML = html;
+        }
+
+        async function fetchLibrary() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/admin/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
+                await checkAuthResponse(res);
+                const data = await res.json();
+                
+                // Separate tests and folders based on our backend structure flag
+                allFolders = data.filter(item => item.isFolder === true);
+                allTests = data.filter(item => item.isFolder !== true);
+                
+                populateFolderDropdown();
+                renderLibrary();
+            } catch (err) { 
+                if (err.message !== "AUTH_FAILED") showToast("Data sync failure.", "error"); 
+            }
+        }
+
+        function navigateToFolder(id) {
+            currentFolderId = id;
+            renderLibrary();
+        }
+
+        function renderLibrary() {
+            const grid = document.getElementById('library-grid');
+            const breadcrumbs = document.getElementById('breadcrumb-container');
+            grid.innerHTML = '';
+            
+            // Build and display Navigation Breadcrumbs
+            breadcrumbs.classList.remove('hidden');
+            let bcHtml = `<button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Root</button>`;
+            
+            if (currentFolderId) {
+                const folder = allFolders.find(f => f.id === currentFolderId);
+                if (folder) {
+                    bcHtml += ` <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 mx-1"></i> <span class="text-brand-600 font-bold bg-brand-50 px-2 py-0.5 rounded">${escapeHTML(folder.title)}</span>`;
+                }
+            }
+            breadcrumbs.innerHTML = bcHtml;
+
+            // Filter for current directory
+            const currentFolders = allFolders.filter(f => (f.parentId || null) === currentFolderId);
+            const currentTests = allTests.filter(t => (t.folderId || null) === currentFolderId);
+
+            if(currentFolders.length === 0 && currentTests.length === 0) { 
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-4 opacity-50"></i>
+                        <span class="text-sm font-medium">This folder is empty. Create a new folder or assessment here.</span>
+                    </div>`; 
+                return; 
+            }
+            
+            // Render Sub-Folders
+            currentFolders.forEach(folder => {
+                const nestedTestsCount = allTests.filter(t => t.folderId === folder.id).length;
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group cursor-pointer relative" onclick="navigateToFolder('${folder.id}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600 shadow-inner">
+                                <i class="fa-solid fa-folder-closed text-2xl group-hover:hidden"></i>
+                                <i class="fa-solid fa-folder-open text-2xl hidden group-hover:block transition-all transform scale-110"></i>
+                            </div>
+                            <button onclick="event.stopPropagation(); promptDeleteFolder('${folder.id}')" class="text-slate-300 hover:text-red-500 w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center transition" title="Delete Folder">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-lg mt-3 leading-tight truncate" title="${folder.title}">${folder.title}</h3>
+                        <p class="text-xs font-semibold text-slate-500 mt-1">${nestedTestsCount} Assessments</p>
+                    </div>
+                `;
+            });
+
+            // Render Tests
+            currentTests.forEach(test => {
+                const qCount = test.questions ? test.questions.length : 0;
+                let badge = test.status === 'published' 
+                    ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Published</span>`
+                    : `<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Draft</span>`;
+                
+                let levelsDisplay = 'Unassigned';
+                if (test.levels && test.levels.length > 0) {
+                     levelsDisplay = test.levels.includes('All Levels') ? 'Global Audience' : test.levels.join(', ');
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group">
+                        <div class="flex justify-between items-start mb-4">
+                            ${badge}
+                            <span class="text-[10px] font-semibold text-slate-400 truncate max-w-[100px] flex items-center gap-1" title="${levelsDisplay}"><i class="fa-solid fa-users"></i> ${levelsDisplay}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-base mb-4 leading-tight line-clamp-2" title="${test.title}">${test.title}</h3>
+                        
+                        <div class="flex gap-2 mb-5 mt-auto">
+                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-list text-brand-500 mr-1"></i> ${qCount} Items</span>
+                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-stopwatch text-amber-500 mr-1"></i> ${test.timeLimit || 60}m</span>
+                        </div>
+
+                        <div class="flex gap-2 pt-4 border-t border-slate-100">
+                            <button onclick="editTest('${test.id}')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium py-1.5 rounded-lg text-xs transition shadow-sm">Edit</button>
+                            <button onclick="promptDelete('${test.id}')" class="w-9 h-auto bg-white border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center rounded-lg transition shadow-sm" title="Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
 
         /* --- Level-Based Attempts UI Logic --- */
         async function fetchLevels() {
             try {
                 const res = await fetch(`${API_BASE_URL}/admin/levels`, { headers: { 'Authorization': `Bearer ${token}` } });
-                allLevels = await res.json();
+                await checkAuthResponse(res);
+                const levels = await res.json();
                 const container = document.getElementById('levelCheckboxes');
                 
                 let html = `
@@ -506,7 +918,7 @@
                     </div>
                 `;
                 
-                allLevels.forEach(lvl => {
+                levels.forEach(lvl => {
                     const safeId = lvl.levelName.replace(/\s+/g, '-');
                     html += `
                         <div class="flex items-center justify-between gap-2 p-2 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-lg transition">
@@ -608,68 +1020,26 @@
                 });
             }
         }
-        /* -------------------------------------- */
 
-        async function fetchLibrary() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/admin/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
-                testLibrary = await res.json();
-                renderLibrary();
-            } catch (err) { showToast("Data sync failure.", "error"); }
-        }
-
-        function renderLibrary() {
-            const grid = document.getElementById('library-grid');
-            grid.innerHTML = '';
-            
-            if(testLibrary.length === 0) { 
-                grid.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                        <i class="fa-solid fa-box-open text-4xl mb-4 opacity-50"></i>
-                        <span class="text-sm font-medium">Repository is empty. Create your first assessment.</span>
-                    </div>`; 
-                return; 
-            }
-            
-            testLibrary.forEach(test => {
-                const qCount = test.questions ? test.questions.length : 0;
-                let badge = test.status === 'published' 
-                    ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Published</span>`
-                    : `<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Draft</span>`;
-                
-                let levelsDisplay = 'Unassigned';
-                if (test.levels && test.levels.length > 0) {
-                     levelsDisplay = test.levels.includes('All Levels') ? 'Global Audience' : test.levels.join(', ');
-                }
-
-                grid.innerHTML += `
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group">
-                        <div class="flex justify-between items-start mb-4">
-                            ${badge}
-                            <span class="text-[10px] font-semibold text-slate-400 truncate max-w-[100px] flex items-center gap-1" title="${levelsDisplay}"><i class="fa-solid fa-users"></i> ${levelsDisplay}</span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-base mb-4 leading-tight line-clamp-2" title="${test.title}">${test.title}</h3>
-                        
-                        <div class="flex gap-2 mb-5 mt-auto">
-                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-list text-brand-500 mr-1"></i> ${qCount} Items</span>
-                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-stopwatch text-amber-500 mr-1"></i> ${test.timeLimit || 60}m</span>
-                        </div>
-
-                        <div class="flex gap-2 pt-4 border-t border-slate-100">
-                            <button onclick="editTest('${test.id}')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium py-1.5 rounded-lg text-xs transition shadow-sm">Edit</button>
-                            <button onclick="promptDelete('${test.id}')" class="w-9 h-auto bg-white border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center rounded-lg transition shadow-sm" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
+        /* --- Deletion Handling --- */
         function promptDelete(id) {
             testToDelete = id;
+            isDeletingFolder = false;
+            document.getElementById('delete-title').innerText = "Delete Assessment";
+            document.getElementById('delete-desc').innerText = "Are you sure you want to permanently delete this assessment? This action cannot be undone.";
+            document.getElementById('delete-icon').className = "fa-solid fa-trash-can text-red-600";
             document.getElementById('delete-modal').classList.remove('hidden');
             document.getElementById('confirm-delete-btn').onclick = () => executeDelete();
+        }
+
+        function promptDeleteFolder(id) {
+            testToDelete = id;
+            isDeletingFolder = true;
+            document.getElementById('delete-title').innerText = "Delete Entire Folder";
+            document.getElementById('delete-desc').innerText = "Are you sure you want to delete this folder? All assessments currently residing in this folder will also be permanently removed.";
+            document.getElementById('delete-icon').className = "fa-solid fa-folder-minus text-red-600";
+            document.getElementById('delete-modal').classList.remove('hidden');
+            document.getElementById('confirm-delete-btn').onclick = () => executeDeleteFolder();
         }
 
         function closeDeleteModal() {
@@ -679,7 +1049,6 @@
 
         async function executeDelete() {
             if(!testToDelete) return;
-            const id = testToDelete;
             const btn = document.getElementById('confirm-delete-btn');
             const originalText = btn.innerHTML;
             
@@ -687,7 +1056,8 @@
             btn.disabled = true;
 
             try { 
-                const res = await fetch(`${API_BASE_URL}/admin/tests/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
+                const res = await fetch(`${API_BASE_URL}/admin/tests/${testToDelete}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
+                await checkAuthResponse(res);
                 if(res.ok) {
                     showToast('Assessment deleted successfully.');
                     fetchLibrary();
@@ -696,7 +1066,7 @@
                     showToast('Failed to delete assessment.', 'error');
                 }
             } catch(e) {
-                showToast("Network error during deletion.", 'error');
+                if (e.message !== "AUTH_FAILED") showToast("Network error during deletion.", 'error');
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -704,6 +1074,34 @@
             }
         }
 
+        async function executeDeleteFolder() {
+            if(!testToDelete) return;
+            const btn = document.getElementById('confirm-delete-btn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Deleting...`;
+            btn.disabled = true;
+
+            try { 
+                const res = await fetch(`${API_BASE_URL}/admin/test-folders/${testToDelete}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
+                await checkAuthResponse(res);
+                if(res.ok) {
+                    showToast('Folder deleted.');
+                    fetchLibrary();
+                    closeDeleteModal();
+                } else {
+                    showToast('Failed to delete folder.', 'error');
+                }
+            } catch(e) {
+                if (e.message !== "AUTH_FAILED") showToast("Network error during deletion.", 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                closeDeleteModal();
+            }
+        }
+
+        /* --- Editor --- */
         function showEditor(isNew = true) {
             document.getElementById('view-library').classList.add('hidden');
             document.getElementById('view-editor').classList.remove('hidden');
@@ -712,6 +1110,10 @@
             if(isNew) {
                 document.getElementById('edit-test-id').value = ''; 
                 document.getElementById('testTitle').value = '';
+                
+                // Automatically set folder placement to current directory if creating from one
+                document.getElementById('testFolderId').value = currentFolderId || '';
+
                 populateEditorLevels([], {}); 
                 
                 document.getElementById('testStartTime').value = '';
@@ -734,20 +1136,22 @@
         }
 
         function editTest(id) {
-            const test = testLibrary.find(t => t.id === id); 
+            const test = allTests.find(t => t.id === id); 
             if(!test) return;
             
             showEditor(false);
             
             document.getElementById('edit-test-id').value = test.id; 
             document.getElementById('testTitle').value = test.title; 
+            document.getElementById('testFolderId').value = test.folderId || '';
             
             populateEditorLevels(test.levels || [], test.levelAttempts || {});
             
             const formatForInput = (isoString) => {
                 if(!isoString) return '';
                 const date = new Date(isoString);
-                date.setMinutes(date.getMinutes() - date.getTimeOffset());
+                if (isNaN(date.getTime())) return '';
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
                 return date.toISOString().slice(0,16);
             };
 
@@ -762,9 +1166,9 @@
             document.getElementById('questions-container').innerHTML = ''; 
             qCounter = 0;
             
-            /* --- STREAMING_CHUNK:Safely Rendering Historical Tests --- */
+            /* --- Safely Rendering Historical Tests --- */
             const fragment = document.createDocumentFragment();
-            if (test.questions && Array.isArray(test.questions)) {
+            if (test.questions && Array.isArray(test.questions) && test.questions.length > 0) {
                 test.questions.forEach(q => addQuestion(q.type, q, fragment));
             } else {
                 addQuestion('mcq', null, fragment);
@@ -787,7 +1191,7 @@
             div.className = `question-block bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 ${borderCol} mb-4 relative`;
             div.dataset.type = type;
             
-            /* --- STREAMING_CHUNK:Safe Input Generation --- */
+            /* --- Safe Input Generation --- */
             let optionsHtml = '';
             if (type === 'mcq' || type === 'msq') {
                 const inputType = type === 'mcq' ? 'radio' : 'checkbox';
@@ -871,7 +1275,6 @@
             `;
             container.appendChild(div);
             
-            // Only trigger full DOM recalculation if we are appending directly to the live container
             if (!targetContainer) {
                 updateQuestionNumbers();
             }
@@ -904,7 +1307,6 @@
             list.querySelectorAll('.option-row').forEach((row, index) => {
                 const input = row.querySelector('.opt-input');
                 if (!input.value) { input.placeholder = `Option ${index + 1}`; }
-                // Also update the radio/checkbox value so indices don't break
                 const radioOrCheckbox = row.querySelector(`input[type="radio"], input[type="checkbox"]`);
                 if(radioOrCheckbox) radioOrCheckbox.value = index;
             });
@@ -914,6 +1316,7 @@
             const file = inputElem.files[0]; if(!file) return;
             try {
                 const res = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) });
+                await checkAuthResponse(res);
                 const data = await res.json(); 
                 await fetch(data.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
                 
@@ -953,6 +1356,7 @@
         async function saveTest(status) {
             const title = document.getElementById('testTitle').value.trim(); 
             const id = document.getElementById('edit-test-id').value;
+            const folderId = document.getElementById('testFolderId').value || null;
             
             const levels = [];
             const levelAttempts = {};
@@ -960,7 +1364,6 @@
             const selectAllCb = document.getElementById('selectAllLevels');
             let hasAllLevels = selectAllCb && selectAllCb.checked;
 
-            // BUG FIX: ALWAYS capture individually checked levels so their specific attempts are saved.
             document.querySelectorAll('.level-cb:checked').forEach(cb => {
                 levels.push(cb.value);
                 const safeId = cb.value.replace(/\s+/g, '-');
@@ -968,7 +1371,6 @@
                 levelAttempts[cb.value] = attemptsVal;
             });
 
-            // Include global 'All Levels' flag if the master toggle is active.
             if (hasAllLevels) {
                 if (!levels.includes('All Levels')) {
                     levels.push('All Levels');
@@ -989,7 +1391,7 @@
             if (startTime) {
                  startTime = new Date(startTime).toISOString();
             } else {
-                 startTime = null; // BUG FIX: Ensure we send null, not empty strings ("")
+                 startTime = null; 
             }
 
             const questions = [];
@@ -1029,7 +1431,7 @@
 
             try {
                 const payload = { 
-                    id, title, levels, levelAttempts, status, questions, 
+                    id, title, folderId, levels, levelAttempts, status, questions, 
                     startTime, timeLimit, passingScore, 
                     releaseResults, showAnswersImmediately 
                 };
@@ -1040,6 +1442,8 @@
                     body: JSON.stringify(payload) 
                 });
                 
+                await checkAuthResponse(res);
+                
                 if(res.ok) { 
                     showToast(`Saved successfully as ${status}.`); 
                     await fetchLibrary(); 
@@ -1048,7 +1452,7 @@
                     throw new Error("Server synchronization failed");
                 }
             } catch (e) { 
-                showToast('Save failed: Network latency or backend issue.', 'error'); 
+                if (e.message !== "AUTH_FAILED") showToast('Save failed: Network latency or backend issue.', 'error'); 
             }
         }
 
