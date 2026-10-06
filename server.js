@@ -12,6 +12,9 @@ app.use(cors());
 app.use(express.json({ limit: '1500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1500mb' }));
 
+
+
+
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key_here_2026';
 
@@ -1486,40 +1489,49 @@ app.post('/api/student/tests/submit', authenticateToken, async (req, res) => {
     }
 });
 
-
 app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, async (req, res) => {
     try {
-        const { text } = req.body;
+        const { text, apiKey } = req.body;
+        
         if (!text) return res.status(400).json({ error: 'Text content from PDF is required.' });
-
-        const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+        
+        // Use the API key provided by the frontend, fallback to env variable if needed
+        const OPENROUTER_API_KEY = apiKey || process.env.OPENROUTER_API_KEY;
         if (!OPENROUTER_API_KEY) {
-            return res.status(500).json({ error: 'OpenRouter API key is not configured in the environment.' });
+            return res.status(400).json({ error: 'OpenRouter API key is required to generate questions.' });
         }
 
         // Expanded string limit to capture massive documents
-        const safeText = text.substring(0, 80000); 
+        const safeText = text.substring(0, 100000); 
 
         const prompt = `
-        You are an expert AI examination parser.
-        Analyze the following text extracted from a document. The text likely contains a massive list of existing test questions, options, and an answer key at the bottom.
+        You are an expert AI examination parser with a flawless accuracy rate.
+        Analyze the following text extracted from a document. The text contains a list of test questions, options, and an answer key.
 
-        YOUR MISSION:
-        1. Extract EVERY SINGLE question found in the text. If there are 110 questions, you MUST extract all 110. Do not stop early.
-        2. Accurately map the correct answer for each question using the answer key provided in the text.
-        3. If the text is just plain study material (no existing questions found), GENERATE 20 high-quality questions covering the core concepts.
+        YOUR MISSION & STRICT RULES:
+        1. EXTRACT ALL QUESTIONS: Extract every single question found. Do not summarize. Strip out the question numbering (e.g., remove "1.", "Q2:") from the beginning of the extracted question text.
+        2. EXTRACT ALL OPTIONS (CRITICAL): Pay close attention. Some questions have 4 options (A, B, C, D), but many have 5, 6, or more (E, F, etc.). YOU MUST EXTRACT EVERY OPTION PROVIDED. NEVER TRUNCATE OPTIONS.
+        3. MAP CORRECT ANSWERS PERFECTLY: Carefully locate the answer key (usually at the bottom of the document) and strictly map the correct answer to each question. Ensure absolute precision.
+        4. IF NO QUESTIONS EXIST: If the text is just plain study material, GENERATE 20 high-quality questions covering the core concepts.
 
         Classify each question into one of exactly three types:
         - 'mcq' (Single correct option)
         - 'msq' (Multiple correct options)
         - 'fib' (Fill in the blanks / Short exact answer)
 
-        IMPORTANT: Your output MUST strictly follow the JSON schema provided.
-        Each object MUST have the following keys:
-        - "text" (string): The question text.
-        - "type" (string): 'mcq', 'msq', or 'fib'.
-        - "options" (array of strings): Options for mcq/msq. Empty [] for fib.
-        - "correctOptions" (array of strings): 0-based indices as strings (e.g. ["0", "2"]). For fib, the exact answer string.
+        OUTPUT FORMAT:
+        Return ONLY a valid JSON object. No explanations, no markdown blocks (do not wrap in \`\`\`json).
+        CRITICAL: To save space, make the JSON as compact as possible.
+        {
+          "questions": [
+            {
+              "text": "The exact question text without the question number.",
+              "type": "mcq", 
+              "options": ["Option A text", "Option B text", "Option C text", "Option D text", "Option E text"], // Include ALL options found.
+              "correctOptions": ["0"] // For mcq/msq, this MUST be an array of stringified 0-based INDICES representing the correct option(s). E.g., if 'A' is correct, use ["0"]. If 'E' is correct, use ["4"].
+            }
+          ]
+        }
 
         Text to analyze:
         """
@@ -1531,65 +1543,53 @@ app.post('/api/admin/generate-questions-from-text', authenticateToken, isAdmin, 
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://geekyresearcher.com", // Recommended by OpenRouter
+                "X-Title": "Geeky Researcher Assessment Engine" // Recommended by OpenRouter
             },
             body: JSON.stringify({
-                model: "openai/gpt-4o-mini", 
-                messages: [{ role: "user", content: prompt }],
-                response_format: {
-                    type: "json_schema",
-                    json_schema: {
-                        name: "exam_parser",
-                        strict: true,
-                        schema: {
-                            type: "object",
-                            properties: {
-                                questions: {
-                                    type: "array",
-                                    items: {
-                                        type: "object",
-                                        properties: {
-                                            text: { type: "string" },
-                                            type: { type: "string", enum: ["mcq", "msq", "fib"] },
-                                            options: { type: "array", items: { type: "string" } },
-                                            correctOptions: { type: "array", items: { type: "string" } }
-                                        },
-                                        required: ["text", "type", "options", "correctOptions"],
-                                        additionalProperties: false
-                                    }
-                                }
-                            },
-                            required: ["questions"],
-                            additionalProperties: false
-                        }
-                    }
+                // Reverted to 8b for safety/speed balance on OpenRouter
+                model: "meta-llama/llama-3.1-8b-instruct", 
+                // This tells OpenRouter to specifically prioritize Groq's ultra-fast servers for this request
+                provider: {
+                    order: ["Groq"] 
                 },
-                max_tokens: 16000, 
-                temperature: 0.1 
+                messages: [
+                    { role: "system", content: "You are a strict data extraction API. You output ONLY pure, raw JSON objects. Never include markdown formatting or explanations." },
+                    { role: "user", content: prompt }
+                ],
+                response_format: { type: "json_object" },
+                temperature: 0.0, // Set to 0 for maximum deterministic accuracy
+                max_tokens: 8000 // CRITICAL FIX: Ensure the AI is given the maximum possible room to finish writing
             })
         });
 
         if (!response.ok) {
-            console.error("OpenRouter API Error:", await response.text());
-            return res.status(500).json({ error: 'Failed to communicate with the AI model.' });
+            const errText = await response.text();
+            console.error("OpenRouter API Error:", errText);
+            return res.status(500).json({ error: 'Failed to communicate with the OpenRouter AI model. Please verify your API key.' });
         }
 
         const data = await response.json();
-        
-        if (data.choices[0].finish_reason === 'length') {
-            console.warn("AI response hit max_tokens length limit. Output may be truncated.");
-        }
-
         let aiText = data.choices[0].message.content.trim();
         
-        // Scrub markdown code block tags if the AI ignores instructions
-        if (aiText.startsWith('```json')) aiText = aiText.slice(7);
-        if (aiText.startsWith('```')) aiText = aiText.slice(3);
-        if (aiText.endsWith('```')) aiText = aiText.slice(0, -3);
-
-        const parsed = JSON.parse(aiText.trim());
+        // Robust JSON extraction (removes markdown formatting if the AI hallucinated it)
+        if (aiText.startsWith('```json')) {
+            aiText = aiText.replace(/^```json/, '').replace(/```$/, '').trim();
+        } else if (aiText.startsWith('```')) {
+            aiText = aiText.replace(/^```/, '').replace(/```$/, '').trim();
+        }
         
-        // Ensure the response matches our expected structure even if schema partially failed
+        let parsed;
+        try {
+            parsed = JSON.parse(aiText);
+        } catch (parseError) {
+            console.error("AI JSON Parse Error. The AI got cut off because the document has too many questions. Raw Output length:", aiText.length);
+            // Fallback for massive docs to prevent full server crash
+            return res.status(500).json({ error: 'The document generated too many questions and hit the AI output limit. Please split the PDF into two smaller chapters/parts.' });
+        }
+        
+        // Ensure the response matches our expected structure
         const questions = Array.isArray(parsed.questions) ? parsed.questions : (Array.isArray(parsed) ? parsed : []);
 
         res.json({ questions });
@@ -1618,6 +1618,51 @@ app.get('/api/student/tests/history', authenticateToken, async (req, res) => {
     }
 });
 
+app.post('/api/admin/test-folders', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { id, title, parentId } = req.body;
+        const folderId = id || uuidv4();
+        const folderData = {
+            id: folderId,
+            title: title,
+            isFolder: true,
+            status: 'folder', // Students look for 'published', so this strictly isolates it
+            parentId: parentId || null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        await dynamoDB.put({ TableName: TABLE_TESTS, Item: folderData }).promise();
+        res.status(201).json({ message: 'Folder created', folderId });
+    } catch (error) { res.status(500).json({ error: 'Failed to create folder' }); }
+});
+
+app.delete('/api/admin/test-folders/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const folderId = req.params.id;
+        
+        // Find and delete the folder 
+        await dynamoDB.delete({ TableName: TABLE_TESTS, Key: { id: folderId } }).promise();
+        
+        // Find and delete all tests located directly inside this folder
+        const testsInside = await dynamoDB.scan({
+            TableName: TABLE_TESTS,
+            FilterExpression: 'folderId = :fid',
+            ExpressionAttributeValues: { ':fid': folderId }
+        }).promise();
+
+        if (testsInside.Items && testsInside.Items.length > 0) {
+            const deletePromises = testsInside.Items.map(test => 
+                dynamoDB.delete({ TableName: TABLE_TESTS, Key: { id: test.id } }).promise()
+            );
+            await Promise.all(deletePromises);
+        }
+
+        res.json({ message: 'Folder and nested tests deleted completely.' });
+    } catch (error) { 
+        console.error("Folder deletion error:", error);
+        res.status(500).json({ error: 'Folder deletion failed' }); 
+    }
+});
 
 /* ==========================================================================
    GLOBAL ERROR HANDLER
