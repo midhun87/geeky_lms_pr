@@ -176,6 +176,7 @@
         body.expanded-mode #syllabus-panel { display: none !important; }
         body.expanded-mode #workspace { padding: 0 !important; gap: 0 !important; }
         body.expanded-mode #reader-panel { border-radius: 0 !important; border: none !important; margin: 0 !important; }
+        body.expanded-mode #mobile-bottom-dock { display: none !important; }
 
         @media (max-width: 1023px) {
             .mobile-hide { display: none !important; }
@@ -328,7 +329,7 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all hidden sm:flex">
+                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
                             <i class="fa-solid fa-expand text-brand-500" id="fullscreen-icon"></i> 
                             <span class="hidden lg:inline text-[13px] font-semibold" id="fullscreen-text">Expand</span>
                         </button>
@@ -356,7 +357,7 @@
         </div>
     </main>
 
-    <div class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
+    <div id="mobile-bottom-dock" class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
         <nav class="bg-white/95 backdrop-blur-xl border border-surface-200/60 shadow-glass rounded-2xl flex justify-around items-center px-2 py-2 pb-safe-offset transition-transform duration-300 relative overflow-hidden">
             <a href="dashboard.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
                 <i class="fa-solid fa-border-all text-[20px] mb-1 relative z-10"></i>
@@ -472,6 +473,8 @@
         // 3. Catch strict backgrounding on iOS/Android (App Switcher)
         window.addEventListener('pagehide', () => privacyLayer.classList.add('active'));
         
+        // NOTE: Hardware OS-level screenshots (Power+Volume) CANNOT be blocked by any web browser. 
+        // This is a strict Apple/Google OS limitation. Only native apps can block hardware screenshots.
         // ----------------------------------------------------------------
 
         setInterval(() => {
@@ -646,8 +649,8 @@
                 const pdf = await loadingTask.promise;
                 loader.style.display = 'none'; 
                 
-                // PRODUCTION FIX: Bumped multiplier to 3.0x for ultimate clarity, securely capped at 5 to prevent mobile RAM crashes
-                const outputScale = Math.min((window.devicePixelRatio || 1) * 3.0, 5); 
+                // PRODUCTION FIX: Bumped multiplier to 4.0x for absolute maximum mobile clarity, securely capped at 7
+                const outputScale = Math.min((window.devicePixelRatio || 1) * 4.0, 7); 
                 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
