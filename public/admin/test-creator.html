@@ -2,293 +2,377 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geeky Researcher | Enterprise Test Creator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Geeky Researcher | Assessments</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- PDF.js for Client-Side Text Extraction -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        cbt: ['Arial', 'Helvetica', 'sans-serif']
+                    }, 
+                    colors: { 
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
+                        surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        cbt: { main: '#1a365d', sec: '#2563eb', border: '#cbd5e1', bg: '#f1f5f9' }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
+                        'card': '0 2px 12px rgba(0,0,0,0.03)',
+                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+                        'mnc': '0 4px 12px rgba(0,0,0,0.05)'
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.3s ease-out',
-                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideInRight: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                        slideUp: { '0%': { transform: 'translateY(16px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
-                }
-            }
+                } 
+            } 
         }
     </script>
+    
     <style>
+        body { 
+            background-color: #f8fafc; 
+            color: #334155; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior-y: none;
+            
+            /* Aggressive Selection Prevention */
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        /* HARD BLOCK PRINTING */
+        @media print {
+            body { display: none !important; }
+            html { background-color: #000000; }
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .sidebar-link { transition: all 0.25s ease; border-radius: 0.875rem; margin-bottom: 0.25rem; position: relative; }
+        .sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
+        .sidebar-link.active { background: #f0fdf4; color: #16a34a; font-weight: 600; }
+        .sidebar-link.active i { color: #16a34a; }
+        .sidebar-link.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); height: 60%; width: 4px; background: #16a34a; border-radius: 0 4px 4px 0; }
+
+        .panel { background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-hover:hover { box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.05); transform: translateY(-2px); }
+
+        /* Privacy Layer */
+        #privacy-blur-layer {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.1s ease;
+        }
+        #privacy-blur-layer.active { opacity: 1; pointer-events: auto; }
+
+        /* ----- GOVT EXAM CBT UI STYLES ----- */
+        .cbt-opt-label { 
+            display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; 
+            border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; 
+            background: #ffffff; margin-bottom: 0.5rem; transition: background 0.2s;
+        }
+        .cbt-opt-label:hover { background: #f1f5f9; }
+        .cbt-opt-label:has(input:checked) { 
+            background: #eff6ff; border-color: #2563eb; 
+        }
+        .cbt-opt-label:has(input:checked) span { color: #000; font-weight: bold; }
         
-        body { background-color: #f1f5f9; color: #1e293b; }
+        .palette-btn {
+            width: 42px; height: 38px; max-width: none; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; border: 1px solid #c0c0c0; background: #f0f0f0; color: #000; margin: 0 auto;
+            font-family: Arial, Helvetica, sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .palette-btn:hover { background: #e2e8f0; }
+        .palette-btn.not-answered { background: #ed2a26; color: white; border-color: #d1221e; border-radius: 4px 4px 0 0; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+        .palette-btn.answered { background: #26a65b; color: white; border-color: #1e8748; border-radius: 4px 4px 0 0; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
+        .palette-btn.marked { background: #5a54a4; color: white; border-color: #484384; border-radius: 50%; }
+        .palette-btn.marked-answered { background: #5a54a4; color: white; border-color: #484384; border-radius: 50%; position: relative; }
+        .palette-btn.marked-answered::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background-color: #26a65b; border-radius: 50%; border: 2px solid white; }
+        .palette-btn.active-q { box-shadow: 0 0 0 2px #000; outline: 1px solid #2563eb; outline-offset: 1px; }
 
-        .nav-link {
-            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
-            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
-        }
-        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
-        .nav-link.active { background-color: #f0fdfa; color: #0d9488; border-right: 3px solid #14b8a6; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Form Inputs */
-        .admin-input {
-            width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem;
-            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem;
-            transition: all 0.2s ease-in-out; color: #334155;
-        }
-        .admin-input:focus { background-color: #ffffff; border-color: #14b8a6; outline: none; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15); }
-        .admin-input:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.6; }
-
-        /* Specialized Buttons */
-        .q-type-btn {
-            flex: 1; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 0.75rem; font-weight: 600; font-size: 0.875rem; color: #64748b; transition: all 0.2s; background: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; justify-content: center;
-        }
-        .q-type-btn:hover { border-color: #0d9488; color: #0f766e; background: #f0fdfa; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
-        .q-type-btn i { font-size: 1.25rem; }
-
-        /* Progress Bar Animation */
-        .progress-bar-striped {
-            background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-            background-size: 1rem 1rem;
-        }
-        .animate-stripes {
-            animation: progress-stripes 1s linear infinite;
-        }
-        @keyframes progress-stripes {
-            from { background-position: 1rem 0; }
-            to { background-position: 0 0; }
-        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
     </style>
 </head>
-<body class="antialiased w-full h-screen flex overflow-hidden">
 
-    <!-- Mobile Top Navigation Bar -->
-    <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
-        <div class="flex items-center gap-2">
-            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
-            <span class="font-bold text-slate-800 text-sm">Geeky Researcher</span>
+<body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
+
+    <!-- ========================================== -->
+    <!-- SECURE EXAM ENVIRONMENT (GOVT CBT STYLE)   -->
+    <!-- ========================================== -->
+    <div id="active-test-area" class="hidden fixed inset-0 z-[100] bg-white flex-col w-full h-full font-cbt tracking-normal text-[14px]">
+        
+        <!-- Top Header -->
+        <div class="bg-[#1a365d] text-white flex justify-between items-center px-6 py-3 shrink-0 border-b-4 border-[#2563eb]">
+            <h2 id="active-test-title" class="text-[18px] md:text-[20px] font-bold tracking-wide">Exam Title</h2>
         </div>
-        <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-slate-800 focus:outline-none p-2 rounded-md bg-slate-50">
-            <i class="fa-solid fa-bars text-lg"></i>
-        </button>
+
+        <!-- Layout Body -->
+        <div class="flex-1 flex overflow-hidden relative"> 
+            
+            <!-- Left: Question Panel -->
+            <div class="flex-1 flex flex-col bg-white overflow-hidden relative border-r border-[#cbd5e1]">
+                
+                <!-- Section / Timer Bar -->
+                <div class="bg-[#f1f5f9] px-6 py-2 border-b border-[#cbd5e1] flex justify-between items-center font-bold text-[#1a365d] shadow-sm shrink-0">
+                    <div>Section: <span class="bg-[#2563eb] text-white px-3 py-1 rounded text-sm ml-2">General Test</span></div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-600">Time Left:</span> 
+                        <span id="exam-timer" class="text-[#dc2626] text-lg bg-white px-3 py-0.5 border border-[#cbd5e1] rounded font-mono shadow-inner">00:00:00</span>
+                    </div>
+                </div>
+
+                <!-- Header Info for Question -->
+                <div class="px-6 py-3 border-b border-[#cbd5e1] flex justify-between items-center shrink-0 z-10 bg-white"> 
+                    <div class="font-bold text-black text-[16px]">
+                        Question No. <span id="q-current-display" class="text-[#dc2626] text-xl ml-1">1</span>
+                    </div>
+                    <div class="flex gap-4 text-xs font-bold text-slate-700">
+                        <div>Marks for correct answer: <span id="q-marks-positive" class="text-[#26a65b] ml-1">3</span></div>
+                        <div class="text-slate-300">|</div>
+                        <div>Negative Marks: <span id="q-marks-negative" class="text-[#ed2a26] ml-1">1</span></div>
+                    </div>
+                </div>
+
+                <!-- Scrollable Question Content -->
+                <div class="flex-1 overflow-y-auto p-6 lg:p-8 hide-scrollbar bg-white" id="questions-container">
+                    <!-- Injected via JS -->
+                </div>
+
+                <!-- Footer Controls -->
+                <div class="p-3 lg:p-4 border-t border-[#cbd5e1] bg-[#f8fafc] flex justify-between items-center gap-3 shrink-0">
+                    <div class="flex gap-2">
+                        <button onclick="markForReview()" id="btn-mark" class="px-4 py-2.5 bg-white border border-[#cbd5e1] text-black font-bold rounded hover:bg-slate-100 transition text-[13px] shadow-sm">
+                            Mark for Review & Next
+                        </button>
+                        <button onclick="clearResponse()" class="px-4 py-2.5 bg-white border border-[#cbd5e1] text-black font-bold rounded hover:bg-slate-100 transition shadow-sm text-[13px]">
+                            Clear Response
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-6 py-2.5 bg-white text-black border border-[#cbd5e1] rounded font-bold hover:bg-slate-100 transition text-[13px] shadow-sm disabled:opacity-50">
+                            Previous
+                        </button>
+                        <button onclick="saveAndNext()" id="btn-next" class="px-8 py-2.5 bg-[#2563eb] text-white rounded font-bold hover:bg-[#1d4ed8] transition shadow-sm text-[13px]">
+                            Save & Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Question Palette -->
+            <div id="palette-panel" class="w-[280px] lg:w-[320px] bg-[#eef2f6] flex flex-col shrink-0 h-full border-l border-[#cbd5e1]"> 
+                
+                <!-- Candidate Info Govt Style -->
+                <div class="p-4 flex items-start gap-4 border-b border-[#cbd5e1] bg-white shrink-0">
+                    <div class="w-[85px] h-[100px] bg-slate-100 border border-[#cbd5e1] p-1 shrink-0">
+                         <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <div class="mt-1 flex flex-col min-w-0">
+                         <span class="text-[14px] font-bold text-black truncate" id="exam-candidate-name">Student Name</span>
+                    </div>
+                </div>
+
+                <!-- Legend Govt Style -->
+                <div class="p-3 border-b border-[#cbd5e1] shrink-0 grid grid-cols-2 gap-y-3 gap-x-2 text-[12px] font-medium text-black bg-[#e2f3f5]">
+                    <div class="flex items-center gap-2"><span class="w-7 h-7 flex items-center justify-center text-white text-[12px] font-bold bg-[#26a65b] shrink-0" style="clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);">0</span> Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-7 h-7 flex items-center justify-center text-white text-[12px] font-bold bg-[#ed2a26] shrink-0" style="clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);">0</span> Not Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-7 h-7 rounded flex items-center justify-center text-black text-[12px] font-bold bg-[#f0f0f0] border border-[#c0c0c0] shrink-0">0</span> Not Visited</div>
+                    <div class="flex items-center gap-2"><span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[12px] font-bold bg-[#5a54a4] shrink-0">0</span> Marked</div>
+                    <div class="flex items-start gap-2 col-span-2"><span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[12px] font-bold bg-[#5a54a4] shrink-0 relative"><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#26a65b] rounded-full border border-white"></span>0</span> Answered & Marked for Review</div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4 bg-[#eef2f6] relative">
+                    <div class="bg-[#2563eb] text-white px-3 py-1.5 font-bold text-sm mb-3 rounded-sm shadow-sm inline-block">General Test</div>
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2 mt-2">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Submit Govt Style -->
+                <div class="p-4 bg-[#eef2f6] border-t border-[#cbd5e1] shrink-0 flex justify-center">
+                    <button onclick="confirmSubmitTest()" class="w-full bg-[#26a65b] hover:bg-[#1e8748] border border-[#1e8748] text-white py-2.5 rounded font-bold text-[15px] shadow-sm transition">Submit</button>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- NEW FOOTER AS REQUESTED -->
+        <div class="h-10 bg-[#e2e8f0] border-t border-[#cbd5e1] flex items-center justify-center text-[12px] sm:text-[13px] text-gray-700 font-medium shrink-0 z-20 w-full relative">
+            <span class="text-center px-4">Examination system Proctorix-api(proctorix.in) Designed & developed by <a href="https://www.xetatechsolutions.com/" target="_blank" class="text-[#2563eb] hover:underline font-bold">Xeta Tech Solutions</a></span>
+        </div>
     </div>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
-        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
-            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
-            <div>
-                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Researcher</div>
-                <div class="text-brand-500 text-[11px] font-medium uppercase tracking-wider">Admin Portal</div>
-            </div>
+    <!-- Security Blackout Shield -->
+    <div id="privacy-blur-layer">
+        <div class="w-20 h-20 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-rose-200 shadow-2xl">
+            <i class="fa-solid fa-shield-halved"></i>
         </div>
-        
-        <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
-            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
-            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
-            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
-            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
-            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
-            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
-            <a href="test-creator.html" class="nav-link active"><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
-            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
-        </nav>
-        
-        <div class="p-4 border-t border-slate-100">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-            </button>
+        <h2 id="shield-title" class="text-3xl font-extrabold text-white mb-3 tracking-tight">Protected Environment</h2>
+        <p id="shield-msg" class="text-surface-300 text-[15px] font-medium px-4 text-center max-w-md">Screen-capturing and copying are strictly prohibited.</p>
+        <button id="shield-btn" class="mt-8 px-8 py-3.5 bg-white text-surface-900 hover:bg-surface-100 rounded-xl font-bold transition shadow-lg text-[15px]">Return to Assessment</button>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <aside id="main-sidebar" class="w-[280px] hidden lg:flex flex-col shrink-0 z-30 bg-white border-r border-surface-200 transition-all duration-300">
+        <div class="h-full flex flex-col overflow-hidden">
+            <div class="h-20 flex items-center px-6 gap-3 z-10 pt-safe">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-surface-100">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="w-full h-full object-cover">
+                </div>
+                <div class="flex flex-col justify-center min-w-0">
+                    <span class="text-surface-900 font-bold tracking-tight text-[16px] truncate">Geeky Researcher</span>
+                    <span class="text-brand-600 text-[11px] font-bold tracking-wider uppercase">Scholar Portal</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-4 py-8 space-y-6 z-10 hide-scrollbar">
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Learn</p>
+                    <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-border-all w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Overview</span>
+                    </a>
+                    <a href="chapters.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-book-open w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Study Materials</span>
+                    </a>
+                    <a href="media-viewer.html" class="sidebar-link flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-circle-play w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Video Lectures</span>
+                    </a>
+                </div>
+                <div>
+                    <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Evaluate</p>
+                    <a href="assessment.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-surface-600">
+                        <i class="fa-solid fa-pen-ruler w-5 text-[18px] text-surface-400 transition-colors"></i> 
+                        <span class="font-medium text-[15px]">Assessments</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="p-4 z-10 pb-safe">
+                <div class="rounded-2xl p-3 flex items-center gap-3 bg-surface-50 border border-surface-200 hover:border-surface-300 hover:bg-surface-100 transition-all cursor-pointer group">
+                    <div id="sidebar-avatar" class="w-10 h-10 bg-surface-800 text-white rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">S</div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-name" class="text-[14px] font-bold text-surface-900 truncate">Student Name</p>
+                        <p class="text-[12px] text-surface-500 truncate font-medium" id="sidebar-plan-label">Plan Active</p>
+                    </div>
+                    <button onclick="logout()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0" title="Logout">
+                        <i class="fa-solid fa-power-off text-[14px]"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full w-full pt-16 md:pt-0 bg-slate-50 relative z-0">
+    <!-- Main Workspace (Pre-Exam Dashboard) -->
+    <main id="main-content" class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50 transition-all duration-300">
         
-        <!-- View: Library -->
-        <div id="view-library" class="flex flex-col h-full overflow-hidden">
-            <div class="p-6 md:p-8 shrink-0 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-slate-200 bg-white shadow-sm z-10">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Assessment Engine</h2>
-                    <p class="text-sm text-slate-500 mt-1">Design examinations, assign targeted levels, and set rules.</p>
+        <header id="main-header" class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center bg-white/75 backdrop-blur-md sticky top-0 pt-safe border-b border-surface-200/50">
+            <div class="flex items-center gap-3 lg:hidden">
+                <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm border border-surface-200">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
                 </div>
-                <div class="flex gap-2 w-full md:w-auto">
-                    <!-- New Folder Button -->
-                    <button class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none" onclick="promptCreateFolder()">
-                        <i class="fa-solid fa-folder-plus text-brand-500"></i> New Folder
-                    </button>
-                    <!-- AI Generator Button -->
-                    <input type="file" id="pdf-upload" accept="application/pdf" class="hidden" onchange="handlePdfUpload(event)">
-                    <button id="btn-ai-gen" onclick="promptForApiKey()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate
-                    </button>
-                    <!-- Standard New Test -->
-                    <button class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm whitespace-nowrap flex-1 md:flex-none" onclick="showEditor()">
-                        <i class="fa-solid fa-plus"></i> New Assessment
-                    </button>
-                </div>
+                <span class="text-surface-900 font-bold tracking-tight text-[15px]">Assessments</span>
             </div>
             
-            <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/50">
-                
-                <!-- Breadcrumbs -->
-                <div id="breadcrumb-container" class="mb-5 flex items-center gap-2 text-sm font-semibold text-slate-600 px-1 hidden">
-                    <!-- Populated by JS -->
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="library-grid">
-                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-brand-500"></i>
-                        <span class="text-sm font-medium">Loading assessments...</span>
-                    </div>
-                </div>
+            <div class="hidden lg:flex items-center gap-2 text-[14px] font-medium text-surface-400">
+                <a href="dashboard.html" class="hover:text-surface-900 transition-colors">Dashboard</a>
+                <span class="text-surface-300 mx-1">/</span>
+                <span class="text-surface-900">Assessments</span>
             </div>
-        </div>
-
-        <!-- View: Editor -->
-        <div id="view-editor" class="hidden flex-col h-full overflow-hidden bg-white">
             
-            <!-- Editor Header -->
-            <div class="border-b border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between sm:items-center bg-white shadow-sm z-20 shrink-0 gap-4">
-                <div class="flex items-center gap-4">
-                    <button onclick="hideEditor()" class="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center justify-center transition text-slate-500">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900 tracking-tight" id="editor-title-display">New Assessment Protocol</h2>
-                    </div>
-                </div>
-                <div class="flex gap-3">
-                    <button class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg transition-colors shadow-sm text-sm" onclick="saveTest('draft')">Save Draft</button>
-                    <button class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-5 rounded-lg transition-colors shadow-sm text-sm" onclick="saveTest('published')">Publish Live</button>
-                </div>
+            <div class="flex items-center gap-3 ml-auto">
+                <button class="hidden md:flex w-10 h-10 items-center justify-center text-surface-600 hover:text-surface-900 bg-white border border-surface-200 rounded-full shadow-sm transition-all hover:shadow">
+                    <i class="fa-regular fa-bell text-[16px]"></i>
+                </button>
+                <button onclick="logout()" class="lg:hidden w-10 h-10 flex items-center justify-center text-surface-600 hover:text-rose-600 bg-white border border-surface-200 rounded-full shadow-sm transition-colors">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-[15px]"></i>
+                </button>
             </div>
+        </header>
 
-            <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-slate-50">
+        <!-- UI FIX: Re-structured paddings so mobile bottom dock NEVER blocks the last row -->
+        <div id="dashboard-scroll-area" class="flex-1 overflow-y-auto w-full px-4 pt-4 pb-36 md:px-8 md:pt-8 md:pb-40 lg:pb-12 hide-scrollbar scroll-smooth">
+            <div class="max-w-5xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
                 
-                <!-- LEFT: Main Questions Canvas -->
-                <div class="flex-1 overflow-y-auto p-6 lg:p-8">
-                    
-                    <!-- Title Configuration -->
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-6">
-                        <input type="hidden" id="edit-test-id">
-                        <label class="block text-xs font-bold text-brand-600 uppercase tracking-wider mb-2">Assessment Title</label>
-                        <input type="text" id="testTitle" class="w-full text-xl md:text-2xl font-bold border-none bg-transparent outline-none placeholder-slate-300 text-slate-900" placeholder="e.g., Final Examination: Cellular Pathology">
+                <!-- Clean Page Header -->
+                <div class="panel p-6 sm:p-10 bg-white overflow-hidden relative shadow-sm border-surface-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2 relative z-10">
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-surface-900 tracking-tight leading-tight">Course Assessments</h1>
+                        <p class="text-[14px] text-surface-500 font-medium max-w-xl leading-relaxed">
+                            Complete your assigned assessments below. All tests are conducted in a secure, locked environment to ensure academic integrity.
+                        </p>
                     </div>
-
-                    <!-- Dynamic Questions Container -->
-                    <div id="questions-container" class="space-y-6 mb-6"></div>
-                    
-                    <!-- Append Question UI -->
-                    <div class="bg-white rounded-xl border-2 border-dashed border-slate-300 p-6 flex flex-col md:flex-row gap-6 justify-center items-center">
-                        <span class="font-bold text-slate-600 text-sm whitespace-nowrap"><i class="fa-solid fa-plus-circle text-slate-400 mr-2"></i> Add Question Type:</span>
-                        <div class="flex w-full md:w-auto gap-3 flex-1">
-                            <button onclick="addQuestion('mcq')" class="q-type-btn !flex-row !p-3">
-                                <i class="fa-regular fa-circle-dot text-brand-500"></i> <span class="hidden sm:inline">Single Correct</span><span class="sm:hidden">MCQ</span>
-                            </button>
-                            <button onclick="addQuestion('msq')" class="q-type-btn !flex-row !p-3">
-                                <i class="fa-solid fa-check-double text-blue-500"></i> <span class="hidden sm:inline">Multiple Correct</span><span class="sm:hidden">MSQ</span>
-                            </button>
-                            <button onclick="addQuestion('fib')" class="q-type-btn !flex-row !p-3">
-                                <i class="fa-solid fa-pen-clip text-amber-500"></i> <span class="hidden sm:inline">Short Answer</span><span class="sm:hidden">FIB</span>
-                            </button>
-                        </div>
+                    <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-brand-100 shrink-0">
+                        <i class="fa-solid fa-award"></i>
                     </div>
                 </div>
 
-                <!-- RIGHT: Configuration Sidebar -->
-                <div class="w-full lg:w-[320px] xl:w-[350px] shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-slate-200 bg-white p-6 space-y-6 lg:shadow-[-4px_0_15px_rgba(0,0,0,0.02)]">
-                    
-                    <!-- Folder Placement -->
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded bg-purple-50 text-purple-600 flex items-center justify-center"><i class="fa-solid fa-folder-tree text-xs"></i></div> Placement
-                        </h3>
-                        <p class="text-[11px] text-slate-500 mb-2">Select the folder to save this assessment into.</p>
-                        <select id="testFolderId" class="admin-input !py-2 !text-xs font-semibold">
-                            <option value="">Root Directory</option>
-                            <!-- Populated dynamically via JS -->
-                        </select>
+                <div class="space-y-4">
+                    <!-- Tabs Navigation -->
+                    <div class="flex gap-6 border-b border-surface-200 mb-6">
+                        <button onclick="switchTab('pending')" id="tab-pending" class="pb-3 border-b-2 border-brand-600 font-bold text-brand-600 transition-colors text-[15px]">Pending Examinations</button>
+                        <button onclick="switchTab('history')" id="tab-history" class="pb-3 border-b-2 border-transparent font-bold text-surface-500 hover:text-surface-800 transition-colors text-[15px]">Test History</button>
                     </div>
 
-                    <!-- Access & Attempts -->
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded bg-brand-50 text-brand-600 flex items-center justify-center"><i class="fa-solid fa-users text-xs"></i></div> Target Audience
-                        </h3>
-                        <p class="text-[11px] text-slate-500 mb-3">Set access and max attempts per level.</p>
-                        
-                        <div id="levelCheckboxes" class="space-y-2 max-h-64 overflow-y-auto pr-1">
-                            <!-- Populated dynamically via JS -->
+                    <!-- Pending Examinations Container -->
+                    <div id="pending-container" class="space-y-4 block">
+                        <div class="flex justify-between items-center px-2">
+                            <!-- Breadcrumbs for Folder Navigation -->
+                            <div id="breadcrumb-container" class="flex items-center gap-2 text-[15px] font-bold text-surface-900">
+                                <button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5">
+                                    <i class="fa-solid fa-house text-sm text-surface-400"></i> Assigned
+                                </button>
+                                <!-- Injected via JS -->
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Scheduler -->
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-2 pb-2 border-b border-slate-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded bg-blue-50 text-blue-500 flex items-center justify-center"><i class="fa-solid fa-calendar-alt text-xs"></i></div> Availability
-                        </h3>
-                        <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">Leave blank to make available instantly. Test concludes automatically when the user's access duration expires.</p>
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Commences (Starts)</label>
-                                <input type="datetime-local" id="testStartTime" class="admin-input !py-2 !text-xs mt-1">
+                        <div id="test-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-4">
+                            <div class="col-span-full py-16 text-center text-surface-400 font-medium flex flex-col items-center">
+                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
+                                Fetching assigned examinations...
                             </div>
                         </div>
                     </div>
 
-                    <!-- Exam Rules -->
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded bg-amber-50 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-scale-balanced text-xs"></i></div> Rules
-                        </h3>
-                        <div class="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-100">
-                            <div class="flex items-center justify-between">
-                                <label class="text-xs font-semibold text-slate-700">Duration (Mins)</label>
-                                <input type="number" id="testTimeLimit" class="admin-input !w-20 !py-1 text-center font-bold text-brand-600 bg-white" value="60" min="1">
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <label class="text-xs font-semibold text-slate-700">Passing Mark (%)</label>
-                                <input type="number" id="testPassingScore" class="admin-input !w-20 !py-1 text-center font-bold text-brand-600 bg-white" value="50" min="1" max="100">
-                            </div>
+                    <!-- Test History Container -->
+                    <div id="history-container" class="space-y-4 hidden">
+                        <div class="flex justify-between items-center px-2">
+                            <h3 class="font-bold text-surface-900 text-[16px] md:text-[18px]">Previous Attempts</h3>
                         </div>
-                    </div>
 
-                    <!-- Post-Exam Rules -->
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-3 pb-2 border-b border-slate-100 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded bg-emerald-50 text-emerald-500 flex items-center justify-center"><i class="fa-solid fa-eye text-xs"></i></div> Post-Submission
-                        </h3>
-                        <div class="space-y-3">
-                            <label class="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
-                                <input type="checkbox" id="testReleaseResults" class="mt-0.5 text-brand-600 rounded" checked> 
-                                <span class="text-xs text-slate-700 font-medium leading-tight">Display score instantly after submission</span>
-                            </label>
-                            <label class="flex items-start gap-3 cursor-pointer p-2 rounded hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
-                                <input type="checkbox" id="testShowAnswers" class="mt-0.5 text-brand-600 rounded" checked> 
-                                <span class="text-xs text-slate-700 font-medium leading-tight">Reveal correct answer key in review</span>
-                            </label>
+                        <div id="history-grid" class="flex flex-col gap-4">
+                            <div class="py-16 text-center text-surface-400 font-medium flex flex-col items-center">
+                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
+                                Loading historical data...
+                            </div>
                         </div>
                     </div>
 
@@ -297,192 +381,154 @@
         </div>
     </main>
 
-    <!-- Folder Creation Modal -->
-    <div id="folder-modal" class="fixed inset-0 z-[60] hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeFolderModal()"></div>
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
-            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto p-6 border border-slate-100">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-600">
-                        <i class="fa-solid fa-folder-plus text-lg"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900 tracking-tight">Create New Folder</h3>
-                </div>
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Folder Name</label>
-                <input type="text" id="folderNameInput" class="admin-input w-full mb-6 font-medium text-slate-800" placeholder="e.g., Biology Semester 1">
-                <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100">
-                    <button onclick="closeFolderModal()" class="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-                    <button onclick="saveFolder()" class="px-5 py-2.5 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors shadow-sm">Save Folder</button>
-                </div>
-            </div>
-        </div>
+    <div id="mobile-dock" class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
+        <nav class="bg-white/90 backdrop-blur-xl border border-surface-200/60 shadow-glass rounded-2xl flex justify-around items-center px-2 py-2 pb-safe-offset transition-transform duration-300">
+            <a href="dashboard.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-border-all text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="chapters.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-book-open text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Study</span>
+            </a>
+            <a href="media-viewer.html" class="flex flex-col items-center justify-center w-16 h-14 text-surface-400 hover:text-surface-800 transition-colors relative group">
+                <i class="fa-solid fa-circle-play text-[20px] mb-1"></i>
+                <span class="text-[10px] font-bold">Watch</span>
+            </a>
+            <a href="assessment.html" class="flex flex-col items-center justify-center w-16 h-14 relative group">
+                <div class="absolute inset-0 bg-brand-50 rounded-xl transition-opacity opacity-100"></div>
+                <i class="fa-solid fa-pen-ruler text-[20px] mb-1 text-brand-600 relative z-10"></i>
+                <span class="text-[10px] font-bold text-brand-700 relative z-10">Test</span>
+            </a>
+        </nav>
     </div>
-
-    <!-- API Key Modal -->
-    <div id="api-key-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
-        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeApiModal()"></div>
-        <div class="relative bg-white rounded-xl shadow-xl w-full max-w-md p-8 z-10 animate-fade-in mx-4 border border-slate-200">
-            <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-                <i class="fa-solid fa-key text-xl text-indigo-500"></i>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-2">OpenRouter API Key Required</h3>
-            <p class="text-sm text-slate-500 mb-6">Please provide your OpenRouter API key to power the AI Generator. Your key is stored securely in your browser's local storage.</p>
-            
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">API Key</label>
-            <input type="password" id="openrouter-api-key-input" class="admin-input w-full mb-6 font-mono text-sm" placeholder="sk-or-v1-...">
-            
-            <div class="flex justify-end gap-3">
-                <button onclick="closeApiModal()" class="px-5 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-                <button onclick="saveApiKeyAndProceed()" class="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-sm">Save & Proceed</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- NEW Immersive Percentage-Based AI Loading Overlay -->
-    <div id="ai-loading-overlay" class="fixed inset-0 z-[200] bg-slate-900/90 backdrop-blur-md hidden flex-col items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center relative overflow-hidden">
-            <!-- Decorative abstract background -->
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl"></div>
-            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-500/10 rounded-full blur-2xl"></div>
-            
-            <div class="relative z-10">
-                <div class="w-20 h-20 mx-auto bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-indigo-100 relative">
-                    <i id="ai-magic-icon" class="fa-solid fa-wand-magic-sparkles text-4xl text-indigo-500 transition-all duration-300"></i>
-                    
-                    <!-- Circular Percentage Display -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span id="ai-percentage-text" class="text-xl font-bold text-indigo-600 hidden">0%</span>
-                    </div>
-                </div>
-                
-                <h3 class="text-2xl font-bold text-slate-900 tracking-tight mb-2">Proctorix AI Engine</h3>
-                
-                <!-- Dynamic Text Status -->
-                <p id="ai-status-text" class="text-sm font-medium text-indigo-600 mb-6 h-5 flex items-center justify-center leading-snug">Initializing sequence...</p>
-                
-                <!-- Smooth Progress Bar -->
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-8 shadow-inner border border-slate-200/50">
-                    <div id="ai-progress-fill" class="h-full bg-indigo-500 progress-bar-striped animate-stripes transition-all duration-300 ease-out w-0 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]"></div>
-                </div>
-
-                <!-- Phase Indicators -->
-                <div class="space-y-4 text-left border-t border-slate-100 pt-6">
-                    <div id="ai-step-1" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-1"></i>
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-1"></i>
-                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-1"></i>
-                        <span>Reading Document Data</span>
-                    </div>
-                    <div id="ai-step-2" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-2"></i>
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-2"></i>
-                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-2"></i>
-                        <span>AI Generating Questions (Groq LPU)</span>
-                    </div>
-                    <div id="ai-step-3" class="flex items-center gap-3 text-sm font-semibold text-slate-400 transition-colors duration-300">
-                        <i class="fa-solid fa-circle-notch fa-spin w-5 text-center text-lg hidden" id="spinner-3"></i>
-                        <i class="fa-solid fa-circle-check w-5 text-center text-lg hidden" id="check-3"></i>
-                        <i class="fa-regular fa-circle w-5 text-center text-lg" id="circle-3"></i>
-                        <span>Structuring Editor Format</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 z-[60] hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0 pointer-events-none">
-            <div class="relative bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full animate-fade-in pointer-events-auto">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fa-solid fa-trash-can text-red-600" id="delete-icon"></i>
-                        </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-semibold text-slate-900" id="delete-title">Delete Assessment</h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-slate-500" id="delete-desc">Are you sure you want to permanently delete this item? This action cannot be undone.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-100 gap-2">
-                    <button type="button" id="confirm-delete-btn" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:w-auto sm:text-sm transition-colors">
-                        Delete Permanently
-                    </button>
-                    <button type="button" onclick="closeDeleteModal()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm transition-colors">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-4 right-4 z-[70] flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // Setup PDF.js Worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
         const API_BASE_URL = '/api';
-        const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-        let qCounter = 0; 
+        let token = localStorage.getItem('token');
         
-        // Folder System Variables
+        let availableFolders = [];
+        let availableTests = [];
+        let testHistory = [];
+        
         let currentFolderId = null;
-        let allFolders = [];
-        let allTests = [];
-        let testToDelete = null;
-        let isDeletingFolder = false;
+        let currentTest = null;
+        let timerInterval = null;
+        
+        let currentQuestionIndex = 0;
+        let questionStates = [];
 
-        // Progress bar interval variable
-        let aiProgressInterval;
+        // --- SECURITY ENGINE FLAGS ---
+        let isTestActive = false;
 
-        if (!token || !user || user.role !== 'admin') { localStorage.clear(); window.location.href = '../login.html'; }
+        if (!token) {
+            token = "mock_token_for_preview";
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify({ role: 'student', name: 'Dr. Scholar', paymentPlan: '100' }));
+        }
 
-        // Centralized API Auth Checker to handle 401 (Session conflicts/expirations) gracefully
-        async function checkAuthResponse(res) {
-            if (res.status === 401 || res.status === 403) {
-                let msg = "Session invalid or expired. Logging out...";
-                try {
-                    const data = await res.json();
-                    if (data.message || data.error) msg = data.message || data.error;
-                } catch(e) {}
-                showToast(msg, "error");
-                setTimeout(logout, 2500);
-                throw new Error("AUTH_FAILED");
+        /* --- DYNAMIC SECURITY & ANTI-CHEAT ENGINE --- */
+        
+        // 1. Prevent Right-Click
+        document.addEventListener('contextmenu', e => { 
+            e.preventDefault(); 
+            showPrivacyShield("Action Blocked", "Right-clicking is disabled during the assessment."); 
+        });
+        
+        // 2. Prevent Copy/Cut/Paste
+        document.addEventListener('copy', e => { 
+            e.preventDefault(); 
+            showPrivacyShield("Action Blocked", "Copying content is strictly prohibited."); 
+        });
+        document.addEventListener('cut', e => { 
+            e.preventDefault(); 
+            showPrivacyShield("Action Blocked", "Cutting content is strictly prohibited."); 
+        });
+        document.addEventListener('paste', e => { e.preventDefault(); });
+
+        // 3. Block Developer Tools & Screenshots
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
+                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
+                e.preventDefault(); 
+                showPrivacyShield("Developer Tools", "Developer tools are disabled in this environment."); 
+                return false;
             }
-            return res;
-        }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
+                try { navigator.clipboard.writeText(''); } catch(err) {} 
+                showPrivacyShield("Screenshot Attempt", "Taking screenshots is a violation of exam integrity. Please focus on the assessment.");
+            }
+        });
 
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); 
-            } else {
-                sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden');
+        // 4. Content Blocking on Tab Switch / Fullscreen Exit
+        function showPrivacyShield(title, message, requiresFullscreen = false) {
+            const layer = document.getElementById('privacy-blur-layer');
+            const titleEl = document.getElementById('shield-title');
+            const msgEl = document.getElementById('shield-msg');
+            const btn = document.getElementById('shield-btn');
+            
+            if(layer && isTestActive) {
+                titleEl.textContent = title;
+                msgEl.textContent = message;
+                
+                btn.onclick = async () => {
+                    if (requiresFullscreen) {
+                        try {
+                            const elem = document.documentElement;
+                            if (elem.requestFullscreen) { await elem.requestFullscreen(); } 
+                            else if (elem.webkitRequestFullscreen) { await elem.webkitRequestFullscreen(); }
+                            layer.classList.remove('active');
+                        } catch (err) {
+                            alert("You must allow fullscreen to resume the exam.");
+                        }
+                    } else {
+                        layer.classList.remove('active');
+                    }
+                };
+                layer.classList.add('active');
             }
         }
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-white border-l-4 border-emerald-500' : 'bg-white border-l-4 border-red-500';
-            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : type === 'info' ? '<i class="fa-solid fa-spinner fa-spin text-blue-500"></i>' : '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
-            toast.className = `${bg} shadow-lg rounded px-4 py-3 text-sm text-slate-700 flex items-center gap-3 animate-slide-in-right pointer-events-auto min-w-[250px]`;
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease-out'; setTimeout(() => toast.remove(), 300); }, type === 'info' ? 5000 : 3000);
-        }
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && isTestActive) {
+                showPrivacyShield("Tab Switched", "You switched tabs or minimized the browser. Please stay on this page to continue.", false);
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded', async () => { 
-            await fetchLevels(); 
-            await fetchLibrary(); 
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && isTestActive) {
+                showPrivacyShield("Fullscreen Exited", "You exited Full Screen mode. You must return to Full Screen to continue the assessment.", true);
+            }
+        });
+
+        // Instantly blur if window loses focus
+        window.addEventListener('blur', () => {
+            if(isTestActive) {
+                showPrivacyShield("Focus Lost", "The exam window lost focus. Please close other applications and return to the exam.", false);
+            }
+        });
+
+
+        // --- DASHBOARD INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            let user = { name: 'Scholar', paymentPlan: '100' };
+            try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
+
+            const elSidebarName = document.getElementById('sidebar-name');
+            const elCandidateName = document.getElementById('exam-candidate-name');
+            const elPlanLabel = document.getElementById('sidebar-plan-label');
+            const elSidebarAvatar = document.getElementById('sidebar-avatar');
+
+            if (elSidebarName) elSidebarName.textContent = user.name || 'Student';
+            if (elCandidateName) elCandidateName.textContent = user.name || 'Student';
+            if (elPlanLabel) elPlanLabel.textContent = `Access Active: ${user.paymentPlan || 100}%`;
+            if (elSidebarAvatar) elSidebarAvatar.textContent = (user.name || 'S')[0].toUpperCase();
+            
+            loadTests();
         });
 
         function escapeHTML(str) {
@@ -495,368 +541,100 @@
                 .replace(/'/g, '&#039;');
         }
 
-        /* --- Dynamic Question Numbering Engine --- */
-        window.updateQuestionNumbers = function() {
-            const blocks = document.querySelectorAll('.question-block');
-            blocks.forEach((block, index) => {
-                const display = block.querySelector('.q-number-display');
-                if (display) {
-                    display.innerText = `Q${index + 1}`;
-                }
-            });
-        };
-
-        /* --- API KEY MANAGEMENT --- */
-        function promptForApiKey() {
-            const savedKey = localStorage.getItem('openRouterApiKey');
-            if (savedKey) {
-                document.getElementById('openrouter-api-key-input').value = savedKey;
-            }
-            document.getElementById('api-key-modal').classList.remove('hidden');
-            document.getElementById('api-key-modal').classList.add('flex');
-        }
-
-        function closeApiModal() {
-            document.getElementById('api-key-modal').classList.add('hidden');
-            document.getElementById('api-key-modal').classList.remove('flex');
-        }
-
-        function saveApiKeyAndProceed() {
-            const key = document.getElementById('openrouter-api-key-input').value.trim();
-            if (!key) {
-                showToast("API Key is required to proceed.", "error");
-                return;
-            }
-            localStorage.setItem('openRouterApiKey', key);
-            closeApiModal();
-            document.getElementById('pdf-upload').click();
-        }
-
-        /* --- NEW: Smart Percentage UI Updater --- */
-        function updateAiProgressUI(percent, statusMsg, stepNum) {
-            const fill = document.getElementById('ai-progress-fill');
-            const text = document.getElementById('ai-percentage-text');
-            const status = document.getElementById('ai-status-text');
-            const magicIcon = document.getElementById('ai-magic-icon');
+        function switchTab(tab) {
+            const activeClass = 'pb-3 border-b-2 border-brand-600 font-bold text-brand-600 transition-colors text-[15px]';
+            const inactiveClass = 'pb-3 border-b-2 border-transparent font-bold text-surface-500 hover:text-surface-800 transition-colors text-[15px]';
             
-            // Format percentage safely
-            let formattedPercent = Math.min(100, Math.max(0, Math.floor(percent)));
+            document.getElementById('tab-pending').className = tab === 'pending' ? activeClass : inactiveClass;
+            document.getElementById('tab-history').className = tab === 'history' ? activeClass : inactiveClass;
             
-            fill.style.width = `${formattedPercent}%`;
-            text.innerText = `${formattedPercent}%`;
-            status.innerText = statusMsg;
-
-            // Transition Icon out when showing percentage
-            if(formattedPercent > 0) {
-                magicIcon.classList.add('opacity-0', 'scale-50');
-                text.classList.remove('hidden');
-                text.classList.add('animate-fade-in');
-            }
-
-            // Reset step UI states
-            for(let i=1; i<=3; i++) {
-                const stepRow = document.getElementById(`ai-step-${i}`);
-                const spinner = document.getElementById(`spinner-${i}`);
-                const check = document.getElementById(`check-${i}`);
-                const circle = document.getElementById(`circle-${i}`);
-                
-                stepRow.classList.remove('text-indigo-600', 'text-emerald-500', 'text-slate-400');
-                spinner.classList.add('hidden');
-                check.classList.add('hidden');
-                circle.classList.add('hidden');
-
-                if (i < stepNum) {
-                    // Completed step
-                    stepRow.classList.add('text-emerald-500');
-                    check.classList.remove('hidden');
-                } else if (i === stepNum) {
-                    // Active step
-                    stepRow.classList.add('text-indigo-600', 'font-bold');
-                    spinner.classList.remove('hidden');
-                } else {
-                    // Pending step
-                    stepRow.classList.add('text-slate-400');
-                    circle.classList.remove('hidden');
-                }
+            if(tab === 'pending') {
+                document.getElementById('pending-container').classList.remove('hidden');
+                document.getElementById('history-container').classList.add('hidden');
+            } else {
+                document.getElementById('pending-container').classList.add('hidden');
+                document.getElementById('history-container').classList.remove('hidden');
+                loadHistory(); 
             }
         }
 
-
-        /* --- AI GENERATION WITH IMMERSIVE PERCENTAGE UI --- */
-        async function handlePdfUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const apiKey = localStorage.getItem('openRouterApiKey');
-            if (!apiKey) {
-                showToast("OpenRouter API key is missing. Please provide it.", "error");
-                event.target.value = '';
-                promptForApiKey();
-                return;
-            }
-
-            const overlay = document.getElementById('ai-loading-overlay');
-            overlay.classList.remove('hidden'); overlay.classList.add('flex');
-            
-            // Reset Progress UI
-            let currentPercent = 0;
-            updateAiProgressUI(0, "Initiating Local PDF Parser...", 1);
-
+        async function loadTests() {
             try {
-                // Step 1: Read PDF (Fast Local Step)
-                const parseInterval = setInterval(() => {
-                    if(currentPercent < 15) {
-                        currentPercent += 2;
-                        updateAiProgressUI(currentPercent, "Extracting text layers from PDF...", 1);
-                    }
-                }, 100);
-
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                let fullText = '';
-                
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += pageText + '\n';
-                }
-
-                clearInterval(parseInterval);
-
-                if (!fullText.trim()) throw new Error("No readable text found in this PDF.");
-
-                // Step 2: Transmit to AI via Backend
-                currentPercent = 20;
-                updateAiProgressUI(currentPercent, "Sending 70B Model request via Groq LPU...", 2);
-
-                aiProgressInterval = setInterval(() => {
-                    if (currentPercent < 90) {
-                        let remaining = 90 - currentPercent;
-                        let increment = Math.max(0.2, Math.random() * (remaining * 0.08)); 
-                        currentPercent += increment;
-                        
-                        let msg = "Structuring extracted knowledge...";
-                        if (currentPercent > 40) msg = "Identifying questions and exact options...";
-                        if (currentPercent > 60) msg = "Mapping accurate answer keys...";
-                        if (currentPercent > 80) msg = "Finalizing JSON payload...";
-                        
-                        updateAiProgressUI(currentPercent, msg, 2);
-                    }
-                }, 400);
-
-                const response = await fetch(`${API_BASE_URL}/admin/generate-questions-from-text`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ text: fullText, apiKey: apiKey })
-                });
-
-                clearInterval(aiProgressInterval);
-                await checkAuthResponse(response);
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || "Failed to generate questions from server.");
-                }
-
-                const data = await response.json();
-                if (!data.questions || data.questions.length === 0) throw new Error("AI returned empty results.");
-
-                // Step 3: Render to UI (Final 10%)
-                currentPercent = 95;
-                updateAiProgressUI(currentPercent, `Success! Structuring ${data.questions.length} questions into the editor...`, 3);
-
-                await new Promise(r => setTimeout(r, 600));
-                
-                currentPercent = 100;
-                updateAiProgressUI(currentPercent, "Complete!", 3);
-                
-                await new Promise(r => setTimeout(r, 600));
-
-                showEditor(true);
-                document.getElementById('testTitle').value = `${file.name.replace('.pdf', '')} - Auto-Generated Test`;
-                
-                document.getElementById('questions-container').innerHTML = '';
-                qCounter = 0;
-                
-                const fragment = document.createDocumentFragment();
-
-                data.questions.forEach((aiQ) => {
-                    let type = (aiQ.type || 'mcq').toLowerCase();
-                    let options = Array.isArray(aiQ.options) ? aiQ.options : [];
-                    let rawCorrect = Array.isArray(aiQ.correctOptions) ? aiQ.correctOptions : [];
-                    
-                    let correctOptions = [];
-
-                    if (type === 'mcq' || type === 'msq') {
-                        rawCorrect.forEach(val => {
-                            let strVal = String(val).trim();
-                            let parsedIdx = parseInt(strVal, 10);
-                            
-                            if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < options.length && strVal.length === parsedIdx.toString().length) {
-                                correctOptions.push(strVal);
-                            } else {
-                                let foundIdx = options.findIndex(opt => String(opt).trim().toLowerCase() === strVal.toLowerCase());
-                                if (foundIdx === -1 && strVal.length === 1) {
-                                    let charCode = strVal.toUpperCase().charCodeAt(0);
-                                    if (charCode >= 65 && charCode <= 90) foundIdx = charCode - 65;
-                                }
-                                if (foundIdx !== -1 && foundIdx < options.length) correctOptions.push(String(foundIdx));
-                            }
-                        });
-                    } else {
-                        correctOptions = rawCorrect.map(String);
-                    }
-
-                    const formattedData = {
-                        text: aiQ.text || aiQ.question || '', 
-                        type: type,
-                        options: options,
-                        correctOptions: correctOptions, 
-                        positiveMarks: 1,
-                        negativeMarks: 0.3
-                    };
-                    addQuestion(formattedData.type, formattedData, fragment);
-                });
-
-                document.getElementById('questions-container').appendChild(fragment);
-                updateQuestionNumbers();
-
-                showToast(`Successfully processed ${data.questions.length} accurate items.`, "success");
-
-            } catch (error) {
-                clearInterval(aiProgressInterval);
-                console.error("AI Generation Error:", error);
-                
-                document.getElementById('ai-progress-fill').classList.replace('bg-indigo-500', 'bg-red-500');
-                document.getElementById('ai-status-text').innerText = "Process Failed!";
-                document.getElementById('ai-status-text').classList.replace('text-indigo-600', 'text-red-500');
-                
-                await new Promise(r => setTimeout(r, 1000));
-                showToast(error.message || "Failed to process document.", "error");
-            } finally {
-                overlay.classList.add('hidden'); overlay.classList.remove('flex');
-                document.getElementById('ai-magic-icon').classList.remove('opacity-0', 'scale-50');
-                document.getElementById('ai-percentage-text').classList.add('hidden');
-                document.getElementById('ai-progress-fill').classList.replace('bg-red-500', 'bg-indigo-500');
-                document.getElementById('ai-status-text').classList.replace('text-red-500', 'text-indigo-600');
-                event.target.value = ''; 
-            }
-        }
-
-        /* --- Folder & Library Operations --- */
-        
-        function promptCreateFolder() {
-            document.getElementById('folderNameInput').value = '';
-            document.getElementById('folder-modal').classList.remove('hidden');
-        }
-
-        function closeFolderModal() {
-            document.getElementById('folder-modal').classList.add('hidden');
-        }
-
-        async function saveFolder() {
-            const title = document.getElementById('folderNameInput').value.trim();
-            if(!title) return showToast("Folder name is required.", "error");
-
-            try {
-                const res = await fetch(`${API_BASE_URL}/admin/test-folders`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ title, parentId: currentFolderId })
-                });
-                await checkAuthResponse(res);
-                if(res.ok) {
-                    showToast("Folder created successfully.");
-                    closeFolderModal();
-                    await fetchLibrary();
-                } else {
-                    showToast("Failed to create folder.", "error");
-                }
-            } catch(e) {
-                if (e.message !== "AUTH_FAILED") showToast("Network error creating folder.", "error");
-            }
-        }
-
-        function populateFolderDropdown() {
-            const select = document.getElementById('testFolderId');
-            if(!select) return;
-            let html = '<option value="">Root Directory</option>';
-            // Populate globally available folders (can nest logic here if multiple depths are ever needed)
-            allFolders.forEach(f => {
-                html += `<option value="${f.id}">${escapeHTML(f.title)}</option>`;
-            });
-            select.innerHTML = html;
-        }
-
-        async function fetchLibrary() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/admin/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
-                await checkAuthResponse(res);
+                const res = await fetch(`${API_BASE_URL}/student/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error();
                 const data = await res.json();
                 
-                // Separate tests and folders based on our backend structure flag
-                allFolders = data.filter(item => item.isFolder === true);
-                allTests = data.filter(item => item.isFolder !== true);
-                
-                populateFolderDropdown();
-                renderLibrary();
-            } catch (err) { 
-                if (err.message !== "AUTH_FAILED") showToast("Data sync failure.", "error"); 
+                // Separate out the folders and the actual tests based on smart backend filtering
+                availableFolders = data.filter(item => item.isFolder === true);
+                availableTests = data.filter(item => item.isFolder !== true);
+
+                renderTestList();
+            } catch (err) {
+                console.error("Failed to fetch tests:", err);
+                availableFolders = [];
+                availableTests = [];
+                renderTestList();
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/student/tests/history`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error();
+                testHistory = await res.json();
+                renderHistory(testHistory);
+            } catch (err) {
+                testHistory = [];
+                renderHistory(testHistory);
             }
         }
 
         function navigateToFolder(id) {
             currentFolderId = id;
-            renderLibrary();
+            renderTestList();
         }
 
-        function renderLibrary() {
-            const grid = document.getElementById('library-grid');
+        function renderTestList() {
+            const grid = document.getElementById('test-grid');
             const breadcrumbs = document.getElementById('breadcrumb-container');
             grid.innerHTML = '';
             
-            // Build and display Navigation Breadcrumbs
-            breadcrumbs.classList.remove('hidden');
-            let bcHtml = `<button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Root</button>`;
+            // Build Breadcrumbs
+            let bcHtml = `<button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5"><i class="fa-solid fa-house text-sm text-surface-400"></i> Assigned</button>`;
             
             if (currentFolderId) {
-                const folder = allFolders.find(f => f.id === currentFolderId);
+                const folder = availableFolders.find(f => f.id === currentFolderId);
                 if (folder) {
-                    bcHtml += ` <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 mx-1"></i> <span class="text-brand-600 font-bold bg-brand-50 px-2 py-0.5 rounded">${escapeHTML(folder.title)}</span>`;
+                    bcHtml += ` <i class="fa-solid fa-chevron-right text-[10px] text-surface-300 mx-1"></i> <span class="text-brand-600 font-bold bg-brand-50 px-2 py-0.5 rounded">${escapeHTML(folder.title)}</span>`;
                 }
             }
             breadcrumbs.innerHTML = bcHtml;
 
             // Filter for current directory
-            const currentFolders = allFolders.filter(f => (f.parentId || null) === currentFolderId);
-            const currentTests = allTests.filter(t => (t.folderId || null) === currentFolderId);
+            const currentFolders = availableFolders.filter(f => (f.parentId || null) === currentFolderId);
+            const currentTests = availableTests.filter(t => (t.folderId || null) === currentFolderId);
 
-            if(currentFolders.length === 0 && currentTests.length === 0) { 
+            if (currentFolders.length === 0 && currentTests.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                        <i class="fa-solid fa-folder-open text-4xl mb-4 opacity-50"></i>
-                        <span class="text-sm font-medium">This folder is empty. Create a new folder or assessment here.</span>
-                    </div>`; 
-                return; 
-            }
-            
-            // Render Sub-Folders
-            currentFolders.forEach(folder => {
-                const nestedTestsCount = allTests.filter(t => t.folderId === folder.id).length;
-                grid.innerHTML += `
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group cursor-pointer relative" onclick="navigateToFolder('${folder.id}')">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center text-brand-600 shadow-inner">
-                                <i class="fa-solid fa-folder-closed text-2xl group-hover:hidden"></i>
-                                <i class="fa-solid fa-folder-open text-2xl hidden group-hover:block transition-all transform scale-110"></i>
-                            </div>
-                            <button onclick="event.stopPropagation(); promptDeleteFolder('${folder.id}')" class="text-slate-300 hover:text-red-500 w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center transition" title="Delete Folder">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                        <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
+                            <i class="fa-solid fa-folder-open text-2xl text-surface-300"></i>
                         </div>
-                        <h3 class="font-bold text-slate-800 text-lg mt-3 leading-tight truncate" title="${folder.title}">${folder.title}</h3>
-                        <p class="text-xs font-semibold text-slate-500 mt-1">${nestedTestsCount} Assessments</p>
+                        <h4 class="text-surface-900 font-bold mb-1">Directory Empty</h4>
+                        <p class="text-surface-500 text-[14px]">There are no active examinations in this folder at this time.</p>
+                    </div>`;
+                return;
+            }
+
+            // Render Folders
+            currentFolders.forEach(folder => {
+                grid.innerHTML += `
+                    <div class="panel panel-hover p-6 flex flex-col justify-center items-center text-center cursor-pointer transition-all hover:border-brand-300 min-h-[200px]" onclick="navigateToFolder('${folder.id}')">
+                        <div class="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 mb-4 shadow-inner">
+                            <i class="fa-solid fa-folder text-3xl"></i>
+                        </div>
+                        <h3 class="font-bold text-surface-900 text-lg tracking-tight leading-tight line-clamp-2">${escapeHTML(folder.title)}</h3>
+                        <p class="text-[12px] font-semibold text-surface-400 mt-2">Open Folder <i class="fa-solid fa-arrow-right ml-1"></i></p>
                     </div>
                 `;
             });
@@ -864,596 +642,547 @@
             // Render Tests
             currentTests.forEach(test => {
                 const qCount = test.questions ? test.questions.length : 0;
-                let badge = test.status === 'published' 
-                    ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Published</span>`
-                    : `<span class="bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Draft</span>`;
-                
-                let levelsDisplay = 'Unassigned';
-                if (test.levels && test.levels.length > 0) {
-                     levelsDisplay = test.levels.includes('All Levels') ? 'Global Audience' : test.levels.join(', ');
+                const attemptsUsed = test.attemptCount || 0;
+                const maxAttempts = test.maxAttempts || 1;
+                const canAttempt = attemptsUsed < maxAttempts;
+
+                let actionButton = '';
+                if (canAttempt) {
+                    actionButton = `<button onclick="initiateTestLaunch('${test.id}')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-[14px]"><i class="fa-solid fa-play text-[12px]"></i> Launch Exam</button>`;
+                } else {
+                    actionButton = `<button disabled class="w-full bg-surface-100 text-surface-400 font-bold py-3 px-4 rounded-xl cursor-not-allowed border border-surface-200 flex items-center justify-center gap-2 text-[14px]"><i class="fa-solid fa-lock"></i> Attempts Reached</button>`;
                 }
 
                 grid.innerHTML += `
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all flex flex-col group">
-                        <div class="flex justify-between items-start mb-4">
-                            ${badge}
-                            <span class="text-[10px] font-semibold text-slate-400 truncate max-w-[100px] flex items-center gap-1" title="${levelsDisplay}"><i class="fa-solid fa-users"></i> ${levelsDisplay}</span>
+                    <div class="panel panel-hover p-6 flex flex-col justify-between rounded-2xl min-h-[240px]">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-surface-50 border border-surface-100 flex items-center justify-center text-surface-500">
+                                    <i class="fa-solid fa-file-signature text-lg"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-surface-500 bg-surface-50 px-2 py-1 rounded-md border border-surface-100">Attempt ${attemptsUsed}/${maxAttempts}</span>
+                            </div>
+                            <h3 class="font-bold text-surface-900 text-base md:text-lg tracking-tight leading-tight mb-4 line-clamp-2">${escapeHTML(test.title)}</h3>
+                            
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="bg-surface-50 border border-surface-100 text-surface-600 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-list text-brand-500"></i> ${qCount} Qs</span>
+                                <span class="bg-surface-50 border border-surface-100 text-surface-600 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-stopwatch text-amber-500"></i> ${test.timeLimit || 60}m</span>
+                                <span class="bg-surface-50 border border-surface-100 text-surface-600 px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1.5"><i class="fa-solid fa-bullseye text-blue-500"></i> ${test.passingScore || 50}%</span>
+                            </div>
                         </div>
-                        <h3 class="font-bold text-slate-800 text-base mb-4 leading-tight line-clamp-2" title="${test.title}">${test.title}</h3>
-                        
-                        <div class="flex gap-2 mb-5 mt-auto">
-                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-list text-brand-500 mr-1"></i> ${qCount} Items</span>
-                            <span class="text-xs text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-stopwatch text-amber-500 mr-1"></i> ${test.timeLimit || 60}m</span>
-                        </div>
-
-                        <div class="flex gap-2 pt-4 border-t border-slate-100">
-                            <button onclick="editTest('${test.id}')" class="flex-1 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium py-1.5 rounded-lg text-xs transition shadow-sm">Edit</button>
-                            <button onclick="promptDelete('${test.id}')" class="w-9 h-auto bg-white border border-red-200 text-red-500 hover:bg-red-50 flex items-center justify-center rounded-lg transition shadow-sm" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                        <div class="mt-auto">
+                            ${actionButton}
                         </div>
                     </div>
                 `;
             });
         }
 
-        /* --- Level-Based Attempts UI Logic --- */
-        async function fetchLevels() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/admin/levels`, { headers: { 'Authorization': `Bearer ${token}` } });
-                await checkAuthResponse(res);
-                const levels = await res.json();
-                const container = document.getElementById('levelCheckboxes');
-                
-                let html = `
-                    <div class="flex items-center justify-between gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg mb-2">
-                        <label class="flex items-center gap-2 cursor-pointer flex-1">
-                            <input type="checkbox" id="selectAllLevels" value="All Levels" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="toggleAllLevels(this)">
-                            <span class="font-bold text-xs text-slate-800">Global Audience</span>
-                        </label>
-                        <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-slate-200">
-                            <span class="text-[10px] text-slate-400 font-semibold uppercase">Max:</span>
-                            <input type="number" id="attempts-All-Levels" oninput="syncGlobalAttempts(this)" class="admin-input !w-12 !py-0.5 !px-1 text-center !text-xs font-bold !bg-transparent !border-none !shadow-none p-0" value="1" min="1" disabled>
+        function renderHistory(history) {
+            const grid = document.getElementById('history-grid');
+            grid.innerHTML = '';
+            
+            if (history.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                        <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
+                            <i class="fa-solid fa-clock-rotate-left text-2xl text-surface-300"></i>
+                        </div>
+                        <h4 class="text-surface-900 font-bold mb-1">No History Found</h4>
+                        <p class="text-surface-500 text-[14px]">You haven't completed any assessments yet.</p>
+                    </div>`;
+                return;
+            }
+
+            history.forEach(item => {
+                const dateStr = new Date(item.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const statusClass = item.passed ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-rose-600 bg-rose-50 border-rose-200';
+                const statusIcon = item.passed ? 'fa-check' : 'fa-xmark';
+                const statusText = item.passed ? 'PASSED' : 'FAILED';
+
+                grid.innerHTML += `
+                    <div class="panel p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl transition-all hover:bg-surface-50">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-surface-500 uppercase tracking-widest bg-surface-100 px-2.5 py-1 rounded-md border border-surface-200">Attempt ${item.attemptNumber}</span>
+                                <span class="text-[11px] text-surface-400 font-medium">${dateStr}</span>
+                            </div>
+                            <h4 class="font-bold text-surface-900 text-[16px]">${item.testTitle}</h4>
+                            <div class="text-[13px] text-surface-500 mt-1 font-medium">Score: ${item.totalScore} / ${item.maxScore}</div>
+                        </div>
+                        <div class="shrink-0 flex items-center gap-4 w-full md:w-auto border-t md:border-t-0 border-surface-100 pt-4 md:pt-0 mt-2 md:mt-0">
+                            <div class="text-right flex-1 md:flex-none">
+                                <p class="text-[20px] font-black text-surface-900 tracking-tight">${item.scorePercentage}%</p>
+                            </div>
+                            <div class="w-px h-10 bg-surface-200 hidden md:block"></div>
+                            <div class="${statusClass} px-3 py-1.5 rounded-lg border flex items-center justify-center gap-1.5 font-bold text-[12px] tracking-widest uppercase shadow-sm">
+                                <i class="fa-solid ${statusIcon}"></i> ${statusText}
+                            </div>
                         </div>
                     </div>
                 `;
+            });
+        }
+
+        // --- TEST LAUNCH SEQUENCE ---
+        
+        function initiateTestLaunch(id) {
+            currentTest = availableTests.find(t => t.id === id);
+            if (!currentTest || !currentTest.questions || currentTest.questions.length === 0) {
+                showCustomModal("Exam Error", "Test data is invalid or empty.");
+                return;
+            }
+
+            // 1. Show Agreement Modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-lg w-full shadow-glass border border-white text-left">
+                    <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center mb-5 border border-rose-100 shadow-sm">
+                        <i class="fa-solid fa-user-shield text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-surface-900 mb-3 tracking-tight">Strict Examination Rules</h3>
+                    <ul class="text-surface-600 text-[14px] space-y-3 mb-8 font-medium">
+                        <li class="flex gap-3 items-start"><i class="fa-solid fa-expand text-rose-500 mt-1"></i> <span>You must remain in Full Screen mode. Exiting will auto-submit the test immediately.</span></li>
+                        <li class="flex gap-3 items-start"><i class="fa-solid fa-window-restore text-rose-500 mt-1"></i> <span>Do not switch tabs, minimize the browser, or open other applications.</span></li>
+                        <li class="flex gap-3 items-start"><i class="fa-solid fa-copy text-rose-500 mt-1"></i> <span>Copying, pasting, and taking screenshots are strictly prohibited and disabled.</span></li>
+                    </ul>
+                    <div class="flex gap-3">
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3.5 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Cancel</button>
+                        <button onclick="this.closest('.fixed').remove(); executeSecureLaunch();" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md cursor-pointer transition text-[14px]">I Agree, Launch Exam</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function executeSecureLaunch() {
+            // 2. Show Pre-Load Animation
+            const loader = document.createElement('div');
+            loader.id = 'exam-init-loader';
+            loader.className = 'fixed inset-0 z-[400] bg-surface-900 flex flex-col items-center justify-center p-4 text-white animate-fade-in';
+            loader.innerHTML = `
+                <i class="fa-solid fa-shield-halved text-5xl text-brand-500 mb-6 animate-pulse"></i>
+                <h3 class="text-2xl font-bold tracking-tight mb-2">Initializing Secure Environment...</h3>
+                <p class="text-surface-400 font-medium">Please wait while we lock down the assessment module.</p>
+            `;
+            document.body.appendChild(loader);
+
+            // 3. Request Full Screen
+            try {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) { await elem.requestFullscreen(); } 
+                else if (elem.webkitRequestFullscreen) { await elem.webkitRequestFullscreen(); }
+            } catch (err) {
+                loader.remove();
+                showCustomModal("Error", "Your browser blocked full-screen mode. Please try again and allow full-screen access.");
+                return;
+            }
+
+            // 4. Simulate a short loading delay for UX, then start test
+            setTimeout(() => {
+                loader.remove();
+                startTestLogic();
+            }, 1800);
+        }
+
+        function startTestLogic() {
+            isTestActive = true; // Activate Security Triggers
+
+            document.getElementById('active-test-area').classList.remove('hidden');
+            document.getElementById('active-test-area').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('active-test-title').textContent = currentTest.title;
+
+            const timeLimitMins = parseInt(currentTest.timeLimit) || 60;
+            let timeRemaining = timeLimitMins * 60;
+            updateTimerDisplay(timeRemaining);
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay(timeRemaining);
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest(true);
+                }
+            }, 1000);
+
+            currentQuestionIndex = 0;
+            
+            questionStates = new Array(currentTest.questions.length).fill('not-visited');
+            questionStates[0] = 'not-answered'; 
+            
+            renderQuestionsAndPalette();
+            showQuestion(0);
+        }
+
+        function exitExamFullscreen() {
+            document.body.style.overflow = '';
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(err => console.log(err));
+            }
+        }
+
+        function renderQuestionsAndPalette() {
+            const qContainer = document.getElementById('questions-container');
+            const pContainer = document.getElementById('palette-grid');
+            qContainer.innerHTML = '';
+            pContainer.innerHTML = '';
+
+            currentTest.questions.forEach((q, index) => {
+                const stateClass = questionStates[index] === 'not-visited' ? '' : questionStates[index];
+                pContainer.innerHTML += `<button id="pal-btn-${index}" onclick="showQuestion(${index})" class="palette-btn ${stateClass} shadow-sm">${index + 1}</button>`;
+
+                let optionsHtml = '';
+                if (q.type === 'mcq' || q.type === 'msq') {
+                    const inputType = q.type === 'mcq' ? 'radio' : 'checkbox';
+                    q.options.forEach((opt, optIdx) => {
+                        if (opt && opt.trim() !== '') {
+                            optionsHtml += `
+                                <label class="cbt-opt-label">
+                                    <input type="${inputType}" name="ans_${q.id}" value="${optIdx}" class="w-4 h-4 cursor-pointer mt-0.5 shrink-0 accent-[#2563eb]">
+                                    <span class="text-[15px] text-black font-cbt">${escapeHTML(opt)}</span>
+                                </label>
+                            `;
+                        }
+                    });
+                } else {
+                    optionsHtml = `<input type="text" name="ans_${q.id}" class="w-full max-w-xl p-3 border border-slate-400 focus:border-[#2563eb] focus:outline-none text-[15px] rounded font-cbt" placeholder="Type your answer here...">`;
+                }
+
+                qContainer.innerHTML += `
+                    <div class="question-block hidden" data-qid="${q.id}" data-type="${q.type}" id="q-block-${index}">
+                        <div class="text-[16px] md:text-[18px] text-black font-bold leading-relaxed mb-6 font-cbt">${escapeHTML(q.text)}</div>
+                        <div class="space-y-3 max-w-3xl">
+                            ${optionsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.querySelectorAll('.question-block input').forEach(input => {
+                input.addEventListener('change', updateCurrentQuestionState);
+                input.addEventListener('keyup', updateCurrentQuestionState);
+            });
+        }
+        
+        function updateCurrentQuestionState() {
+            const block = document.getElementById(`q-block-${currentQuestionIndex}`);
+            if (!block) return;
+            
+            if(questionStates[currentQuestionIndex] === 'marked' || questionStates[currentQuestionIndex] === 'marked-answered') {
+               questionStates[currentQuestionIndex] = 'not-answered';
+               updatePaletteVisuals();
+            }
+        }
+
+        function showQuestion(index) {
+            document.querySelectorAll('.question-block').forEach(b => b.classList.add('hidden'));
+            
+            if (index < 0) index = 0;
+            if (index >= currentTest.questions.length) index = currentTest.questions.length - 1;
+            
+            if (currentQuestionIndex !== index) {
+               evaluateQuestionState(currentQuestionIndex);
+            }
+            
+            currentQuestionIndex = index;
+            
+            if (questionStates[currentQuestionIndex] === 'not-visited') {
+                questionStates[currentQuestionIndex] = 'not-answered';
+            }
+
+            const targetBlock = document.getElementById(`q-block-${index}`);
+            if (targetBlock) {
+                targetBlock.classList.remove('hidden');
+            }
+
+            document.getElementById('q-current-display').textContent = index + 1;
+            const qData = currentTest.questions[index];
+            document.getElementById('q-marks-positive').textContent = qData.positiveMarks || 3;
+            document.getElementById('q-marks-negative').textContent = qData.negativeMarks || 1;
+
+            document.getElementById('btn-prev').disabled = (index === 0);
+            
+            document.querySelectorAll('.palette-btn').forEach(btn => btn.classList.remove('active-q'));
+            const activePalBtn = document.getElementById(`pal-btn-${index}`);
+            if(activePalBtn) activePalBtn.classList.add('active-q');
+            
+            updatePaletteVisuals();
+            
+            document.getElementById('questions-container').scrollTop = 0;
+        }
+        
+        function hasResponse(index) {
+            const block = document.getElementById(`q-block-${index}`);
+            if (!block) return false;
+            
+            const hasChecked = block.querySelectorAll('input:checked').length > 0;
+            const textInput = block.querySelector('input[type="text"]');
+            const hasText = textInput && textInput.value.trim() !== '';
+            
+            return hasChecked || hasText;
+        }
+
+        function evaluateQuestionState(index) {
+            if(questionStates[index] !== 'marked' && questionStates[index] !== 'marked-answered') {
+                 if(hasResponse(index)) {
+                     questionStates[index] = 'answered';
+                 } else {
+                     questionStates[index] = 'not-answered';
+                 }
+            }
+        }
+
+        function saveAndNext() {
+            if(hasResponse(currentQuestionIndex)) {
+                questionStates[currentQuestionIndex] = 'answered';
+            } else {
+                questionStates[currentQuestionIndex] = 'not-answered';
+            }
+            navigateQuestion(1);
+        }
+
+        function markForReview() {
+            if(hasResponse(currentQuestionIndex)) {
+                questionStates[currentQuestionIndex] = 'marked-answered';
+            } else {
+                questionStates[currentQuestionIndex] = 'marked';
+            }
+            navigateQuestion(1);
+        }
+
+        function navigateQuestion(direction) {
+            showQuestion(currentQuestionIndex + direction);
+        }
+
+        function clearResponse() {
+            const activeBlock = document.getElementById(`q-block-${currentQuestionIndex}`);
+            if (!activeBlock) return;
+            
+            activeBlock.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(i => i.checked = false);
+            activeBlock.querySelectorAll('input[type="text"]').forEach(i => i.value = '');
+            
+            questionStates[currentQuestionIndex] = 'not-answered';
+            updatePaletteVisuals();
+        }
+
+        function updatePaletteVisuals() {
+            currentTest.questions.forEach((q, index) => {
+                const palBtn = document.getElementById(`pal-btn-${index}`);
+                if (!palBtn) return;
                 
-                levels.forEach(lvl => {
-                    const safeId = lvl.levelName.replace(/\s+/g, '-');
-                    html += `
-                        <div class="flex items-center justify-between gap-2 p-2 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-lg transition">
-                            <label class="flex items-center gap-2 cursor-pointer flex-1">
-                                <input type="checkbox" value="${lvl.levelName}" class="level-cb w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500" onchange="toggleLevelInput(this)">
-                                <span class="text-xs text-slate-700 font-medium">${lvl.levelName}</span>
-                            </label>
-                            <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">
-                                <span class="text-[10px] text-slate-400 font-semibold uppercase">Max:</span>
-                                <input type="number" id="attempts-${safeId}" class="admin-input !w-12 !py-0.5 !px-1 text-center !text-xs font-bold !bg-transparent !border-none !shadow-none p-0" value="1" min="1" disabled>
+                palBtn.classList.remove('answered', 'not-answered', 'marked', 'marked-answered');
+                
+                if (questionStates[index] !== 'not-visited') {
+                    palBtn.classList.add(questionStates[index]);
+                }
+            });
+        }
+
+        function updateTimerDisplay(seconds) {
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            const timeStr = `${h}:${m}:${s}`;
+            
+            const timerMain = document.getElementById('exam-timer');
+            if(timerMain) timerMain.textContent = timeStr;
+        }
+
+        function confirmSubmitTest() {
+            let answeredCount = questionStates.filter(s => s === 'answered' || s === 'marked-answered').length;
+            let markedCount = questionStates.filter(s => s === 'marked' || s === 'marked-answered').length;
+            let total = currentTest.questions.length;
+            
+            let message = `You have answered ${answeredCount} questions and marked ${markedCount} for review out of ${total}. Are you sure you want to submit the assessment? This action is final.`;
+            
+            showCustomConfirm("Submit Assessment", message, () => {
+                submitTest(false);
+            });
+        }
+
+        async function submitTest(isAutoSubmit = false) {
+            isTestActive = false; // Turn off security triggers so exiting fullscreen doesn't cause a loop
+            clearInterval(timerInterval);
+            exitExamFullscreen();
+
+            const responses = {};
+            document.querySelectorAll('.question-block').forEach(block => {
+                const qId = block.dataset.qid;
+                const type = block.dataset.type;
+                if (type === 'mcq' || type === 'msq') {
+                    const checked = block.querySelectorAll(`input[name="ans_${qId}"]:checked`);
+                    responses[qId] = Array.from(checked).map(el => el.value);
+                } else {
+                    const input = block.querySelector(`input[name="ans_${qId}"]`);
+                    responses[qId] = input ? input.value.trim() : "";
+                }
+            });
+
+            showSubmitLoadingOverlay();
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/student/tests/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ testId: currentTest.id, responses })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Submission failed");
+                removeSubmitLoadingOverlay();
+                showResultsOverlay(data.result, data.testSettings, data.questions);
+            } catch (err) {
+                setTimeout(() => {
+                    removeSubmitLoadingOverlay();
+                    showCustomModal("Error", "Submission failed. Please check your internet connection and try again.");
+                }, 1500);
+            }
+        }
+        
+        function showSubmitLoadingOverlay() {
+            const overlay = document.createElement('div');
+            overlay.id = 'submit-loading-overlay';
+            overlay.className = 'fixed inset-0 z-[200] bg-surface-900/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-white animate-fade-in';
+            overlay.innerHTML = `
+                <i class="fa-solid fa-circle-notch fa-spin text-5xl text-brand-500 mb-6"></i>
+                <h3 class="text-2xl font-bold tracking-tight mb-2">Submitting Assessment...</h3>
+                <p class="text-surface-400">Please do not close this window.</p>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        function removeSubmitLoadingOverlay() {
+            const overlay = document.getElementById('submit-loading-overlay');
+            if(overlay) overlay.remove();
+        }
+
+        function showResultsOverlay(result, testSettings = {}, questions = []) {
+            document.getElementById('active-test-area').classList.add('hidden');
+            document.getElementById('active-test-area').classList.remove('flex');
+            
+            let detailedReviewHtml = '';
+            
+            if (testSettings.showAnswers && questions && questions.length > 0) {
+                detailedReviewHtml += `<div class="mt-8 text-left border-t border-surface-200 pt-6">
+                    <h4 class="font-bold text-surface-900 mb-4 text-lg"><i class="fa-solid fa-list-check text-brand-500 mr-2"></i> Detailed Performance Review</h4>
+                    <div class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 hide-scrollbar">`;
+                
+                questions.forEach((q, idx) => {
+                    const studentAnsRaw = result.responses ? result.responses[q.id] : null;
+                    let studentAnsText = "<span class='text-surface-400 italic'>Not Answered</span>";
+
+                    if (studentAnsRaw) {
+                        if (q.type === 'fib') { 
+                            studentAnsText = escapeHTML(studentAnsRaw); 
+                        } else if (Array.isArray(studentAnsRaw) && studentAnsRaw.length > 0) {
+                            studentAnsText = studentAnsRaw.map(optIdx => escapeHTML(q.options[parseInt(optIdx)]) || `Unknown`).join('<span class="text-surface-300 mx-1">|</span>');
+                        }
+                    }
+
+                    let correctAnsText = q.type === 'fib' ? escapeHTML(q.correctOptions[0] || '') : q.correctOptions.map(optIdx => escapeHTML(q.options[parseInt(optIdx)])).join('<span class="text-surface-300 mx-1">|</span>');
+
+                    let isCorrect = false;
+                    if (q.type === 'fib') {
+                        isCorrect = studentAnsRaw && typeof studentAnsRaw === 'string' && studentAnsRaw.trim().toLowerCase() === correctAnsText.trim().toLowerCase();
+                    } else if (Array.isArray(studentAnsRaw)) {
+                        const sortedStudent = [...studentAnsRaw].sort();
+                        const sortedCorrect = [...q.correctOptions].sort();
+                        isCorrect = studentAnsRaw.length > 0 && sortedStudent.length === sortedCorrect.length && sortedStudent.every((val, index) => val === sortedCorrect[index]);
+                    }
+
+                    const badge = isCorrect 
+                        ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-200 shrink-0 uppercase tracking-widest"><i class="fa-solid fa-check mr-1"></i> Correct</span>`
+                        : `<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded text-[10px] font-bold border border-rose-200 shrink-0 uppercase tracking-widest"><i class="fa-solid fa-xmark mr-1"></i> Incorrect</span>`;
+
+                    detailedReviewHtml += `
+                        <div class="bg-surface-50 p-4 rounded-xl border border-surface-200 shadow-sm relative">
+                            <div class="flex justify-between items-start gap-3 mb-3">
+                                <p class="font-semibold text-surface-800 text-[14px] leading-snug flex-1"><span class="text-brand-600 font-bold mr-1">Q${idx+1}.</span> ${escapeHTML(q.text)}</p>
+                                ${badge}
+                            </div>
+                            <div class="space-y-1.5 text-[13px] bg-white p-3 rounded-lg border border-surface-100">
+                                <div class="flex gap-2"><span class="font-bold text-surface-400 w-16 shrink-0 uppercase tracking-wider text-[10px] mt-0.5">You:</span> <span class="${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-600 font-semibold'}">${studentAnsText}</span></div>
+                                <div class="flex gap-2"><span class="font-bold text-surface-400 w-16 shrink-0 uppercase tracking-wider text-[10px] mt-0.5">Key:</span> <span class="text-surface-700 font-semibold">${correctAnsText}</span></div>
                             </div>
                         </div>
                     `;
                 });
-                container.innerHTML = html;
-            } catch(e) {
-                showToast("Failed to connect to level registry.", "error");
-            }
-        }
-
-        window.syncGlobalAttempts = function(input) {
-            const val = input.value;
-            document.querySelectorAll('.level-cb:checked').forEach(cb => {
-                const safeId = cb.value.replace(/\s+/g, '-');
-                const childInput = document.getElementById(`attempts-${safeId}`);
-                if (childInput) childInput.value = val;
-            });
-        };
-
-        function toggleLevelInput(cb) {
-            const safeId = cb.value.replace(/\s+/g, '-');
-            const input = document.getElementById(`attempts-${safeId}`);
-            if(input) {
-                input.disabled = !cb.checked;
-                if(!cb.checked) input.value = 1;
-            }
-            updateAllLevelsCheckboxState();
-        }
-
-        function toggleAllLevels(selectAllCb) {
-            const checkboxes = document.querySelectorAll('.level-cb');
-            checkboxes.forEach(cb => { cb.checked = selectAllCb.checked; toggleLevelInput(cb); });
-            const allInput = document.getElementById('attempts-All-Levels');
-            if(allInput) {
-                allInput.disabled = !selectAllCb.checked;
-                if (selectAllCb.checked) syncGlobalAttempts(allInput);
-            }
-        }
-
-        function updateAllLevelsCheckboxState() {
-            const checkboxes = document.querySelectorAll('.level-cb');
-            const selectAllCb = document.getElementById('selectAllLevels');
-            const allInput = document.getElementById('attempts-All-Levels');
-            if(selectAllCb) {
-                const allChecked = Array.from(checkboxes).length > 0 && Array.from(checkboxes).every(cb => cb.checked);
-                selectAllCb.checked = allChecked;
-                if (allInput) allInput.disabled = !allChecked;
-            }
-        }
-
-        function populateEditorLevels(savedLevels, savedAttempts) {
-            const checkboxes = document.querySelectorAll('.level-cb');
-            const selectAllCb = document.getElementById('selectAllLevels');
-            
-            checkboxes.forEach(cb => { cb.checked = false; toggleLevelInput(cb); });
-            if(selectAllCb) { selectAllCb.checked = false; document.getElementById('attempts-All-Levels').disabled = true; }
-
-            if (!savedLevels || savedLevels.length === 0) return;
-
-            if (savedLevels.includes('All Levels')) {
-                if(selectAllCb) {
-                    selectAllCb.checked = true;
-                    const input = document.getElementById('attempts-All-Levels');
-                    input.disabled = false;
-                    input.value = (savedAttempts && savedAttempts['All Levels']) ? savedAttempts['All Levels'] : 1;
-                }
-                checkboxes.forEach(cb => {
-                    cb.checked = true;
-                    toggleLevelInput(cb);
-                    const safeId = cb.value.replace(/\s+/g, '-');
-                    const input = document.getElementById(`attempts-${safeId}`);
-                    if (input) {
-                        if (savedAttempts && savedAttempts[cb.value]) {
-                            input.value = savedAttempts[cb.value];
-                        } else if (savedAttempts && savedAttempts['All Levels']) {
-                            input.value = savedAttempts['All Levels'];
-                        }
-                    }
-                });
-            } else {
-                checkboxes.forEach(cb => {
-                    if (savedLevels.includes(cb.value)) {
-                        cb.checked = true;
-                        toggleLevelInput(cb);
-                        const safeId = cb.value.replace(/\s+/g, '-');
-                        const input = document.getElementById(`attempts-${safeId}`);
-                        if (input && savedAttempts && savedAttempts[cb.value]) { input.value = savedAttempts[cb.value]; }
-                    }
-                });
-            }
-        }
-
-        /* --- Deletion Handling --- */
-        function promptDelete(id) {
-            testToDelete = id;
-            isDeletingFolder = false;
-            document.getElementById('delete-title').innerText = "Delete Assessment";
-            document.getElementById('delete-desc').innerText = "Are you sure you want to permanently delete this assessment? This action cannot be undone.";
-            document.getElementById('delete-icon').className = "fa-solid fa-trash-can text-red-600";
-            document.getElementById('delete-modal').classList.remove('hidden');
-            document.getElementById('confirm-delete-btn').onclick = () => executeDelete();
-        }
-
-        function promptDeleteFolder(id) {
-            testToDelete = id;
-            isDeletingFolder = true;
-            document.getElementById('delete-title').innerText = "Delete Entire Folder";
-            document.getElementById('delete-desc').innerText = "Are you sure you want to delete this folder? All assessments currently residing in this folder will also be permanently removed.";
-            document.getElementById('delete-icon').className = "fa-solid fa-folder-minus text-red-600";
-            document.getElementById('delete-modal').classList.remove('hidden');
-            document.getElementById('confirm-delete-btn').onclick = () => executeDeleteFolder();
-        }
-
-        function closeDeleteModal() {
-            testToDelete = null;
-            document.getElementById('delete-modal').classList.add('hidden');
-        }
-
-        async function executeDelete() {
-            if(!testToDelete) return;
-            const btn = document.getElementById('confirm-delete-btn');
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Deleting...`;
-            btn.disabled = true;
-
-            try { 
-                const res = await fetch(`${API_BASE_URL}/admin/tests/${testToDelete}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
-                await checkAuthResponse(res);
-                if(res.ok) {
-                    showToast('Assessment deleted successfully.');
-                    fetchLibrary();
-                    closeDeleteModal();
-                } else {
-                    showToast('Failed to delete assessment.', 'error');
-                }
-            } catch(e) {
-                if (e.message !== "AUTH_FAILED") showToast("Network error during deletion.", 'error');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                closeDeleteModal();
-            }
-        }
-
-        async function executeDeleteFolder() {
-            if(!testToDelete) return;
-            const btn = document.getElementById('confirm-delete-btn');
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Deleting...`;
-            btn.disabled = true;
-
-            try { 
-                const res = await fetch(`${API_BASE_URL}/admin/test-folders/${testToDelete}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }}); 
-                await checkAuthResponse(res);
-                if(res.ok) {
-                    showToast('Folder deleted.');
-                    fetchLibrary();
-                    closeDeleteModal();
-                } else {
-                    showToast('Failed to delete folder.', 'error');
-                }
-            } catch(e) {
-                if (e.message !== "AUTH_FAILED") showToast("Network error during deletion.", 'error');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                closeDeleteModal();
-            }
-        }
-
-        /* --- Editor --- */
-        function showEditor(isNew = true) {
-            document.getElementById('view-library').classList.add('hidden');
-            document.getElementById('view-editor').classList.remove('hidden');
-            document.getElementById('view-editor').classList.add('flex');
-            
-            if(isNew) {
-                document.getElementById('edit-test-id').value = ''; 
-                document.getElementById('testTitle').value = '';
                 
-                // Automatically set folder placement to current directory if creating from one
-                document.getElementById('testFolderId').value = currentFolderId || '';
-
-                populateEditorLevels([], {}); 
-                
-                document.getElementById('testStartTime').value = '';
-                document.getElementById('testTimeLimit').value = '60';
-                document.getElementById('testPassingScore').value = '50';
-                document.getElementById('testReleaseResults').checked = true;
-                document.getElementById('testShowAnswers').checked = true;
-
-                document.getElementById('questions-container').innerHTML = ''; 
-                document.getElementById('editor-title-display').innerText = 'New Assessment Protocol';
-                qCounter = 0; 
-                addQuestion('mcq');
+                detailedReviewHtml += `</div></div>`;
             }
-        }
 
-        function hideEditor() {
-            document.getElementById('view-library').classList.remove('hidden'); 
-            document.getElementById('view-editor').classList.add('hidden'); 
-            document.getElementById('view-editor').classList.remove('flex');
-        }
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 z-[200] bg-surface-900/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in';
+            overlay.innerHTML = `
+                <div class="panel bg-white p-8 sm:p-10 rounded-3xl max-w-2xl w-full text-center shadow-glass relative overflow-hidden font-sans my-8">
+                    <div class="absolute top-0 right-0 w-32 h-32 ${result.passed ? 'bg-emerald-500/10' : 'bg-rose-500/10'} rounded-full blur-3xl -mr-10 -mt-10"></div>
+                    
+                    <div class="w-20 h-20 ${result.passed ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'} rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm border relative z-10">
+                        <i class="fa-solid ${result.passed ? 'fa-check' : 'fa-times'}"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-surface-900 mb-2 tracking-tight relative z-10">Assessment Completed</h3>
+                    <p class="text-surface-500 text-[13px] font-medium mb-8 relative z-10">Your final score has been recorded.</p>
+                    
+                    <div class="bg-surface-50 p-6 rounded-2xl border border-surface-200 flex justify-around items-center shadow-soft-inner relative z-10">
+                        <div>
+                            <p class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Status</p>
+                            <p class="text-xl font-black ${result.passed ? 'text-emerald-600' : 'text-rose-600'} tracking-tight">${result.passed ? 'PASSED' : 'FAILED'}</p>
+                        </div>
+                        <div class="w-px h-12 bg-surface-200"></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-surface-400 uppercase tracking-widest mb-1">Final Score</p>
+                            <p class="text-2xl font-black text-surface-900 tracking-tight">${result.scorePercentage}%</p>
+                        </div>
+                    </div>
+                    
+                    ${detailedReviewHtml}
 
-        function editTest(id) {
-            const test = allTests.find(t => t.id === id); 
-            if(!test) return;
-            
-            showEditor(false);
-            
-            document.getElementById('edit-test-id').value = test.id; 
-            document.getElementById('testTitle').value = test.title; 
-            document.getElementById('testFolderId').value = test.folderId || '';
-            
-            populateEditorLevels(test.levels || [], test.levelAttempts || {});
-            
-            const formatForInput = (isoString) => {
-                if(!isoString) return '';
-                const date = new Date(isoString);
-                if (isNaN(date.getTime())) return '';
-                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-                return date.toISOString().slice(0,16);
-            };
-
-            document.getElementById('testStartTime').value = formatForInput(test.startTime);
-            document.getElementById('testTimeLimit').value = test.timeLimit || 60;
-            document.getElementById('testPassingScore').value = test.passingScore || 50;
-            document.getElementById('testReleaseResults').checked = test.releaseResults !== false;
-            document.getElementById('testShowAnswers').checked = test.showAnswersImmediately !== false;
-
-            document.getElementById('editor-title-display').innerText = 'Editing Assessment';
-            
-            document.getElementById('questions-container').innerHTML = ''; 
-            qCounter = 0;
-            
-            /* --- Safely Rendering Historical Tests --- */
-            const fragment = document.createDocumentFragment();
-            if (test.questions && Array.isArray(test.questions) && test.questions.length > 0) {
-                test.questions.forEach(q => addQuestion(q.type, q, fragment));
-            } else {
-                addQuestion('mcq', null, fragment);
-            }
-            document.getElementById('questions-container').appendChild(fragment);
-            updateQuestionNumbers();
-        }
-
-        function addQuestion(type, data = null, targetContainer = null) {
-            qCounter++; 
-            const id = `q_${qCounter}`; 
-            const container = targetContainer || document.getElementById('questions-container');
-            const div = document.createElement('div');
-            
-            let label, borderCol, icon;
-            if (type === 'mcq') { label = 'Single Correct (MCQ)'; borderCol = 'border-l-brand-500'; icon = 'fa-circle-dot'; } 
-            else if (type === 'msq') { label = 'Multiple Correct (MSQ)'; borderCol = 'border-l-blue-500'; icon = 'fa-check-double'; } 
-            else { label = 'Short Answer'; borderCol = 'border-l-amber-500'; icon = 'fa-pen-clip'; }
-
-            div.className = `question-block bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 ${borderCol} mb-4 relative`;
-            div.dataset.type = type;
-            
-            /* --- Safe Input Generation --- */
-            let optionsHtml = '';
-            if (type === 'mcq' || type === 'msq') {
-                const inputType = type === 'mcq' ? 'radio' : 'checkbox';
-                let optionsLength = data && Array.isArray(data.options) && data.options.length > 0 ? data.options.length : 4;
-                
-                optionsHtml += `<div class="options-list space-y-3" id="options_${id}">`;
-                for(let i=0; i<optionsLength; i++) {
-                    const isChecked = data && Array.isArray(data.correctOptions) && data.correctOptions.includes(i.toString()) ? 'checked' : '';
-                    const optVal = data && Array.isArray(data.options) && data.options[i] !== undefined ? escapeHTML(data.options[i]) : '';
-                    optionsHtml += `
-                        <div class="flex items-center gap-3 option-row">
-                            <input type="${inputType}" name="ans_${id}" value="${i}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 cursor-pointer border-slate-300 rounded${inputType === 'radio' ? '-full' : ''}" ${isChecked}>
-                            <input type="text" class="opt-input admin-input flex-1 !py-1.5" placeholder="Option ${i+1}" value="${optVal}">
-                            <button type="button" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition" onclick="removeOption(this)" title="Remove Option"><i class="fa-solid fa-times"></i></button>
-                        </div>`;
-                }
-                optionsHtml += `</div>
-                <div class="mt-4 flex">
-                    <button type="button" class="text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5" onclick="addNewOption('${id}', '${type}')">
-                        <i class="fa-solid fa-plus"></i> Add Option
+                    <button onclick="window.location.reload()" class="mt-8 w-full bg-surface-900 hover:bg-black text-white font-bold py-4 rounded-xl transition shadow-md relative z-10 cursor-pointer text-[15px]">
+                        Return to Dashboard
                     </button>
-                </div>`;
-            } else {
-                const ans = data && Array.isArray(data.correctOptions) && data.correctOptions[0] !== undefined ? escapeHTML(data.correctOptions[0]) : '';
-                optionsHtml = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm font-semibold text-slate-600">Exact Answer:</span>
-                        <input type="text" class="fib-ans admin-input flex-1 font-bold" placeholder="e.g. Mitochondria" value="${ans}">
-                    </div>
-                `;
-            }
-
-            const imgUrl = data && data.imageUrl ? escapeHTML(data.imageUrl) : '';
-            const textVal = data && data.text ? escapeHTML(data.text) : (data && data.question ? escapeHTML(data.question) : '');
-            const posMarksVal = data && data.positiveMarks !== undefined ? Number(data.positiveMarks) : 1;
-            const negMarksVal = data && data.negativeMarks !== undefined ? Number(data.negativeMarks) : 0.3;
-
-            div.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-4 border-b border-slate-100 pb-3">
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                        <span class="q-number-display bg-brand-50 text-brand-600 px-2 py-0.5 rounded text-[11px]">Q${document.querySelectorAll('.question-block').length + 1}</span>
-                        <i class="fa-solid ${icon} text-slate-400 ml-1"></i> ${label}
-                    </span>
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-                            <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest pl-1">Pos:</span>
-                            <input type="number" class="q-pos-marks admin-input !w-14 !py-0.5 !px-1 text-center text-xs font-bold bg-white" value="${posMarksVal}" min="0" step="0.1" title="Positive Marks">
-                            <span class="text-slate-300 mx-1">|</span>
-                            <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Neg:</span>
-                            <input type="number" class="q-neg-marks admin-input !w-14 !py-0.5 !px-1 text-center text-xs font-bold bg-white" value="${negMarksVal}" min="0" step="0.1" title="Negative Marks">
-                        </div>
-                        <button onclick="this.closest('.question-block').remove(); updateQuestionNumbers();" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-red-50 flex items-center justify-center transition" title="Delete Question">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col md:flex-row gap-5 mb-5">
-                    <div class="flex-1">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Question Text</label>
-                        <textarea class="q-text admin-input min-h-[100px] resize-y" placeholder="Enter question text here...">${textVal}</textarea>
-                    </div>
-                    <div class="shrink-0 w-full md:w-48 relative group">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1 text-center">Reference Image</label>
-                        <div class="h-[100px] bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden relative">
-                            ${imgUrl ? `<img src="${imgUrl}" class="q-img-preview w-full h-full object-cover">` : `<span class="q-img-preview text-[10px] font-semibold text-slate-400 uppercase tracking-widest">No Image</span>`}
-                            <label class="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
-                                <i class="fa-solid fa-cloud-arrow-up text-lg mb-1"></i> Upload
-                                <input type="file" accept="image/*" class="hidden" onchange="uploadQuestionImage(this, this.closest('.question-block'))">
-                            </label>
-                        </div>
-                        <input type="hidden" class="q-img-url" value="${imgUrl}">
-                        ${imgUrl ? `<button class="absolute top-6 -right-2 bg-white text-red-500 border border-red-200 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-50 z-10" onclick="removeQuestionImage(this.closest('.question-block'))"><i class="fa-solid fa-times text-[10px]"></i></button>` : ''}
-                    </div>
-                </div>
-                
-                <div class="bg-slate-50 p-5 rounded-lg border border-slate-200/60">
-                    <label class="block text-xs font-semibold text-slate-600 mb-3">Options & Answer Key</label>
-                    ${optionsHtml}
                 </div>
             `;
-            container.appendChild(div);
-            
-            if (!targetContainer) {
-                updateQuestionNumbers();
-            }
+            document.body.appendChild(overlay);
         }
 
-        window.addNewOption = function(qId, type) {
-            const list = document.getElementById(`options_${qId}`);
-            if(!list) return;
-            const inputType = type === 'mcq' ? 'radio' : 'checkbox';
-            const rowCount = list.querySelectorAll('.option-row').length;
-            
-            const newRow = document.createElement('div');
-            newRow.className = 'flex items-center gap-3 option-row';
-            newRow.innerHTML = `
-                <input type="${inputType}" name="ans_${qId}" value="${rowCount}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 cursor-pointer border-slate-300 rounded${inputType === 'radio' ? '-full' : ''}">
-                <input type="text" class="opt-input admin-input flex-1 !py-1.5" placeholder="Option ${rowCount + 1}">
-                <button type="button" class="text-slate-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition" onclick="removeOption(this)" title="Remove Option"><i class="fa-solid fa-times"></i></button>
+        function showCustomModal(title, message) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
+                    <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 border border-rose-100 shadow-sm">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <p class="text-surface-500 text-[14px] font-medium mb-8">${message}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-surface-900 hover:bg-black text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[15px]">Acknowledge</button>
+                </div>
             `;
-            list.appendChild(newRow);
-        };
-
-        window.removeOption = function(btn) {
-            const list = btn.closest('.options-list');
-            if (list.querySelectorAll('.option-row').length <= 2) {
-                showToast('A question must have at least 2 options.', 'error');
-                return;
-            }
-            btn.closest('.option-row').remove();
-            
-            list.querySelectorAll('.option-row').forEach((row, index) => {
-                const input = row.querySelector('.opt-input');
-                if (!input.value) { input.placeholder = `Option ${index + 1}`; }
-                const radioOrCheckbox = row.querySelector(`input[type="radio"], input[type="checkbox"]`);
-                if(radioOrCheckbox) radioOrCheckbox.value = index;
-            });
-        };
-
-        async function uploadQuestionImage(inputElem, block) {
-            const file = inputElem.files[0]; if(!file) return;
-            try {
-                const res = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) });
-                await checkAuthResponse(res);
-                const data = await res.json(); 
-                await fetch(data.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
-                
-                const previewContainer = block.querySelector('.q-img-preview');
-                if (previewContainer.tagName === 'SPAN') {
-                    const img = document.createElement('img');
-                    img.className = 'q-img-preview w-full h-full object-cover';
-                    img.src = data.readUrl;
-                    previewContainer.replaceWith(img);
-                } else {
-                    previewContainer.src = data.readUrl; 
-                }
-                
-                block.querySelector('.q-img-url').value = data.readUrl;
-                
-                if(!block.querySelector('.fa-times')) {
-                    const btn = document.createElement('button');
-                    btn.className = "absolute top-6 -right-2 bg-white text-red-500 border border-red-200 rounded-full w-6 h-6 flex items-center justify-center shadow hover:bg-red-50 z-10";
-                    btn.innerHTML = `<i class="fa-solid fa-times text-[10px]"></i>`;
-                    btn.onclick = () => removeQuestionImage(block);
-                    block.querySelector('.relative.group').appendChild(btn);
-                }
-            } catch(e) { showToast('Image upload failed.', 'error'); }
+            document.body.appendChild(modal);
         }
 
-        function removeQuestionImage(block) {
-            const preview = block.querySelector('.q-img-preview');
-            const span = document.createElement('span');
-            span.className = 'q-img-preview text-[10px] font-semibold text-slate-400 uppercase tracking-widest';
-            span.innerText = 'No Image';
-            preview.replaceWith(span);
-            block.querySelector('.q-img-url').value = '';
-            const btn = block.querySelector('.fa-times');
-            if(btn) btn.closest('button').remove();
-        }
-
-        async function saveTest(status) {
-            const title = document.getElementById('testTitle').value.trim(); 
-            const id = document.getElementById('edit-test-id').value;
-            const folderId = document.getElementById('testFolderId').value || null;
-            
-            const levels = [];
-            const levelAttempts = {};
-            
-            const selectAllCb = document.getElementById('selectAllLevels');
-            let hasAllLevels = selectAllCb && selectAllCb.checked;
-
-            document.querySelectorAll('.level-cb:checked').forEach(cb => {
-                levels.push(cb.value);
-                const safeId = cb.value.replace(/\s+/g, '-');
-                const attemptsVal = parseInt(document.getElementById(`attempts-${safeId}`).value) || 1;
-                levelAttempts[cb.value] = attemptsVal;
-            });
-
-            if (hasAllLevels) {
-                if (!levels.includes('All Levels')) {
-                    levels.push('All Levels');
-                }
-                const attemptsVal = parseInt(document.getElementById('attempts-All-Levels').value) || 1;
-                levelAttempts['All Levels'] = attemptsVal;
-            }
-
-            let startTime = document.getElementById('testStartTime').value;
-            const timeLimit = document.getElementById('testTimeLimit').value;
-            const passingScore = document.getElementById('testPassingScore').value;
-            const releaseResults = document.getElementById('testReleaseResults').checked;
-            const showAnswersImmediately = document.getElementById('testShowAnswers').checked;
-
-            if(!title) return showToast('Assessment Title is required.', 'error');
-            if (levels.length === 0) return showToast('Select at least one Target Audience.', 'error');
-            
-            if (startTime) {
-                 startTime = new Date(startTime).toISOString();
-            } else {
-                 startTime = null; 
-            }
-
-            const questions = [];
-            let isValid = true;
-            
-            document.querySelectorAll('.question-block').forEach((block, index) => {
-                const type = block.dataset.type; 
-                const text = block.querySelector('.q-text').value.trim(); 
-                const imageUrl = block.querySelector('.q-img-url').value;
-                const posVal = parseFloat(block.querySelector('.q-pos-marks').value);
-                const negVal = parseFloat(block.querySelector('.q-neg-marks').value);
-                const posMarks = isNaN(posVal) ? 1 : posVal;
-                const negMarks = isNaN(negVal) ? 0.3 : negVal;
-                
-                let options = [], correctOptions = [];
-                if(type === 'mcq' || type === 'msq') {
-                    block.querySelectorAll('.opt-input').forEach(i => options.push(i.value.trim()));
-                    block.querySelectorAll(`input[name^="ans_"]`).forEach((cb, idx) => { 
-                        if(cb.checked) correctOptions.push(idx.toString()); 
-                    });
-                } else { 
-                    const fibVal = block.querySelector('.fib-ans').value.trim();
-                    if(fibVal) correctOptions.push(fibVal); 
-                }
-                
-                if(!text) { showToast(`Q${index+1}: Question text missing.`, 'error'); isValid = false; return; }
-                if(correctOptions.length === 0) { showToast(`Q${index+1}: Correct answer not selected.`, 'error'); isValid = false; return; }
-
-                questions.push({ 
-                    id: `q${index}`, type, text, imageUrl, options, correctOptions, 
-                    positiveMarks: posMarks, negativeMarks: negMarks
-                });
-            });
-
-            if(!isValid) return;
-            if(questions.length === 0) return showToast('At least one question is required.', 'error');
-
-            try {
-                const payload = { 
-                    id, title, folderId, levels, levelAttempts, status, questions, 
-                    startTime, timeLimit, passingScore, 
-                    releaseResults, showAnswersImmediately 
-                };
-                
-                const res = await fetch(`${API_BASE_URL}/admin/tests`, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
-                    body: JSON.stringify(payload) 
-                });
-                
-                await checkAuthResponse(res);
-                
-                if(res.ok) { 
-                    showToast(`Saved successfully as ${status}.`); 
-                    await fetchLibrary(); 
-                    hideEditor(); 
-                } else {
-                    throw new Error("Server synchronization failed");
-                }
-            } catch (e) { 
-                if (e.message !== "AUTH_FAILED") showToast('Save failed: Network latency or backend issue.', 'error'); 
-            }
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
+            modal.innerHTML = `
+                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
+                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-4 border border-brand-100 shadow-sm">
+                        <i class="fa-solid fa-paper-plane text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <p class="text-surface-500 text-[14px] font-medium mb-8 leading-relaxed">${message}</p>
+                    <div class="flex gap-3">
+                        <button id="modal-cancel" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Review</button>
+                        <button id="modal-ok" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[14px]">Submit</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.querySelector('#modal-cancel').onclick = () => modal.remove();
+            modal.querySelector('#modal-ok').onclick = () => { modal.remove(); onConfirm(); };
         }
 
         function logout() { localStorage.clear(); window.location.href = '../login.html'; }
