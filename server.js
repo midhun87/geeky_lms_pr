@@ -1053,7 +1053,6 @@ app.post('/api/admin/content', authenticateToken, isAdmin, async (req, res) => {
         const contentId = id || uuidv4();
         let finalS3Key = s3Key;
         
-        // --- NEW SAFETY CHECK --- 
         // Forcefully strip parentId from Chapters to guarantee they stay at the root directory
         if (type === 'chapter') {
             parentId = null; 
@@ -1072,8 +1071,15 @@ app.post('/api/admin/content', authenticateToken, isAdmin, async (req, res) => {
         }
 
         const newContent = {
-            id: contentId, title, levels: levels || [], type, textContent, s3Key: finalS3Key,
-            parentId: parentId || null, order: order || 0, status: status || 'published',
+            id: contentId, 
+            title, 
+            levels: levels || [], 
+            type, 
+            textContent, 
+            s3Key: finalS3Key,
+            parentId: parentId || null, 
+            order: parseInt(order) || 0, // Ensure order is parsed as an Integer, default to 0
+            status: status || 'published',
             updatedAt: new Date().toISOString()
         };
         if(!id) newContent.createdAt = new Date().toISOString();
@@ -1082,11 +1088,18 @@ app.post('/api/admin/content', authenticateToken, isAdmin, async (req, res) => {
         res.status(201).json({ message: 'Content saved', contentId });
     } catch (error) { res.status(500).json({ error: 'Failed to save content' }); }
 });
-
 app.get('/api/admin/content', authenticateToken, isAdmin, async (req, res) => {
     try {
         const data = await dynamoDB.scan({ TableName: TABLE_CONTENT }).promise();
-        res.json(data.Items || []);
+        
+        // Ensure data is sorted by Order ascending natively
+        let sortedItems = (data.Items || []).sort((a, b) => {
+            const orderA = a.order !== undefined ? parseInt(a.order) : 0;
+            const orderB = b.order !== undefined ? parseInt(b.order) : 0;
+            return orderA - orderB; 
+        });
+
+        res.json(sortedItems);
     } catch (error) { res.status(500).json({ error: 'Fetch failed' }); }
 });
 
@@ -1275,10 +1288,16 @@ app.get('/api/student/content', authenticateToken, async (req, res) => {
         }).promise();
         
         // Apply Inheritance Engine
-        const accessibleContent = getAccessibleTree(data.Items || [], level);
+        let accessibleContent = getAccessibleTree(data.Items || [], level);
+
+        // Natively Sort the Tree by custom `order`
+        accessibleContent = accessibleContent.sort((a, b) => {
+             const orderA = a.order !== undefined ? parseInt(a.order) : 0;
+             const orderB = b.order !== undefined ? parseInt(b.order) : 0;
+             return orderA - orderB; 
+        });
 
         const contentWithSecureUrls = await Promise.all(accessibleContent.map(async (item) => {
-            // BUG FIX: Removed strict type checking. If it has an S3 Key, generate the URL!
             if (item && item.s3Key) {
                 try {
                     const urlParams = { Bucket: S3_BUCKET, Key: item.s3Key, Expires: 3600 };
@@ -1295,7 +1314,6 @@ app.get('/api/student/content', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Content fetch failed' }); 
     }
 });
-
 app.get('/api/student/recordings', authenticateToken, async (req, res) => {
     try {
         const { level } = req.user;
@@ -1338,9 +1356,9 @@ app.get('/api/student/tests', authenticateToken, async (req, res) => {
         const { level, email } = req.user;
         const testData = await dynamoDB.scan({
             TableName: TABLE_TESTS,
-            FilterExpression: '#st = :status',
+            FilterExpression: '#st = :status OR #st = :folderStatus',
             ExpressionAttributeNames: { '#st': 'status' },
-            ExpressionAttributeValues: { ':status': 'published' }
+            ExpressionAttributeValues: { ':status': 'published', ':folderStatus': 'folder' }
         }).promise();
         
         const scoreData = await dynamoDB.scan({
@@ -1351,18 +1369,18 @@ app.get('/api/student/tests', authenticateToken, async (req, res) => {
         
         const studentScores = scoreData.Items || [];
         const now = new Date();
-        
-        // BUG FIX: Standardize casing to completely bypass mismatches
         const userLevel = (level || '').trim().toLowerCase(); 
 
-        const accessibleTests = (testData.Items || []).filter(test => {
-            const levels = (test.levels || []).map(l => l.trim().toLowerCase());
+        // 1. Identify all tests that are legitimately accessible to this specific student
+        const accessibleTests = (testData.Items || []).filter(item => {
+            if (item.isFolder) return false;
+
+            const levels = (item.levels || []).map(l => l.trim().toLowerCase());
             const hasLevelAccess = levels.includes(userLevel) || levels.includes('all levels');
             
-            // BUG FIX: Strict date evaluation, defaulting to true if no start date
             let hasCommenced = true;
-            if (test.startTime && test.startTime !== null && test.startTime.trim() !== "") {
-                const startDate = new Date(test.startTime);
+            if (item.startTime && item.startTime !== null && item.startTime.trim() !== "") {
+                const startDate = new Date(item.startTime);
                 if (!isNaN(startDate.getTime())) {
                     hasCommenced = startDate <= now;
                 }
@@ -1371,10 +1389,33 @@ app.get('/api/student/tests', authenticateToken, async (req, res) => {
             return hasLevelAccess && hasCommenced;
         });
 
+        // 2. Map Folders & Smartly Filter Out Empty/Inaccessible Ones
+        const allFoldersRaw = (testData.Items || []).filter(item => item.isFolder === true);
+        const folderMap = new Map();
+        allFoldersRaw.forEach(f => folderMap.set(f.id, f));
+        
+        // This Set will collect ONLY the IDs of folders that house accessible tests
+        const neededFolderIds = new Set();
+        
+        accessibleTests.forEach(test => {
+            if (test.folderId) {
+                let currentId = test.folderId;
+                // Trace up the hierarchy recursively. This ensures that if a test is buried 
+                // in a sub-folder, the parent folder is also passed to the UI so it can be navigated.
+                while (currentId && folderMap.has(currentId)) {
+                    neededFolderIds.add(currentId);
+                    currentId = folderMap.get(currentId).parentId;
+                }
+            }
+        });
+
+        // Pluck only the verified necessary folders
+        const accessibleFolders = allFoldersRaw.filter(f => neededFolderIds.has(f.id));
+
+        // 3. Clean up the actual test payloads (calculate attempts, hide right answers)
         const sanitizedTests = accessibleTests.map(test => {
             let maxAttempts = 1; 
             if (test.levelAttempts) {
-                // Normalize keys inside levelAttempts for case-insensitive fetching
                 const normAttempts = {};
                 for (let k in test.levelAttempts) normAttempts[k.trim().toLowerCase()] = test.levelAttempts[k];
 
@@ -1393,7 +1434,8 @@ app.get('/api/student/tests', authenticateToken, async (req, res) => {
             return { ...test, questions: safeQuestions, attemptCount, maxAttempts };
         });
         
-        res.json(sanitizedTests);
+        // 4. Return the highly optimized payload
+        res.json([...accessibleFolders, ...sanitizedTests]);
     } catch (error) { 
         console.error("Test fetch error:", error);
         res.status(500).json({ error: 'Failed to fetch tests' }); 
@@ -1663,6 +1705,68 @@ app.delete('/api/admin/test-folders/:id', authenticateToken, isAdmin, async (req
         res.status(500).json({ error: 'Folder deletion failed' }); 
     }
 });
+
+/* ==========================================================================
+   PUBLIC ROUTES (For Dynamic Homepage)
+   ========================================================================== */
+app.get('/api/public/levels', async (req, res) => {
+    try {
+        // Fetch all levels directly from DynamoDB
+        const result = await dynamoDB.scan({ TableName: TABLE_LEVELS }).promise();
+        const levels = result.Items || [];
+        
+        // Strip out any sensitive admin data if necessary, though levels usually don't have it
+        res.json(levels);
+    } catch (error) { 
+        console.error("Public levels fetch error:", error);
+        res.status(500).json({ error: 'Failed to fetch public levels' }); 
+    }
+});
+
+app.get('/api/public/homepage-settings', async (req, res) => {
+    try {
+        const result = await dynamoDB.get({ 
+            TableName: TABLE_SETTINGS, 
+            Key: { id: 'main_page_stats' } 
+        }).promise();
+        
+        // Return default values if table is empty
+        res.json(result.Item || {
+            ecosystem: { videos: '300+', daily: '75+', weekly: '15+', monthly: '4+', subject: '10+', model: '15+', ars: '45+' },
+            achievements: { net: '45+', arsMains: '30', arsInterview: '15' }
+        });
+    } catch (error) { 
+        // Fail gracefully for the frontend
+        res.json({ ecosystem: {}, achievements: {} }); 
+    }
+});
+
+// Update dynamic homepage settings (Admin Token required)
+app.put('/api/admin/homepage-settings', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { ecosystem, achievements } = req.body;
+        
+        await dynamoDB.put({
+            TableName: TABLE_SETTINGS,
+            Item: {
+                id: 'main_page_stats', // Single row configuration
+                ecosystem: ecosystem || {},
+                achievements: achievements || {},
+                updatedAt: new Date().toISOString()
+            }
+        }).promise();
+        
+        res.json({ message: 'Homepage settings updated successfully' });
+    } catch (error) {
+        console.error("Homepage settings update error:", error);
+        // Hint for AWS setup
+        if (error.code === 'ResourceNotFoundException') {
+            return res.status(500).json({ error: `Table '${TABLE_SETTINGS}' does not exist in AWS DynamoDB. Please create it with 'id' as the Primary Key.` });
+        }
+        res.status(500).json({ error: 'Failed to update settings' });
+    }
+});
+
 
 /* ==========================================================================
    GLOBAL ERROR HANDLER
