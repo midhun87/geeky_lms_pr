@@ -10,7 +10,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = { 
@@ -18,27 +18,27 @@
                 extend: { 
                     fontFamily: { 
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        cbt: ['Arial', 'Helvetica', 'sans-serif']
+                        cbt: ['"Inter"', 'Arial', 'sans-serif']
                     }, 
                     colors: { 
                         brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
                         surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
-                        cbt: { main: '#1a365d', sec: '#2563eb', border: '#cbd5e1', bg: '#f1f5f9' }
+                        cbt: { main: '#0f172a', sec: '#3b82f6', border: '#e2e8f0', bg: '#f8fafc' }
                     },
                     boxShadow: {
                         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
                         'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
-                        'card': '0 2px 12px rgba(0,0,0,0.03)',
-                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
-                        'mnc': '0 4px 12px rgba(0,0,0,0.05)'
+                        'card': '0 4px 20px -2px rgba(0,0,0,0.05)',
+                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(16px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     }
                 } 
             } 
@@ -72,171 +72,205 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Dashboard Links */
         .sidebar-link { transition: all 0.25s ease; border-radius: 0.875rem; margin-bottom: 0.25rem; position: relative; }
         .sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
         .sidebar-link.active { background: #f0fdf4; color: #16a34a; font-weight: 600; }
         .sidebar-link.active i { color: #16a34a; }
         .sidebar-link.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); height: 60%; width: 4px; background: #16a34a; border-radius: 0 4px 4px 0; }
 
+        /* Smooth Panels */
         .panel { background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-hover:hover { box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.05); transform: translateY(-2px); }
+        .panel-hover:hover { box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.08); transform: translateY(-4px); border-color: rgba(16, 185, 129, 0.3); }
 
         /* Privacy Layer */
         #privacy-blur-layer {
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.1s ease;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease-in-out;
         }
         #privacy-blur-layer.active { opacity: 1; pointer-events: auto; }
 
-        /* ----- GOVT EXAM CBT UI STYLES ----- */
+        /* ----- MODERN EXAM CBT UI STYLES ----- */
         .cbt-opt-label { 
-            display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; 
-            border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; 
-            background: #ffffff; margin-bottom: 0.5rem; transition: background 0.2s;
+            display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem; 
+            border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; 
+            background: #ffffff; margin-bottom: 0.75rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .cbt-opt-label:hover { background: #f1f5f9; }
+        .cbt-opt-label:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
         .cbt-opt-label:has(input:checked) { 
-            background: #eff6ff; border-color: #2563eb; 
+            background: #eff6ff; border-color: #3b82f6; box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.15);
         }
-        .cbt-opt-label:has(input:checked) span { color: #000; font-weight: bold; }
+        .cbt-opt-label:has(input:checked) span { color: #0f172a; font-weight: 600; }
         
-        .palette-btn {
-            width: 42px; height: 38px; max-width: none; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 14px; border: 1px solid #c0c0c0; background: #f0f0f0; color: #000; margin: 0 auto;
-            font-family: Arial, Helvetica, sans-serif; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        .cbt-opt-input {
+            width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; cursor: pointer;
+            accent-color: #3b82f6;
         }
-        .palette-btn:hover { background: #e2e8f0; }
-        .palette-btn.not-answered { background: #ed2a26; color: white; border-color: #d1221e; border-radius: 4px 4px 0 0; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
-        .palette-btn.answered { background: #26a65b; color: white; border-color: #1e8748; border-radius: 4px 4px 0 0; clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%); }
-        .palette-btn.marked { background: #5a54a4; color: white; border-color: #484384; border-radius: 50%; }
-        .palette-btn.marked-answered { background: #5a54a4; color: white; border-color: #484384; border-radius: 50%; position: relative; }
-        .palette-btn.marked-answered::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; background-color: #26a65b; border-radius: 50%; border: 2px solid white; }
-        .palette-btn.active-q { box-shadow: 0 0 0 2px #000; outline: 1px solid #2563eb; outline-offset: 1px; }
+        
+        /* Modernized Palette Buttons */
+        .palette-btn {
+            width: 100%; aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; 
+            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-family: 'Inter', sans-serif;
+        }
+        .palette-btn:hover { background: #f1f5f9; border-color: #94a3b8; transform: translateY(-1px); }
+        
+        /* Govt specific shapes but modernized */
+        .palette-btn.not-answered { background: #ef4444; color: white; border-color: #dc2626; border-radius: 8px 8px 0 0; clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
+        .palette-btn.answered { background: #10b981; color: white; border-color: #059669; border-radius: 8px 8px 0 0; clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%); }
+        .palette-btn.marked { background: #6366f1; color: white; border-color: #4f46e5; border-radius: 50%; }
+        .palette-btn.marked-answered { background: #6366f1; color: white; border-color: #4f46e5; border-radius: 50%; position: relative; }
+        .palette-btn.marked-answered::after { content: ''; position: absolute; bottom: 0px; right: -2px; width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; border: 2px solid white; }
+        
+        /* Active indicator */
+        .palette-btn.active-q { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4); outline: none; border-color: #3b82f6; transform: scale(1.05); z-index: 10; }
 
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 1rem); }
         .pt-safe { padding-top: env(safe-area-inset-top, 1rem); }
+        .pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+        .pr-safe { padding-right: env(safe-area-inset-right, 0px); }
     </style>
 </head>
 
 <body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
 
     <!-- ========================================== -->
-    <!-- SECURE EXAM ENVIRONMENT (GOVT CBT STYLE)   -->
+    <!-- SECURE EXAM ENVIRONMENT                    -->
     <!-- ========================================== -->
-    <div id="active-test-area" class="hidden fixed inset-0 z-[100] bg-white flex-col w-full h-full font-cbt tracking-normal text-[14px]">
+    <div id="active-test-area" class="hidden fixed inset-0 z-[100] bg-surface-50 flex-col w-full h-full font-cbt tracking-normal text-[15px]">
         
-        <!-- Top Header -->
-        <div class="bg-[#1a365d] text-white flex justify-between items-center px-6 py-3 shrink-0 border-b-4 border-[#2563eb]">
-            <h2 id="active-test-title" class="text-[18px] md:text-[20px] font-bold tracking-wide">Exam Title</h2>
+        <!-- Modern Top Header -->
+        <div class="bg-cbt-main text-white flex justify-between items-center px-4 lg:px-8 py-3.5 shrink-0 border-b-4 border-cbt-sec shadow-md z-20 pt-safe pl-safe pr-safe relative">
+            <!-- decorative gradient -->
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-transparent pointer-events-none"></div>
+            
+            <div class="flex items-center gap-3 relative z-10 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+                    <i class="fa-solid fa-file-signature text-sm"></i>
+                </div>
+                <h2 id="active-test-title" class="text-[16px] md:text-[20px] font-bold tracking-tight truncate pr-2">Exam Title</h2>
+            </div>
+
+            <!-- Mobile Toggle Button -->
+            <button onclick="togglePalette()" class="lg:hidden shrink-0 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3.5 py-2 rounded-lg text-sm font-semibold shadow-sm flex items-center gap-2 transition-colors relative z-10">
+                <i class="fa-solid fa-bars-staggered"></i> <span class="hidden sm:inline">Overview</span>
+            </button>
         </div>
 
         <!-- Layout Body -->
-        <div class="flex-1 flex overflow-hidden relative"> 
+        <div class="flex-1 flex overflow-hidden relative pl-safe pr-safe pb-safe"> 
             
             <!-- Left: Question Panel -->
-            <div class="flex-1 flex flex-col bg-white overflow-hidden relative border-r border-[#cbd5e1]">
+            <div class="flex-1 flex flex-col bg-white overflow-hidden relative lg:border-r border-cbt-border shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10 lg:rounded-tl-2xl lg:mt-4 lg:ml-4 lg:mb-4 border lg:border-surface-200">
                 
                 <!-- Section / Timer Bar -->
-                <div class="bg-[#f1f5f9] px-6 py-2 border-b border-[#cbd5e1] flex justify-between items-center font-bold text-[#1a365d] shadow-sm shrink-0">
-                    <div>Section: <span class="bg-[#2563eb] text-white px-3 py-1 rounded text-sm ml-2">General Test</span></div>
+                <div class="bg-surface-50 px-5 lg:px-8 py-3 border-b border-cbt-border flex justify-between items-center shadow-sm shrink-0">
                     <div class="flex items-center gap-2">
-                        <span class="text-sm text-slate-600">Time Left:</span> 
-                        <span id="exam-timer" class="text-[#dc2626] text-lg bg-white px-3 py-0.5 border border-[#cbd5e1] rounded font-mono shadow-inner">00:00:00</span>
+                        <span class="text-xs font-bold text-surface-500 uppercase tracking-wider hidden md:inline">Section</span> 
+                        <span class="bg-surface-200 text-surface-700 px-3 py-1 rounded-md text-xs font-bold border border-surface-300 shadow-sm">General</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-rose-50 border border-rose-100 px-4 py-1.5 rounded-lg shadow-sm">
+                        <i class="fa-regular fa-clock text-rose-500 animate-pulse"></i>
+                        <span id="exam-timer" class="text-rose-600 text-base lg:text-lg font-mono font-bold tracking-widest leading-none mt-0.5">00:00:00</span>
                     </div>
                 </div>
 
                 <!-- Header Info for Question -->
-                <div class="px-6 py-3 border-b border-[#cbd5e1] flex justify-between items-center shrink-0 z-10 bg-white"> 
-                    <div class="font-bold text-black text-[16px]">
-                        Question No. <span id="q-current-display" class="text-[#dc2626] text-xl ml-1">1</span>
+                <div class="px-5 lg:px-8 py-4 border-b border-cbt-border flex flex-col sm:flex-row justify-between sm:items-center shrink-0 bg-white gap-3"> 
+                    <div class="font-extrabold text-surface-900 text-lg lg:text-xl flex items-center gap-2">
+                        Question <span id="q-current-display" class="bg-brand-50 text-brand-600 px-3 py-0.5 rounded-md border border-brand-200">1</span>
                     </div>
-                    <div class="flex gap-4 text-xs font-bold text-slate-700">
-                        <div>Marks for correct answer: <span id="q-marks-positive" class="text-[#26a65b] ml-1">3</span></div>
-                        <div class="text-slate-300">|</div>
-                        <div>Negative Marks: <span id="q-marks-negative" class="text-[#ed2a26] ml-1">1</span></div>
+                    <div class="flex items-center gap-3 text-xs font-bold bg-surface-50 p-2 rounded-lg border border-surface-200">
+                        <div class="flex items-center gap-1.5 text-surface-600"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> <span class="hidden md:inline">Correct:</span> <span id="q-marks-positive" class="text-emerald-600">+3</span></div>
+                        <div class="w-px h-4 bg-surface-300"></div>
+                        <div class="flex items-center gap-1.5 text-surface-600"><div class="w-2 h-2 rounded-full bg-rose-500"></div> <span class="hidden md:inline">Incorrect:</span> <span id="q-marks-negative" class="text-rose-600">-1</span></div>
                     </div>
                 </div>
 
                 <!-- Scrollable Question Content -->
-                <div class="flex-1 overflow-y-auto p-6 lg:p-8 hide-scrollbar bg-white" id="questions-container">
+                <div class="flex-1 overflow-y-auto p-5 lg:p-8 hide-scrollbar bg-white" id="questions-container">
                     <!-- Injected via JS -->
                 </div>
 
-                <!-- Footer Controls -->
-                <div class="p-3 lg:p-4 border-t border-[#cbd5e1] bg-[#f8fafc] flex justify-between items-center gap-3 shrink-0">
-                    <div class="flex gap-2">
-                        <button onclick="markForReview()" id="btn-mark" class="px-4 py-2.5 bg-white border border-[#cbd5e1] text-black font-bold rounded hover:bg-slate-100 transition text-[13px] shadow-sm">
-                            Mark for Review & Next
+                <!-- Modern Responsive Footer Controls -->
+                <div class="p-4 lg:p-5 border-t border-cbt-border bg-surface-50 flex flex-wrap justify-between items-center gap-3 shrink-0">
+                    <div class="flex flex-1 md:flex-none gap-2">
+                        <button onclick="markForReview()" id="btn-mark" class="flex-1 md:flex-none px-4 py-3 bg-white border border-indigo-200 text-indigo-700 font-bold rounded-xl hover:bg-indigo-50 transition text-[13px] shadow-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i class="fa-regular fa-bookmark hidden sm:inline"></i> Mark <span class="hidden md:inline">for Review</span>
                         </button>
-                        <button onclick="clearResponse()" class="px-4 py-2.5 bg-white border border-[#cbd5e1] text-black font-bold rounded hover:bg-slate-100 transition shadow-sm text-[13px]">
-                            Clear Response
+                        <button onclick="clearResponse()" class="flex-none px-4 py-3 bg-white border border-surface-300 text-surface-600 font-bold rounded-xl hover:bg-surface-100 transition shadow-sm text-[13px]" title="Clear Response">
+                            <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline ml-1">Clear</span>
                         </button>
                     </div>
                     
-                    <div class="flex gap-2">
-                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-6 py-2.5 bg-white text-black border border-[#cbd5e1] rounded font-bold hover:bg-slate-100 transition text-[13px] shadow-sm disabled:opacity-50">
-                            Previous
+                    <div class="flex flex-1 md:flex-none gap-2 w-full md:w-auto mt-2 md:mt-0">
+                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="flex-1 md:flex-none px-6 py-3 bg-white text-surface-700 border border-surface-300 rounded-xl font-bold hover:bg-surface-100 transition text-[14px] shadow-sm disabled:opacity-40 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-left"></i> Prev
                         </button>
-                        <button onclick="saveAndNext()" id="btn-next" class="px-8 py-2.5 bg-[#2563eb] text-white rounded font-bold hover:bg-[#1d4ed8] transition shadow-sm text-[13px]">
-                            Save & Next
+                        <button onclick="saveAndNext()" id="btn-next" class="flex-1 md:flex-none px-8 py-3 bg-cbt-sec text-white rounded-xl font-bold hover:bg-blue-600 transition shadow-md shadow-blue-500/20 text-[14px] flex items-center justify-center gap-2">
+                            Save & Next <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Question Palette -->
-            <div id="palette-panel" class="w-[280px] lg:w-[320px] bg-[#eef2f6] flex flex-col shrink-0 h-full border-l border-[#cbd5e1]"> 
+            <!-- Mobile Backdrop Overlay -->
+            <div id="palette-overlay" onclick="togglePalette()" class="absolute inset-0 bg-slate-900/40 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+            <!-- Right: Question Palette (Slide-out on Mobile) -->
+            <div id="palette-panel" class="absolute right-0 top-0 bottom-0 z-40 transform translate-x-full lg:translate-x-0 lg:static lg:block w-[280px] lg:w-[320px] bg-surface-50 flex flex-col shrink-0 h-full transition-transform duration-300 shadow-2xl lg:shadow-none lg:mr-4 lg:my-4 rounded-l-2xl lg:rounded-r-2xl lg:rounded-l-none lg:border lg:border-l-0 border-surface-200"> 
                 
                 <!-- Candidate Info Govt Style -->
-                <div class="p-4 flex items-start gap-4 border-b border-[#cbd5e1] bg-white shrink-0">
-                    <div class="w-[85px] h-[100px] bg-slate-100 border border-[#cbd5e1] p-1 shrink-0">
-                         <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                <div class="p-5 flex items-center gap-4 border-b border-surface-200 bg-white shrink-0 lg:rounded-tr-2xl rounded-tl-2xl lg:rounded-tl-none">
+                    <div class="w-[60px] h-[60px] bg-surface-100 rounded-full border-2 border-surface-200 p-0.5 shrink-0 overflow-hidden shadow-sm">
+                         <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <div class="mt-1 flex flex-col min-w-0">
-                         <span class="text-[14px] font-bold text-black truncate" id="exam-candidate-name">Student Name</span>
-                         <span class="hidden" id="exam-avatar-letter"></span>
+                    <div class="flex flex-col min-w-0">
+                         <span class="text-xs font-bold text-surface-400 uppercase tracking-widest mb-0.5">Candidate</span>
+                         <span class="text-[15px] font-extrabold text-surface-900 truncate" id="exam-candidate-name">Student Name</span>
                     </div>
                 </div>
 
-                <!-- Legend Govt Style -->
-                <div class="p-3 border-b border-[#cbd5e1] shrink-0 grid grid-cols-2 gap-y-3 gap-x-2 text-[12px] font-medium text-black bg-[#e2f3f5]">
-                    <div class="flex items-center gap-2"><span class="w-7 h-7 flex items-center justify-center text-white text-[12px] font-bold bg-[#26a65b] shrink-0" style="clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);">0</span> Answered</div>
-                    <div class="flex items-center gap-2"><span class="w-7 h-7 flex items-center justify-center text-white text-[12px] font-bold bg-[#ed2a26] shrink-0" style="clip-path: polygon(0 0, 100% 0, 100% 75%, 75% 100%, 0 100%);">0</span> Not Answered</div>
-                    <div class="flex items-center gap-2"><span class="w-7 h-7 rounded flex items-center justify-center text-black text-[12px] font-bold bg-[#f0f0f0] border border-[#c0c0c0] shrink-0">0</span> Not Visited</div>
-                    <div class="flex items-center gap-2"><span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[12px] font-bold bg-[#5a54a4] shrink-0">0</span> Marked</div>
-                    <div class="flex items-start gap-2 col-span-2"><span class="w-7 h-7 rounded-full flex items-center justify-center text-white text-[12px] font-bold bg-[#5a54a4] shrink-0 relative"><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#26a65b] rounded-full border border-white"></span>0</span> Answered & Marked for Review</div>
+                <!-- Legend Modernized -->
+                <div class="p-4 border-b border-surface-200 shrink-0 grid grid-cols-2 gap-y-3 gap-x-2 text-[11px] font-semibold text-surface-600 bg-surface-100/50">
+                    <div class="flex items-center gap-2"><span class="w-6 h-6 flex items-center justify-center text-white text-[10px] font-bold bg-[#10b981] shrink-0 rounded" style="clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);">0</span> Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-6 h-6 flex items-center justify-center text-white text-[10px] font-bold bg-[#ef4444] shrink-0 rounded" style="clip-path: polygon(0 0, 100% 0, 100% 80%, 80% 100%, 0 100%);">0</span> Not Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-6 h-6 rounded flex items-center justify-center text-surface-600 text-[10px] font-bold bg-white border border-surface-300 shrink-0 shadow-sm">0</span> Not Visited</div>
+                    <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold bg-[#6366f1] shrink-0 shadow-sm">0</span> Marked</div>
+                    <div class="flex items-start gap-2 col-span-2"><span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold bg-[#6366f1] shrink-0 relative shadow-sm"><span class="absolute bottom-0 right-[-2px] w-2.5 h-2.5 bg-[#10b981] rounded-full border-2 border-white"></span>0</span> Answered & Marked for Review</div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto p-4 bg-[#eef2f6] relative">
-                    <div class="bg-[#2563eb] text-white px-3 py-1.5 font-bold text-sm mb-3 rounded-sm shadow-sm inline-block">General Test</div>
-                    <div id="palette-grid" class="grid grid-cols-5 gap-2 mt-2">
+                <div class="flex-1 overflow-y-auto p-4 bg-surface-50 relative hide-scrollbar">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-surface-800 text-sm">Question Navigator</h4>
+                        <span class="text-[10px] font-bold bg-surface-200 text-surface-600 px-2 py-0.5 rounded-full" id="q-total-display">0 Items</span>
+                    </div>
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2.5">
                         <!-- Buttons injected via JS -->
                     </div>
                 </div>
 
-                <!-- Submit Govt Style -->
-                <div class="p-4 bg-[#eef2f6] border-t border-[#cbd5e1] shrink-0 flex justify-center">
-                    <button onclick="confirmSubmitTest()" class="w-full bg-[#26a65b] hover:bg-[#1e8748] border border-[#1e8748] text-white py-2.5 rounded font-bold text-[15px] shadow-sm transition">Submit</button>
+                <!-- Submit Button -->
+                <div class="p-4 bg-white border-t border-surface-200 shrink-0 flex justify-center lg:rounded-br-2xl pb-safe">
+                    <button onclick="confirmSubmitTest()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-[15px] shadow-md shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Submit Assessment
+                    </button>
                 </div>
             </div>
             
-        </div>
-        
-        <!-- NEW FOOTER AS REQUESTED -->
-        <div class="h-10 bg-[#e2e8f0] border-t border-[#cbd5e1] flex items-center justify-center text-[12px] sm:text-[13px] text-gray-700 font-medium shrink-0 z-20 w-full relative">
-            <span class="text-center px-4">Examination system Proctorix-api(proctorix.in) Designed & developed by <a href="https://www.xetatechsolutions.com/" target="_blank" class="text-[#2563eb] hover:underline font-bold">Xeta Tech Solutions</a></span>
         </div>
     </div>
 
     <!-- Security Blackout Shield -->
     <div id="privacy-blur-layer">
-        <div class="w-20 h-20 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center text-3xl mb-5 border border-rose-200 shadow-2xl">
-            <i class="fa-solid fa-shield-halved"></i>
+        <div class="w-24 h-24 bg-rose-500/10 text-rose-500 rounded-3xl flex items-center justify-center text-4xl mb-6 border border-rose-500/20 shadow-2xl relative">
+            <div class="absolute inset-0 bg-rose-500/20 animate-ping rounded-3xl"></div>
+            <i class="fa-solid fa-shield-halved relative z-10"></i>
         </div>
-        <h2 id="shield-title" class="text-3xl font-extrabold text-white mb-3 tracking-tight">Protected Environment</h2>
-        <p id="shield-msg" class="text-surface-300 text-[15px] font-medium px-4 text-center max-w-md">Screen-capturing and copying are strictly prohibited.</p>
-        <button id="shield-btn" class="mt-8 px-8 py-3.5 bg-white text-surface-900 hover:bg-surface-100 rounded-xl font-bold transition shadow-lg text-[15px]">Return to Assessment</button>
+        <h2 id="shield-title" class="text-4xl font-black text-white mb-3 tracking-tight drop-shadow-lg">Protected Environment</h2>
+        <p id="shield-msg" class="text-surface-200 text-lg font-medium px-4 text-center max-w-md drop-shadow">Screen-capturing, tab-switching, and copying are strictly prohibited.</p>
+        <button id="shield-btn" class="mt-10 px-8 py-4 bg-white text-surface-900 hover:bg-surface-100 hover:scale-105 rounded-xl font-bold transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] text-[16px]">Return to Assessment</button>
     </div>
 
     <!-- Desktop Sidebar -->
@@ -270,7 +304,7 @@
                 </div>
                 <div>
                     <p class="px-4 text-[11px] font-bold text-surface-400 uppercase tracking-widest mb-3">Evaluate</p>
-                    <a href="assessment.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-surface-600">
+                    <a href="assessment.html" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-surface-600 shadow-sm">
                         <i class="fa-solid fa-pen-ruler w-5 text-[18px] text-surface-400 transition-colors"></i> 
                         <span class="font-medium text-[15px]">Assessments</span>
                     </a>
@@ -278,13 +312,13 @@
             </nav>
 
             <div class="p-4 z-10 pb-safe">
-                <div class="rounded-2xl p-3 flex items-center gap-3 bg-surface-50 border border-surface-200 hover:border-surface-300 hover:bg-surface-100 transition-all cursor-pointer group">
-                    <div id="sidebar-avatar" class="w-10 h-10 bg-surface-800 text-white rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">S</div>
+                <div class="rounded-2xl p-3 flex items-center gap-3 bg-surface-50 border border-surface-200 hover:border-brand-300 hover:bg-brand-50 transition-all cursor-pointer group">
+                    <div id="sidebar-avatar" class="w-10 h-10 bg-gradient-to-br from-surface-700 to-surface-900 text-white rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">S</div>
                     <div class="flex-1 min-w-0">
-                        <p id="sidebar-name" class="text-[14px] font-bold text-surface-900 truncate">Student Name</p>
-                        <p class="text-[12px] text-surface-500 truncate font-medium" id="sidebar-plan-label">Plan Active</p>
+                        <p id="sidebar-name" class="text-[14px] font-bold text-surface-900 truncate group-hover:text-brand-700 transition-colors">Student Name</p>
+                        <p class="text-[12px] text-surface-500 truncate font-medium group-hover:text-brand-600" id="sidebar-plan-label">Plan Active</p>
                     </div>
-                    <button onclick="logout()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0" title="Logout">
+                    <button onclick="logout()" class="w-8 h-8 rounded-full flex items-center justify-center text-surface-400 opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-100 transition-all shrink-0" title="Logout">
                         <i class="fa-solid fa-power-off text-[14px]"></i>
                     </button>
                 </div>
@@ -295,22 +329,22 @@
     <!-- Main Workspace (Pre-Exam Dashboard) -->
     <main id="main-content" class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50 transition-all duration-300">
         
-        <header id="main-header" class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center bg-white/75 backdrop-blur-md sticky top-0 pt-safe border-b border-surface-200/50">
+        <header id="main-header" class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center bg-white/80 backdrop-blur-xl sticky top-0 pt-safe border-b border-surface-200/50 shadow-sm">
             <div class="flex items-center gap-3 lg:hidden">
                 <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm border border-surface-200">
                     <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
                 </div>
-                <span class="text-surface-900 font-bold tracking-tight text-[15px]">Assessments</span>
+                <span class="text-surface-900 font-bold tracking-tight text-[16px]">Assessments</span>
             </div>
             
-            <div class="hidden lg:flex items-center gap-2 text-[14px] font-medium text-surface-400">
-                <a href="dashboard.html" class="hover:text-surface-900 transition-colors">Dashboard</a>
+            <div class="hidden lg:flex items-center gap-2 text-[14px] font-semibold text-surface-400">
+                <a href="dashboard.html" class="hover:text-brand-600 transition-colors">Dashboard</a>
                 <span class="text-surface-300 mx-1">/</span>
                 <span class="text-surface-900">Assessments</span>
             </div>
             
             <div class="flex items-center gap-3 ml-auto">
-                <button class="hidden md:flex w-10 h-10 items-center justify-center text-surface-600 hover:text-surface-900 bg-white border border-surface-200 rounded-full shadow-sm transition-all hover:shadow">
+                <button class="hidden md:flex w-10 h-10 items-center justify-center text-surface-600 hover:text-brand-600 bg-white border border-surface-200 hover:border-brand-300 rounded-full shadow-sm transition-all hover:shadow">
                     <i class="fa-regular fa-bell text-[16px]"></i>
                 </button>
                 <button onclick="logout()" class="lg:hidden w-10 h-10 flex items-center justify-center text-surface-600 hover:text-rose-600 bg-white border border-surface-200 rounded-full shadow-sm transition-colors">
@@ -320,17 +354,20 @@
         </header>
 
         <div id="dashboard-scroll-area" class="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-32 lg:pb-12 hide-scrollbar scroll-smooth">
-            <div class="max-w-5xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
+            <div class="max-w-6xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
                 
                 <!-- Clean Page Header -->
-                <div class="panel p-6 sm:p-10 bg-white overflow-hidden relative shadow-sm border-surface-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="panel p-6 sm:p-10 bg-white overflow-hidden relative border-surface-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-card">
+                    <!-- Subtle background decoration -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-brand-50 to-transparent rounded-full -mt-20 -mr-20 blur-3xl opacity-60 pointer-events-none"></div>
+                    
                     <div class="space-y-2 relative z-10">
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-surface-900 tracking-tight leading-tight">Course Assessments</h1>
-                        <p class="text-[14px] text-surface-500 font-medium max-w-xl leading-relaxed">
+                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-surface-900 tracking-tight leading-tight">Course Assessments</h1>
+                        <p class="text-[14px] lg:text-[15px] text-surface-500 font-medium max-w-xl leading-relaxed">
                             Complete your assigned assessments below. All tests are conducted in a secure, locked environment to ensure academic integrity.
                         </p>
                     </div>
-                    <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-brand-100 shrink-0">
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-100 to-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-brand-200 shrink-0 relative z-10">
                         <i class="fa-solid fa-award"></i>
                     </div>
                 </div>
@@ -343,27 +380,36 @@
                     </div>
 
                     <!-- Pending Examinations Container -->
-                    <div id="pending-container" class="space-y-4 block">
+                    <div id="pending-container" class="space-y-4 block animate-fade-in">
                         <div class="flex justify-between items-center px-2">
-                            <h3 class="font-bold text-surface-900 text-[16px] md:text-[18px]">Assigned to You</h3>
+                            <!-- Breadcrumbs for Folder Navigation -->
+                            <div id="breadcrumb-container" class="flex items-center gap-2 text-[15px] font-bold text-surface-900 bg-white px-4 py-2 rounded-xl border border-surface-200 shadow-sm w-full md:w-auto">
+                                <button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5 text-surface-600">
+                                    <i class="fa-solid fa-house text-sm"></i> Assigned
+                                </button>
+                                <!-- Injected via JS -->
+                            </div>
                         </div>
 
-                        <div id="test-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                            <div class="col-span-full py-16 text-center text-surface-400 font-medium flex flex-col items-center">
-                                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
-                                Fetching assigned examinations...
+                        <div id="test-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6 mt-4">
+                            <!-- Loader -->
+                            <div class="col-span-full py-20 text-center text-surface-400 font-medium flex flex-col items-center">
+                                <div class="w-16 h-16 bg-white rounded-2xl shadow-sm border border-surface-200 flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500"></i> 
+                                </div>
+                                Fetching your directory...
                             </div>
                         </div>
                     </div>
 
                     <!-- Test History Container -->
-                    <div id="history-container" class="space-y-4 hidden">
+                    <div id="history-container" class="space-y-4 hidden animate-fade-in">
                         <div class="flex justify-between items-center px-2">
                             <h3 class="font-bold text-surface-900 text-[16px] md:text-[18px]">Previous Attempts</h3>
                         </div>
 
                         <div id="history-grid" class="flex flex-col gap-4">
-                            <div class="py-16 text-center text-surface-400 font-medium flex flex-col items-center">
+                            <div class="py-20 text-center text-surface-400 font-medium flex flex-col items-center">
                                 <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> 
                                 Loading historical data...
                             </div>
@@ -400,8 +446,12 @@
     <script>
         const API_BASE_URL = '/api';
         let token = localStorage.getItem('token');
+        
+        let availableFolders = [];
         let availableTests = [];
         let testHistory = [];
+        
+        let currentFolderId = null;
         let currentTest = null;
         let timerInterval = null;
         
@@ -419,42 +469,39 @@
 
         /* --- DYNAMIC SECURITY & ANTI-CHEAT ENGINE --- */
         
-        // 1. Prevent Right-Click
         document.addEventListener('contextmenu', e => { 
-            e.preventDefault(); 
-            showPrivacyShield("Action Blocked", "Right-clicking is disabled during the assessment."); 
+            if(isTestActive) { e.preventDefault(); showPrivacyShield("Action Blocked", "Right-clicking is disabled during the assessment."); }
         });
         
-        // 2. Prevent Copy/Cut/Paste
         document.addEventListener('copy', e => { 
-            e.preventDefault(); 
-            showPrivacyShield("Action Blocked", "Copying content is strictly prohibited."); 
+            if(isTestActive) { e.preventDefault(); showPrivacyShield("Action Blocked", "Copying content is strictly prohibited."); }
         });
         document.addEventListener('cut', e => { 
-            e.preventDefault(); 
-            showPrivacyShield("Action Blocked", "Cutting content is strictly prohibited."); 
+            if(isTestActive) { e.preventDefault(); showPrivacyShield("Action Blocked", "Cutting content is strictly prohibited."); }
         });
-        document.addEventListener('paste', e => { e.preventDefault(); });
+        document.addEventListener('paste', e => { if(isTestActive) e.preventDefault(); });
 
-        // 3. Block Developer Tools & Screenshots
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
-                (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
-                e.preventDefault(); 
-                showPrivacyShield("Developer Tools", "Developer tools are disabled in this environment."); 
-                return false;
+            if(isTestActive) {
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
+                    (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'p' || e.key === 'c'))) {
+                    e.preventDefault(); 
+                    showPrivacyShield("Developer Tools", "Developer tools are disabled in this environment."); 
+                    return false;
+                }
             }
         });
         
         document.addEventListener('keyup', (e) => {
-            if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
-                try { navigator.clipboard.writeText(''); } catch(err) {} 
-                showPrivacyShield("Screenshot Attempt", "Taking screenshots is a violation of exam integrity. Please focus on the assessment.");
+            if(isTestActive) {
+                if (e.key === 'PrintScreen' || e.keyCode === 44 || e.key === 'Meta' || e.key === 'OS') {
+                    try { navigator.clipboard.writeText(''); } catch(err) {} 
+                    showPrivacyShield("Screenshot Attempt", "Taking screenshots is a violation of exam integrity. Please focus on the assessment.");
+                }
             }
         });
 
-        // 4. Content Blocking on Tab Switch / Fullscreen Exit
         function showPrivacyShield(title, message, requiresFullscreen = false) {
             const layer = document.getElementById('privacy-blur-layer');
             const titleEl = document.getElementById('shield-title');
@@ -495,27 +542,41 @@
             }
         });
 
-        // Instantly blur if window loses focus (blocks OS clipping tools like Snipping Tool before they capture)
         window.addEventListener('blur', () => {
             if(isTestActive) {
                 showPrivacyShield("Focus Lost", "The exam window lost focus. Please close other applications and return to the exam.", false);
             }
         });
 
-
         // --- DASHBOARD INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             let user = { name: 'Scholar', paymentPlan: '100' };
             try { user = JSON.parse(localStorage.getItem('user')) || user; } catch(e) {}
 
-            document.getElementById('sidebar-name').textContent = user.name || 'Student';
-            document.getElementById('exam-candidate-name').textContent = user.name || 'Student';
-            document.getElementById('sidebar-plan-label').textContent = `Access Active: ${user.paymentPlan || 100}%`;
-            document.getElementById('sidebar-avatar').textContent = (user.name || 'S')[0].toUpperCase();
-            document.getElementById('exam-avatar-letter').textContent = (user.name || 'S')[0].toUpperCase();
+            const elSidebarName = document.getElementById('sidebar-name');
+            const elCandidateName = document.getElementById('exam-candidate-name');
+            const elPlanLabel = document.getElementById('sidebar-plan-label');
+            const elSidebarAvatar = document.getElementById('sidebar-avatar');
+            const elExamAvatarLetter = document.getElementById('exam-avatar-letter');
+
+            if (elSidebarName) elSidebarName.textContent = user.name || 'Student';
+            if (elCandidateName) elCandidateName.textContent = user.name || 'Student';
+            if (elPlanLabel) elPlanLabel.textContent = `Access Active: ${user.paymentPlan || 100}%`;
+            if (elSidebarAvatar) elSidebarAvatar.textContent = (user.name || 'S')[0].toUpperCase();
+            if (elExamAvatarLetter) elExamAvatarLetter.textContent = (user.name || 'S')[0].toUpperCase();
             
             loadTests();
         });
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         function switchTab(tab) {
             const activeClass = 'pb-3 border-b-2 border-brand-600 font-bold text-brand-600 transition-colors text-[15px]';
@@ -538,17 +599,16 @@
             try {
                 const res = await fetch(`${API_BASE_URL}/student/tests`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!res.ok) throw new Error();
-                availableTests = await res.json();
+                const data = await res.json();
+                
+                availableFolders = data.filter(item => item.isFolder === true);
+                availableTests = data.filter(item => item.isFolder !== true);
+
                 renderTestList();
             } catch (err) {
-                availableTests = [
-                    { id: 't1', title: 'Unit 1 Assessment: Advanced Fundamentals', timeLimit: 45, passingScore: 65, maxAttempts: 2, attemptCount: 0, questions: [
-                        { id: 'q1', type: 'mcq', text: 'Which data collection method is most resilient to self-reporting bias in longitudinal studies?', options: ['Likert-scale Surveys', 'Direct Observational Tracking', 'Retrospective Interviews', 'Focus Group Dynamics'], correctOptions: ['1'], positiveMarks: 3, negativeMarks: 1 },
-                        { id: 'q2', type: 'fib', text: 'Enter the standard critical p-value threshold typically used to reject the null hypothesis in quantitative research:', correctOptions: ['0.05'], positiveMarks: 3, negativeMarks: 1 },
-                        { id: 'q3', type: 'mcq', text: 'What is the time complexity of binary search on a sorted array?', options: ['O(n)', 'O(n log n)', 'O(log n)', 'O(1)'], correctOptions: ['2'], positiveMarks: 2, negativeMarks: 0.5 },
-                        { id: 'q4', type: 'mcq', text: 'Which principle of OOP describes hiding internal state and requiring all interaction to be performed through an object\'s methods?', options: ['Inheritance', 'Polymorphism', 'Encapsulation', 'Abstraction'], correctOptions: ['2'], positiveMarks: 4, negativeMarks: 1 }
-                    ]}
-                ];
+                console.error("Failed to fetch tests:", err);
+                availableFolders = [];
+                availableTests = [];
                 renderTestList();
             }
         }
@@ -560,31 +620,61 @@
                 testHistory = await res.json();
                 renderHistory(testHistory);
             } catch (err) {
-                testHistory = [
-                    { testTitle: 'Advanced Data Structures & Algorithms', scorePercentage: '88.50', passed: true, submittedAt: new Date().toISOString(), attemptNumber: 1, totalScore: 35, maxScore: 40 },
-                    { testTitle: 'Cloud Computing Fundamentals', scorePercentage: '42.00', passed: false, submittedAt: new Date(Date.now() - 86400000).toISOString(), attemptNumber: 1, totalScore: 21, maxScore: 50 }
-                ];
+                testHistory = [];
                 renderHistory(testHistory);
             }
         }
 
+        function navigateToFolder(id) {
+            currentFolderId = id;
+            renderTestList();
+        }
+
         function renderTestList() {
             const grid = document.getElementById('test-grid');
+            const breadcrumbs = document.getElementById('breadcrumb-container');
             grid.innerHTML = '';
             
-            if (availableTests.length === 0) {
+            let bcHtml = `<button onclick="navigateToFolder(null)" class="hover:text-brand-600 transition flex items-center gap-1.5 text-surface-600"><i class="fa-solid fa-house text-sm"></i> Assigned</button>`;
+            
+            if (currentFolderId) {
+                const folder = availableFolders.find(f => f.id === currentFolderId);
+                if (folder) {
+                    bcHtml += ` <i class="fa-solid fa-chevron-right text-[10px] text-surface-300 mx-2"></i> <span class="text-brand-700 font-bold bg-brand-50 px-2.5 py-0.5 rounded-md">${escapeHTML(folder.title)}</span>`;
+                }
+            }
+            breadcrumbs.innerHTML = bcHtml;
+
+            const currentFolders = availableFolders.filter(f => (f.parentId || null) === currentFolderId);
+            const currentTests = availableTests.filter(t => (t.folderId || null) === currentFolderId);
+
+            if (currentFolders.length === 0 && currentTests.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center mt-4">
                         <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
-                            <i class="fa-solid fa-clipboard-check text-2xl text-surface-300"></i>
+                            <i class="fa-solid fa-folder-open text-2xl text-surface-300"></i>
                         </div>
-                        <h4 class="text-surface-900 font-bold mb-1">No Pending Assessments</h4>
-                        <p class="text-surface-500 text-[14px]">There are no active examinations assigned to your profile at this time.</p>
+                        <h4 class="text-surface-900 font-bold mb-1">Directory Empty</h4>
+                        <p class="text-surface-500 text-[14px]">There are no active examinations available in this folder.</p>
                     </div>`;
                 return;
             }
 
-            availableTests.forEach(test => {
+            // Render Folders with modern styling
+            currentFolders.forEach(folder => {
+                grid.innerHTML += `
+                    <div class="panel group p-6 flex flex-col justify-center items-center text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-500/10 hover:border-brand-300 min-h-[220px]" onclick="navigateToFolder('${folder.id}')">
+                        <div class="w-20 h-20 bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl flex items-center justify-center text-brand-600 mb-4 border border-brand-200 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <i class="fa-solid fa-folder text-4xl"></i>
+                        </div>
+                        <h3 class="font-bold text-surface-900 text-lg tracking-tight leading-tight line-clamp-2 group-hover:text-brand-700 transition-colors">${escapeHTML(folder.title)}</h3>
+                        <p class="text-[12px] font-semibold text-surface-400 mt-3 flex items-center gap-1 group-hover:text-brand-600 transition-colors px-3 py-1 bg-surface-50 group-hover:bg-brand-50 rounded-full">Open Folder <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1 ml-1"></i></p>
+                    </div>
+                `;
+            });
+
+            // Render Tests with modernized cards
+            currentTests.forEach(test => {
                 const qCount = test.questions ? test.questions.length : 0;
                 const attemptsUsed = test.attemptCount || 0;
                 const maxAttempts = test.maxAttempts || 1;
@@ -592,36 +682,38 @@
 
                 let actionButton = '';
                 if (canAttempt) {
-                    actionButton = `<button onclick="initiateTestLaunch('${test.id}')" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-[15px]"><i class="fa-solid fa-play text-[12px]"></i> Launch Assessment</button>`;
+                    actionButton = `<button onclick="initiateTestLaunch('${test.id}')" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg hover:shadow-brand-500/30 flex items-center justify-center gap-2 cursor-pointer text-[14px]"><i class="fa-solid fa-play text-[12px]"></i> Launch Exam</button>`;
                 } else {
-                    actionButton = `<button disabled class="w-full bg-surface-100 text-surface-400 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed border border-surface-200 flex items-center justify-center gap-2 text-[15px]"><i class="fa-solid fa-lock"></i> Max Attempts Reached</button>`;
+                    actionButton = `<button disabled class="w-full bg-surface-100 text-surface-400 font-bold py-3.5 px-4 rounded-xl cursor-not-allowed border border-surface-200 flex items-center justify-center gap-2 text-[14px]"><i class="fa-solid fa-lock"></i> Attempts Reached</button>`;
                 }
 
                 grid.innerHTML += `
-                    <div class="panel panel-hover p-6 md:p-8 flex flex-col justify-between rounded-2xl">
+                    <div class="panel p-6 flex flex-col justify-between rounded-2xl min-h-[260px] hover:border-brand-200 transition-colors duration-300">
                         <div>
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="bg-brand-50 text-brand-700 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest border border-brand-100"><i class="fa-solid fa-file-signature mr-1"></i> Standard Assessment</span>
-                                <span class="text-[12px] font-bold text-surface-600">Attempt ${attemptsUsed}/${maxAttempts}</span>
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-surface-50 border border-surface-100 flex items-center justify-center text-surface-500 shadow-sm">
+                                    <i class="fa-solid fa-file-signature text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-surface-500 bg-surface-50 px-2.5 py-1 rounded-md border border-surface-200 shadow-sm">Attempt ${attemptsUsed}/${maxAttempts}</span>
                             </div>
-                            <h3 class="font-bold text-surface-900 text-lg md:text-xl tracking-tight leading-tight mb-6">${test.title}</h3>
+                            <h3 class="font-bold text-surface-900 text-lg tracking-tight leading-tight mb-5 line-clamp-2">${escapeHTML(test.title)}</h3>
                             
-                            <div class="grid grid-cols-3 gap-3 mb-8 border-y border-surface-100 py-4">
+                            <div class="grid grid-cols-3 gap-2 mb-6 border-y border-surface-100 py-3">
                                 <div class="text-center border-r border-surface-100">
-                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Questions</p>
-                                    <p class="text-[16px] font-extrabold text-surface-900">${qCount}</p>
+                                    <p class="text-[9px] text-surface-400 font-bold uppercase tracking-widest mb-1">Items</p>
+                                    <p class="text-[14px] font-extrabold text-surface-800">${qCount}</p>
                                 </div>
                                 <div class="text-center border-r border-surface-100">
-                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Duration</p>
-                                    <p class="text-[16px] font-extrabold text-surface-900">${test.timeLimit || 60}m</p>
+                                    <p class="text-[9px] text-surface-400 font-bold uppercase tracking-widest mb-1">Time</p>
+                                    <p class="text-[14px] font-extrabold text-surface-800">${test.timeLimit || 60}m</p>
                                 </div>
                                 <div class="text-center">
-                                    <p class="text-[10px] text-surface-400 font-bold uppercase tracking-widest mb-1">Pass Mark</p>
-                                    <p class="text-[16px] font-extrabold text-surface-900">${test.passingScore || 50}%</p>
+                                    <p class="text-[9px] text-surface-400 font-bold uppercase tracking-widest mb-1">Pass</p>
+                                    <p class="text-[14px] font-extrabold text-surface-800">${test.passingScore || 50}%</p>
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="mt-auto">
                             ${actionButton}
                         </div>
                     </div>
@@ -635,7 +727,7 @@
             
             if (history.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center">
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-surface-200 shadow-sm flex flex-col items-center mt-4">
                         <div class="w-16 h-16 bg-surface-50 rounded-full flex items-center justify-center mb-4 border border-surface-100">
                             <i class="fa-solid fa-clock-rotate-left text-2xl text-surface-300"></i>
                         </div>
@@ -675,8 +767,23 @@
             });
         }
 
+        /* --- MOBILE CBT GRID TOGGLE --- */
+        function togglePalette() {
+            const panel = document.getElementById('palette-panel');
+            const overlay = document.getElementById('palette-overlay');
+            
+            if (panel.classList.contains('translate-x-full')) {
+                // Open Drawer
+                panel.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                // Close Drawer
+                panel.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
         // --- TEST LAUNCH SEQUENCE ---
-        
         function initiateTestLaunch(id) {
             currentTest = availableTests.find(t => t.id === id);
             if (!currentTest || !currentTest.questions || currentTest.questions.length === 0) {
@@ -688,19 +795,19 @@
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
             modal.innerHTML = `
-                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-lg w-full shadow-glass border border-white text-left">
-                    <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center mb-5 border border-rose-100 shadow-sm">
-                        <i class="fa-solid fa-user-shield text-xl"></i>
+                <div class="panel bg-white p-6 sm:p-8 rounded-3xl max-w-lg w-full shadow-2xl border border-white text-left">
+                    <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mb-5 border border-rose-100 shadow-sm">
+                        <i class="fa-solid fa-user-shield text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-surface-900 mb-3 tracking-tight">Strict Examination Rules</h3>
-                    <ul class="text-surface-600 text-[14px] space-y-3 mb-8 font-medium">
+                    <h3 class="text-xl md:text-2xl font-bold text-surface-900 mb-3 tracking-tight">Strict Examination Rules</h3>
+                    <ul class="text-surface-600 text-[14px] md:text-[15px] space-y-4 mb-8 font-medium bg-surface-50 p-5 rounded-2xl border border-surface-100">
                         <li class="flex gap-3 items-start"><i class="fa-solid fa-expand text-rose-500 mt-1"></i> <span>You must remain in Full Screen mode. Exiting will auto-submit the test immediately.</span></li>
                         <li class="flex gap-3 items-start"><i class="fa-solid fa-window-restore text-rose-500 mt-1"></i> <span>Do not switch tabs, minimize the browser, or open other applications.</span></li>
                         <li class="flex gap-3 items-start"><i class="fa-solid fa-copy text-rose-500 mt-1"></i> <span>Copying, pasting, and taking screenshots are strictly prohibited and disabled.</span></li>
                     </ul>
                     <div class="flex gap-3">
-                        <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3.5 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Cancel</button>
-                        <button onclick="this.closest('.fixed').remove(); executeSecureLaunch();" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md cursor-pointer transition text-[14px]">I Agree, Launch Exam</button>
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-white hover:bg-surface-50 border border-surface-200 text-surface-700 font-bold py-3.5 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Cancel</button>
+                        <button onclick="this.closest('.fixed').remove(); executeSecureLaunch();" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-brand-500/20 cursor-pointer transition text-[14px]">I Agree, Launch Exam</button>
                     </div>
                 </div>
             `;
@@ -713,7 +820,9 @@
             loader.id = 'exam-init-loader';
             loader.className = 'fixed inset-0 z-[400] bg-surface-900 flex flex-col items-center justify-center p-4 text-white animate-fade-in';
             loader.innerHTML = `
-                <i class="fa-solid fa-shield-halved text-5xl text-brand-500 mb-6 animate-pulse"></i>
+                <div class="w-24 h-24 bg-brand-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse border border-brand-500/30 shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+                    <i class="fa-solid fa-shield-halved text-4xl text-brand-500"></i>
+                </div>
                 <h3 class="text-2xl font-bold tracking-tight mb-2">Initializing Secure Environment...</h3>
                 <p class="text-surface-400 font-medium">Please wait while we lock down the assessment module.</p>
             `;
@@ -738,13 +847,14 @@
         }
 
         function startTestLogic() {
-            isTestActive = true; // Activate Security Triggers
+            isTestActive = true; 
 
             document.getElementById('active-test-area').classList.remove('hidden');
             document.getElementById('active-test-area').classList.add('flex');
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
 
             document.getElementById('active-test-title').textContent = currentTest.title;
+            document.getElementById('q-total-display').textContent = `${currentTest.questions.length} Items`;
 
             const timeLimitMins = parseInt(currentTest.timeLimit) || 60;
             let timeRemaining = timeLimitMins * 60;
@@ -789,24 +899,25 @@
                 let optionsHtml = '';
                 if (q.type === 'mcq' || q.type === 'msq') {
                     const inputType = q.type === 'mcq' ? 'radio' : 'checkbox';
+                    const shapeClass = inputType === 'radio' ? 'rounded-full' : 'rounded-md';
                     q.options.forEach((opt, optIdx) => {
                         if (opt && opt.trim() !== '') {
                             optionsHtml += `
                                 <label class="cbt-opt-label">
-                                    <input type="${inputType}" name="ans_${q.id}" value="${optIdx}" class="w-4 h-4 cursor-pointer mt-0.5 shrink-0 accent-[#2563eb]">
-                                    <span class="text-[15px] text-black font-cbt">${opt}</span>
+                                    <input type="${inputType}" name="ans_${q.id}" value="${optIdx}" class="cbt-opt-input ${shapeClass}">
+                                    <span class="text-[15px] text-surface-700 leading-relaxed font-cbt">${escapeHTML(opt)}</span>
                                 </label>
                             `;
                         }
                     });
                 } else {
-                    optionsHtml = `<input type="text" name="ans_${q.id}" class="w-full max-w-xl p-3 border border-slate-400 focus:border-[#2563eb] focus:outline-none text-[15px] rounded font-cbt" placeholder="Type your answer here...">`;
+                    optionsHtml = `<input type="text" name="ans_${q.id}" class="w-full max-w-xl p-4 bg-surface-50 border-2 border-surface-200 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10 text-[15px] rounded-xl font-cbt transition-all" placeholder="Type your answer here...">`;
                 }
 
                 qContainer.innerHTML += `
                     <div class="question-block hidden" data-qid="${q.id}" data-type="${q.type}" id="q-block-${index}">
-                        <div class="text-[16px] md:text-[18px] text-black font-bold leading-relaxed mb-6 font-cbt">${q.text}</div>
-                        <div class="space-y-3 max-w-3xl">
+                        <div class="text-[17px] md:text-[19px] text-surface-900 font-bold leading-relaxed mb-8 font-cbt">${escapeHTML(q.text)}</div>
+                        <div class="max-w-4xl">
                             ${optionsHtml}
                         </div>
                     </div>
@@ -848,12 +959,14 @@
             const targetBlock = document.getElementById(`q-block-${index}`);
             if (targetBlock) {
                 targetBlock.classList.remove('hidden');
+                // Subtle fade in for the question block
+                targetBlock.classList.add('animate-fade-in');
             }
 
             document.getElementById('q-current-display').textContent = index + 1;
             const qData = currentTest.questions[index];
-            document.getElementById('q-marks-positive').textContent = qData.positiveMarks || 3;
-            document.getElementById('q-marks-negative').textContent = qData.negativeMarks || 1;
+            document.getElementById('q-marks-positive').textContent = `+${qData.positiveMarks || 3}`;
+            document.getElementById('q-marks-negative').textContent = `-${qData.negativeMarks || 1}`;
 
             document.getElementById('btn-prev').disabled = (index === 0);
             
@@ -864,6 +977,12 @@
             updatePaletteVisuals();
             
             document.getElementById('questions-container').scrollTop = 0;
+            
+            // Auto-close palette on mobile when a question is selected
+            if (window.innerWidth < 1024) {
+                document.getElementById('palette-panel').classList.add('translate-x-full');
+                document.getElementById('palette-overlay').classList.add('hidden');
+            }
         }
         
         function hasResponse(index) {
@@ -940,9 +1059,13 @@
             const timeStr = `${h}:${m}:${s}`;
             
             const timerMain = document.getElementById('exam-timer');
-            const timerMobile = document.getElementById('exam-timer-mobile');
             if(timerMain) timerMain.textContent = timeStr;
-            if(timerMobile) timerMobile.textContent = timeStr;
+            
+            if(seconds < 300) { // Under 5 minutes, make it clearly red and pulse fast
+                timerMain.parentElement.classList.replace('bg-rose-50', 'bg-rose-100');
+                timerMain.parentElement.classList.replace('border-rose-100', 'border-rose-300');
+                timerMain.previousElementSibling.classList.replace('animate-pulse', 'animate-ping');
+            }
         }
 
         function confirmSubmitTest() {
@@ -950,7 +1073,13 @@
             let markedCount = questionStates.filter(s => s === 'marked' || s === 'marked-answered').length;
             let total = currentTest.questions.length;
             
-            let message = `You have answered ${answeredCount} questions and marked ${markedCount} for review out of ${total}. Are you sure you want to submit the assessment? This action is final.`;
+            let message = `You have answered <strong>${answeredCount}</strong> questions and marked <strong>${markedCount}</strong> for review out of ${total}.<br><br>Are you sure you want to submit the assessment? This action is final.`;
+            
+            // Auto close mobile drawer before showing confirm modal
+            if (window.innerWidth < 1024) {
+                document.getElementById('palette-panel').classList.add('translate-x-full');
+                document.getElementById('palette-overlay').classList.add('hidden');
+            }
             
             showCustomConfirm("Submit Assessment", message, () => {
                 submitTest(false);
@@ -958,7 +1087,7 @@
         }
 
         async function submitTest(isAutoSubmit = false) {
-            isTestActive = false; // Turn off security triggers so exiting fullscreen doesn't cause a loop
+            isTestActive = false; // Turn off security triggers
             clearInterval(timerInterval);
             exitExamFullscreen();
 
@@ -990,7 +1119,8 @@
             } catch (err) {
                 setTimeout(() => {
                     removeSubmitLoadingOverlay();
-                    showResultsOverlay({ passed: true, scorePercentage: '85.00', totalScore: 6, maxScore: 6, attemptNumber: 1, maxAttempts: 2 });
+                    showCustomModal("Error", "Failed to reach the server. Your responses were not recorded.");
+                    window.location.reload();
                 }, 1500);
             }
         }
@@ -1029,13 +1159,13 @@
 
                     if (studentAnsRaw) {
                         if (q.type === 'fib') { 
-                            studentAnsText = studentAnsRaw; 
+                            studentAnsText = escapeHTML(studentAnsRaw); 
                         } else if (Array.isArray(studentAnsRaw) && studentAnsRaw.length > 0) {
-                            studentAnsText = studentAnsRaw.map(optIdx => q.options[parseInt(optIdx)] || `Unknown`).join('<span class="text-surface-300 mx-1">|</span>');
+                            studentAnsText = studentAnsRaw.map(optIdx => escapeHTML(q.options[parseInt(optIdx)]) || `Unknown`).join('<span class="text-surface-300 mx-1">|</span>');
                         }
                     }
 
-                    let correctAnsText = q.type === 'fib' ? (q.correctOptions[0] || '') : q.correctOptions.map(optIdx => q.options[parseInt(optIdx)]).join('<span class="text-surface-300 mx-1">|</span>');
+                    let correctAnsText = q.type === 'fib' ? escapeHTML(q.correctOptions[0] || '') : q.correctOptions.map(optIdx => escapeHTML(q.options[parseInt(optIdx)])).join('<span class="text-surface-300 mx-1">|</span>');
 
                     let isCorrect = false;
                     if (q.type === 'fib') {
@@ -1053,7 +1183,7 @@
                     detailedReviewHtml += `
                         <div class="bg-surface-50 p-4 rounded-xl border border-surface-200 shadow-sm relative">
                             <div class="flex justify-between items-start gap-3 mb-3">
-                                <p class="font-semibold text-surface-800 text-[14px] leading-snug flex-1"><span class="text-brand-600 font-bold mr-1">Q${idx+1}.</span> ${q.text}</p>
+                                <p class="font-semibold text-surface-800 text-[14px] leading-snug flex-1"><span class="text-brand-600 font-bold mr-1">Q${idx+1}.</span> ${escapeHTML(q.text)}</p>
                                 ${badge}
                             </div>
                             <div class="space-y-1.5 text-[13px] bg-white p-3 rounded-lg border border-surface-100">
@@ -1106,12 +1236,12 @@
             modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
             modal.innerHTML = `
                 <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
-                    <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 border border-rose-100 shadow-sm">
-                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-rose-100 shadow-sm">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <h3 class="text-xl font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
                     <p class="text-surface-500 text-[14px] font-medium mb-8">${message}</p>
-                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-surface-900 hover:bg-black text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[15px]">Acknowledge</button>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-surface-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-md cursor-pointer transition text-[15px]">Acknowledge</button>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -1121,15 +1251,15 @@
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 z-[300] bg-surface-900/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in font-sans';
             modal.innerHTML = `
-                <div class="panel bg-white p-6 sm:p-8 rounded-2xl max-w-sm w-full text-center shadow-glass border border-white">
-                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-4 border border-brand-100 shadow-sm">
-                        <i class="fa-solid fa-paper-plane text-xl"></i>
+                <div class="panel bg-white p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl border border-white">
+                    <div class="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-brand-100 shadow-sm">
+                        <i class="fa-solid fa-paper-plane text-2xl"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-surface-900 mb-2 tracking-tight">${title}</h3>
+                    <h3 class="text-xl font-bold text-surface-900 mb-3 tracking-tight">${title}</h3>
                     <p class="text-surface-500 text-[14px] font-medium mb-8 leading-relaxed">${message}</p>
                     <div class="flex gap-3">
-                        <button id="modal-cancel" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Review</button>
-                        <button id="modal-ok" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md cursor-pointer transition text-[14px]">Submit</button>
+                        <button id="modal-cancel" class="flex-1 bg-surface-50 hover:bg-surface-100 border border-surface-200 text-surface-700 font-bold py-3.5 rounded-xl cursor-pointer transition shadow-sm text-[14px]">Review</button>
+                        <button id="modal-ok" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-md cursor-pointer transition text-[14px]">Submit</button>
                     </div>
                 </div>
             `;
