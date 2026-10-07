@@ -1126,34 +1126,45 @@ app.post('/api/admin/recordings', authenticateToken, isAdmin, async (req, res) =
         const recordingId = id || uuidv4();
         let finalS3Key = s3Key;
         
-        if (id && !s3Key && type === 'video') {
+        // BUG FIX: Preserve original creation date during updates so sorting never breaks
+        let createdAt = new Date().toISOString();
+        
+        if (id) {
              const existing = await dynamoDB.get({ TableName: TABLE_RECORDINGS, Key: { id } }).promise();
-             if (existing.Item) finalS3Key = existing.Item.s3Key;
-        }
-
-        if (id && s3Key && type === 'video') {
-            const existing = await dynamoDB.get({ TableName: TABLE_RECORDINGS, Key: { id } }).promise();
-            if (existing.Item && existing.Item.s3Key && existing.Item.s3Key !== s3Key) {
-                await deleteS3ObjectSafely(existing.Item.s3Key);
-            }
+             if (existing.Item) {
+                 if (!s3Key && type === 'video') finalS3Key = existing.Item.s3Key;
+                 if (existing.Item.createdAt) createdAt = existing.Item.createdAt;
+                 
+                 // Clean up old S3 file if a new one is replacing it
+                 if (s3Key && type === 'video' && existing.Item.s3Key && existing.Item.s3Key !== s3Key) {
+                     await deleteS3ObjectSafely(existing.Item.s3Key);
+                 }
+             }
         }
 
         const newRecord = {
             id: recordingId, title, type, parentId: parentId || null, 
             levels: levels || [], notes: notes || '', s3Key: finalS3Key || null,
-            status: status || 'published', updatedAt: new Date().toISOString()
+            status: status || 'published', updatedAt: new Date().toISOString(),
+            createdAt: createdAt // Guarantee this is never lost
         };
-        if(!id) newRecord.createdAt = new Date().toISOString();
         
         await dynamoDB.put({ TableName: TABLE_RECORDINGS, Item: newRecord }).promise();
         res.status(201).json({ message: 'Recording saved', recordingId });
     } catch (error) { res.status(500).json({ error: 'Failed to save recording' }); }
 });
-
 app.get('/api/admin/recordings', authenticateToken, isAdmin, async (req, res) => {
     try {
         const data = await dynamoDB.scan({ TableName: TABLE_RECORDINGS }).promise();
-        res.json(data.Items || []);
+        
+        // Ensure data is strictly sorted chronologically (First created on top)
+        const sortedItems = (data.Items || []).sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateA - dateB; 
+        });
+
+        res.json(sortedItems);
     } catch (error) { res.status(500).json({ error: 'Fetch failed' }); }
 });
 
@@ -1327,11 +1338,14 @@ app.get('/api/student/recordings', authenticateToken, async (req, res) => {
         // Apply Inheritance Engine
         let accessible = getAccessibleTree(data.Items || [], level);
 
-        // Sort chronologically so lessons appear in the order they were created by the admin
-        accessible = accessible.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+        // Sort chronologically so folders/videos appear in the exact order they were created (First on top)
+        accessible = accessible.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateA - dateB;
+        });
 
         const withUrls = await Promise.all(accessible.map(async (item) => {
-            // Defensive check added here (item && item.s3Key)
             if (item && item.s3Key && item.type === 'video') {
                 try {
                     const urlParams = { Bucket: S3_BUCKET, Key: item.s3Key, Expires: 3600 };
