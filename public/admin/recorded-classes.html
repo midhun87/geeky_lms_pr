@@ -92,7 +92,6 @@
 </head>
 <body class="antialiased w-full h-screen flex overflow-hidden">
 
-    <!-- Mobile Top Navigation Bar -->
     <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
         <div class="flex items-center gap-2">
             <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
@@ -103,12 +102,9 @@
         </button>
     </div>
 
-    <!-- Mobile Menu Overlay -->
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <!-- Sidebar (Desktop & Mobile Drawer) -->
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shrink-0">
-        <!-- Logo Area -->
         <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
             <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-9 h-9 rounded-full object-cover shadow-sm">
             <div>
@@ -117,7 +113,6 @@
             </div>
         </div>
         
-        <!-- Navigation Links -->
          <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
             <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
             <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
@@ -129,7 +124,6 @@
             <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
         </nav>
         
-        <!-- Bottom Action -->
         <div class="p-4 border-t border-slate-100">
             <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 text-sm text-slate-600 font-medium hover:text-red-600 hover:bg-red-50 py-2.5 rounded-lg transition-colors">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
@@ -137,7 +131,6 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 overflow-hidden flex flex-col h-full bg-slate-50 relative pt-16 md:pt-0 w-full">
         <!-- Header -->
         <div class="px-4 md:px-8 py-5 border-b border-slate-200 bg-white flex flex-col sm:flex-row justify-between sm:items-center gap-4 shrink-0 shadow-sm z-10">
@@ -175,7 +168,6 @@
                 
                 <form id="recordForm" onsubmit="handleFormSubmit(event)" class="max-w-4xl mx-auto pb-20">
                     
-                    <!-- Advanced Progress Upload Overlay -->
                     <div id="upload-overlay" class="absolute inset-0 bg-white/95 z-50 hidden flex-col items-center justify-center backdrop-blur-sm rounded-xl border border-slate-200 m-4 shadow-xl">
                         <i class="fa-solid fa-cloud-arrow-up text-6xl text-brand-500 mb-6 animate-bounce"></i>
                         <h3 class="font-bold text-slate-900 text-2xl tracking-tight mb-2">Uploading Secure Video</h3>
@@ -305,7 +297,6 @@
                                 <button type="button" onclick="revealUploader()" class="px-3 py-1.5 bg-white border border-emerald-200 text-emerald-700 rounded-lg shadow-sm hover:bg-emerald-100 text-xs font-bold transition shrink-0">Replace Video</button>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Notes Editor (Always visible) -->
@@ -428,7 +419,6 @@
         });
 
         // --- UI Interactions ---
-
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -464,17 +454,12 @@
             }, 3000);
         }
 
-        /**
-         * Uploads a file to a pre-signed S3 URL using XMLHttpRequest
-         * This allows us to track real-time upload progress for massive files.
-         */
         function uploadFileWithProgress(url, file, progressCallback) {
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open('PUT', url, true);
                 xhr.setRequestHeader('Content-Type', file.type);
                 
-                // Track progress event
                 xhr.upload.onprogress = (e) => {
                     if (e.lengthComputable) {
                         const percent = Math.round((e.loaded / e.total) * 100);
@@ -484,19 +469,12 @@
                     }
                 };
                 
-                // Handle completion
                 xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        resolve();
-                    } else {
-                        reject(new Error(`S3 Upload Failed with HTTP status ${xhr.status}`));
-                    }
+                    if (xhr.status >= 200 && xhr.status < 300) resolve();
+                    else reject(new Error(`S3 Upload Failed with HTTP status ${xhr.status}`));
                 };
                 
-                // Handle network errors
                 xhr.onerror = () => reject(new Error('S3 Upload encountered a network error'));
-                
-                // Start upload stream
                 xhr.send(file);
             });
         }
@@ -534,8 +512,7 @@
                 if (!file) return;
 
                 const overlay = document.getElementById('upload-overlay');
-                overlay.classList.remove('hidden');
-                overlay.classList.add('flex');
+                overlay.classList.remove('hidden'); overlay.classList.add('flex');
                 
                 const statusText = document.getElementById('upload-status-text');
                 const progressBar = document.getElementById('upload-progress-bar');
@@ -551,7 +528,6 @@
                     });
                     const data = await res.json();
                     
-                    // Utilize the new XHR wrapper for progress tracking on inline media
                     await uploadFileWithProgress(data.uploadUrl, file, (percent, loaded, total) => {
                         statusText.innerText = `Uploading Inline Media: ${percent}% (${loaded} MB / ${total} MB)`;
                         progressBar.style.width = `${percent}%`;
@@ -563,8 +539,7 @@
                 } catch (err) { 
                     showToast('S3 Media Upload failed.', 'error'); 
                 } finally { 
-                    overlay.classList.add('hidden'); 
-                    overlay.classList.remove('flex'); 
+                    overlay.classList.add('hidden'); overlay.classList.remove('flex'); 
                 }
             };
         }
@@ -637,7 +612,6 @@
         function selectEntryType(type) {
             document.getElementById('recordType').value = type;
             
-            // Visual Update
             document.querySelectorAll('.type-card').forEach(card => card.classList.remove('selected'));
             document.getElementById(`type-${type}`).classList.add('selected');
 
@@ -674,6 +648,8 @@
             const parentSelect = document.getElementById('recordParent');
             parentSelect.innerHTML = '<option value="" disabled selected>-- Select a Parent Folder --</option>';
             const targetParentType = type === 'subfolder' ? 'folder' : 'subfolder';
+            
+            // Only populate valid parents chronologically
             const validParents = allRecordings.filter(r => r.type === targetParentType);
             validParents.forEach(p => parentSelect.innerHTML += `<option value="${p.id}">${p.title}</option>`);
         }
@@ -681,7 +657,15 @@
         async function fetchRecordings() {
             try {
                 const res = await fetch(`${API_BASE_URL}/admin/recordings`, { headers: { 'Authorization': `Bearer ${token}` } });
-                allRecordings = await res.json();
+                const data = await res.json();
+                
+                // FORCE SORT CHRONOLOGICALLY IN THE FRONTEND AS WELL FOR MAXIMUM SAFETY
+                allRecordings = data.sort((a, b) => {
+                    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                    return dateA - dateB;
+                });
+
                 renderTree();
                 toggleFormMode(); 
             } catch (e) {
@@ -691,7 +675,7 @@
 
         function renderTree() {
             const tree = document.getElementById('hierarchy-tree');
-            tree.innerHTML = '';
+            let fullHtml = ''; // Build safely in memory to completely prevent DOM thrashing crashes
             
             const folders = allRecordings.filter(c => c.type === 'folder');
             if(folders.length === 0) { 
@@ -700,23 +684,25 @@
             }
 
             folders.forEach(folder => {
-                let html = buildNodeHtml(folder, 'fa-folder', 'text-brand-500', true);
-                html += `<div class="tree-children border-l-2 border-slate-100 ml-3.5 pl-3 mt-1.5 space-y-1 mb-4">`;
+                fullHtml += buildNodeHtml(folder, 'fa-folder', 'text-brand-500', true);
+                fullHtml += `<div class="tree-children border-l-2 border-slate-100 ml-3.5 pl-3 mt-1.5 space-y-1 mb-4">`;
                 
                 const subfolders = allRecordings.filter(c => c.parentId === folder.id);
                 subfolders.forEach(sub => {
-                    html += buildNodeHtml(sub, 'fa-folder-open', 'text-blue-500', false);
-                    html += `<div class="tree-children border-l border-slate-100 ml-3 pl-3 mt-1 space-y-1 mb-3">`;
+                    fullHtml += buildNodeHtml(sub, 'fa-folder-open', 'text-blue-500', false);
+                    fullHtml += `<div class="tree-children border-l border-slate-100 ml-3 pl-3 mt-1 space-y-1 mb-3">`;
                     
                     const videos = allRecordings.filter(c => c.parentId === sub.id);
                     videos.forEach(vid => {
-                        html += buildNodeHtml(vid, 'fa-circle-play', 'text-purple-500', false, true);
+                        fullHtml += buildNodeHtml(vid, 'fa-circle-play', 'text-purple-500', false, true);
                     });
-                    html += `</div>`; 
+                    fullHtml += `</div>`; 
                 });
-                html += `</div>`; 
-                tree.innerHTML += html;
+                fullHtml += `</div>`; 
             });
+            
+            // Assign once to prevent rendering tearing
+            tree.innerHTML = fullHtml;
         }
 
         function buildNodeHtml(node, iconClass, colorClass, isRoot = false, isVideo = false) {
@@ -733,6 +719,14 @@
             const padding = isRoot ? 'p-2.5 mt-2 rounded-lg' : 'py-1.5 px-2 rounded-md';
             const titleClass = isRoot ? 'font-bold text-sm text-slate-800' : (isVideo ? 'font-medium text-xs text-slate-600' : 'font-semibold text-[13px] text-slate-700');
 
+            // NEW: Inject Quick-Add "Plus" Buttons
+            let addBtn = '';
+            if (node.type === 'folder') {
+                addBtn = `<button type="button" onclick="addNewChild('${node.id}', 'subfolder'); event.stopPropagation();" class="text-brand-500 hover:text-brand-700 transition w-6 h-6 flex items-center justify-center rounded hover:bg-brand-50" title="Add Sub-Folder inside"><i class="fa-solid fa-plus text-[11px]"></i></button>`;
+            } else if (node.type === 'subfolder') {
+                addBtn = `<button type="button" onclick="addNewChild('${node.id}', 'video'); event.stopPropagation();" class="text-purple-500 hover:text-purple-700 transition w-6 h-6 flex items-center justify-center rounded hover:bg-purple-50" title="Add Video inside"><i class="fa-solid fa-plus text-[11px]"></i></button>`;
+            }
+
             return `
                 <div class="group flex justify-between items-start ${bgClass} ${padding} transition cursor-pointer" onclick="editRecord('${node.id}')">
                     <div class="flex-1 overflow-hidden flex items-center">
@@ -743,10 +737,27 @@
                         ${fileBadge}
                     </div>
                     <div class="hidden group-hover:flex gap-1 pl-2 pt-0.5 bg-white shadow-sm rounded px-1 shrink-0 ml-2">
+                        ${addBtn}
                         <button type="button" onclick="editRecord('${node.id}'); event.stopPropagation();" class="text-slate-400 hover:text-brand-600 transition w-6 h-6 flex items-center justify-center rounded hover:bg-slate-50" title="Edit"><i class="fa-solid fa-pen text-[10px]"></i></button>
                         <button type="button" onclick="deleteRecord('${node.id}'); event.stopPropagation();" class="text-slate-400 hover:text-red-500 transition w-6 h-6 flex items-center justify-center rounded hover:bg-red-50" title="Delete"><i class="fa-solid fa-trash text-[10px]"></i></button>
                     </div>
                 </div>`;
+        }
+
+        // NEW: Handles clicking the "Plus" button inside the tree
+        function addNewChild(parentId, childType) {
+            resetForm();
+            selectEntryType(childType);
+            
+            // Wait slightly for the DOM dropdown to correctly populate with the new type parents, then auto-select it.
+            setTimeout(() => {
+                document.getElementById('recordParent').value = parentId;
+                document.getElementById('recordTitle').focus();
+                
+                // Scroll form into view
+                const formSection = document.getElementById('recordForm');
+                if (formSection) formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
         }
 
         function previewContent() {
@@ -827,6 +838,9 @@
             document.getElementById('form-main-title').innerText = `Editing: ${item.title}`;
             document.getElementById('edit-badge').classList.remove('hidden');
             document.getElementById('submitBtn').innerHTML = `<i class="fa-solid fa-check mr-2"></i> Update Entry`;
+            
+            const formSection = document.getElementById('recordForm');
+            if (formSection) formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function resetForm() {
@@ -872,7 +886,7 @@
             const notes = quill.root.innerHTML;
             const fileInput = document.getElementById('videoFile');
             
-            if (levels.length === 0) return showToast("Please select at least one Target Audience level.", "error");
+            if (type === 'folder' && levels.length === 0) return showToast("Main folders must have a Target Audience level assigned.", "error");
             if (type !== 'folder' && !parentId) return showToast('Please select a Parent Directory.', "error");
             
             const submitBtn = document.getElementById('submitBtn');
@@ -883,20 +897,17 @@
             try {
                 let s3Key = null;
                 
-                // Advanced S3 Upload handler using the new progress wrapper
                 if (type === 'video' && fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const overlay = document.getElementById('upload-overlay');
                     const statusText = document.getElementById('upload-status-text');
                     const progressBar = document.getElementById('upload-progress-bar');
                     
-                    // Reset UI
                     overlay.classList.remove('hidden'); 
                     overlay.classList.add('flex');
                     progressBar.style.width = `0%`;
                     statusText.innerText = `Preparing infrastructure for ${file.name}...`;
 
-                    // Get the pre-signed URL (which is now valid for 3 hours in the backend)
                     const urlRes = await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
@@ -908,13 +919,11 @@
                     const urlData = await urlRes.json();
                     s3Key = urlData.s3Key;
                     
-                    // Stream the file directly to S3 and update the progress bar in real-time
                     await uploadFileWithProgress(urlData.uploadUrl, file, (percent, loaded, total) => {
                         statusText.innerText = `Uploading: ${percent}% (${loaded} MB of ${total} MB)`;
                         progressBar.style.width = `${percent}%`;
                     });
                     
-                    // Hide overlay upon success
                     overlay.classList.add('hidden'); 
                     overlay.classList.remove('flex');
                 } else if (type === 'video' && !id && fileInput.files.length === 0) {
@@ -922,7 +931,6 @@
                     return showToast("Please select a video file to upload for a new Video entry.", "error");
                 }
 
-                // Push structural metadata to DynamoDB
                 const payload = { title, type, parentId, levels, notes };
                 if (id) payload.id = id;
                 if (s3Key) payload.s3Key = s3Key;
@@ -948,7 +956,6 @@
             }
         }
 
-        /* --- OpenRouter AI Integration --- */
         function loadAiKey() {
             const key = localStorage.getItem('openRouterApiKey');
             if(key) document.getElementById('openRouterKey').value = key;
