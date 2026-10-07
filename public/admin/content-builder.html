@@ -92,6 +92,7 @@
 </head>
 <body class="antialiased w-full h-screen flex overflow-hidden">
 
+    <!-- Mobile Top Navigation Bar -->
     <div class="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-30 flex items-center justify-between px-4 shadow-sm">
         <div class="flex items-center gap-2">
             <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-8 h-8 rounded-full object-cover">
@@ -241,27 +242,36 @@
 
                     <!-- Step 2: Placement & Access -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- Location & Ordering -->
                         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                             <div class="flex items-center gap-3 mb-5">
                                 <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm">2</div>
-                                <h4 class="text-base font-bold text-slate-800">Placement Location</h4>
+                                <h4 class="text-base font-bold text-slate-800">Placement & Ordering</h4>
                             </div>
                             
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-bold text-slate-700 mb-1">Parent Folder</label>
-                                    <p class="text-xs text-slate-500 mb-2">Where should this item live?</p>
-                                    <select id="parentNode" class="input-field" disabled>
-                                        <option value="">-- Main Course Units sit at root --</option>
-                                    </select>
-                                </div>
-                                <div>
                                     <label class="block text-sm font-bold text-slate-700 mb-1">Item Title</label>
                                     <input type="text" id="contentTitle" class="input-field font-semibold" placeholder="e.g., Chapter 1: Introduction" required>
                                 </div>
+                                
+                                <div class="flex gap-4">
+                                    <div class="flex-1">
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Parent Folder</label>
+                                        <select id="parentNode" class="input-field" disabled>
+                                            <option value="">-- Main Course Units sit at root --</option>
+                                        </select>
+                                    </div>
+                                    <div class="w-24 shrink-0">
+                                        <label class="block text-sm font-bold text-brand-600 mb-1">Order Index</label>
+                                        <input type="number" id="contentOrder" class="input-field font-bold text-center border-brand-200 bg-brand-50" placeholder="0" value="0" required>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-slate-500 leading-tight">Lower Order Index numbers appear first. Example: 0 will appear before 1. Items with the same number sort alphabetically.</p>
                             </div>
                         </div>
                         
+                        <!-- Access Permissions -->
                         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden">
                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-400"></div>
                             <div class="flex items-center gap-3 mb-5">
@@ -270,7 +280,7 @@
                             </div>
                             
                             <label class="block text-sm font-bold text-slate-700 mb-1">Target Audience</label>
-                            <p class="text-xs text-amber-600 mb-3">If unchecked on child items, it automatically inherits from its parent folder.</p>
+                            <p class="text-xs text-amber-600 mb-3 leading-tight">If unchecked on child items, it automatically inherits from its parent folder.</p>
                             
                             <div class="border border-slate-200 rounded-lg bg-slate-50 overflow-hidden">
                                 <label class="flex items-center gap-3 cursor-pointer p-3 border-b border-slate-200 bg-white hover:bg-slate-50 transition">
@@ -674,11 +684,14 @@
 
             const addChildBtn = !isFile ? `<button type="button" onclick="prepareAddChild('${node.id}', '${node.type}'); event.stopPropagation();" class="text-slate-400 hover:text-brand-600 transition w-6 h-6 flex items-center justify-center rounded hover:bg-slate-50" title="Add Item Inside"><i class="fa-solid fa-plus text-[10px]"></i></button>` : '';
 
+            // Appended Order Tag visually
+            const orderTag = `<span class="text-[9px] bg-slate-100 text-slate-500 border border-slate-200 px-1.5 rounded font-mono font-bold mx-2" title="Display Order Index">#${node.order || 0}</span>`;
+
             return `
                 <div class="group flex justify-between items-start ${bgClass} ${padding} transition cursor-pointer" onclick="editContent('${node.id}')">
                     <div class="flex-1 overflow-hidden flex items-center">
                         <div class="${titleClass} flex items-center truncate">
-                            <i class="fa-solid ${iconClass} ${colorClass} w-5 text-center mr-1"></i> ${node.title}
+                            <i class="fa-solid ${iconClass} ${colorClass} w-5 text-center mr-1"></i> ${node.title} ${orderTag}
                         </div>
                         ${fileBadge}
                         ${draftBadge}
@@ -738,6 +751,7 @@
 
             document.getElementById('editContentId').value = item.id;
             document.getElementById('contentTitle').value = item.title;
+            document.getElementById('contentOrder').value = item.order || 0;
             
             selectEntryType(item.type);
             setSelectedLevels(item.levels || []);
@@ -763,6 +777,7 @@
         function resetForm() {
             document.getElementById('contentForm').reset();
             document.getElementById('editContentId').value = '';
+            document.getElementById('contentOrder').value = '0';
             setSelectedLevels([]);
             quill.setContents([]);
             
@@ -799,6 +814,7 @@
             
             const id = document.getElementById('editContentId').value;
             const title = document.getElementById('contentTitle').value.trim();
+            const orderVal = document.getElementById('contentOrder').value.trim();
             const levels = getSelectedLevels();
             let type = document.getElementById('levelType').value;
             const parentId = document.getElementById('parentNode').value;
@@ -854,9 +870,6 @@
                             document.getElementById('upload-speed-text').innerText = `${mbps.toFixed(2)} MB/s`;
                         }
                     });
-
-                    // We removed the backend PPT-to-PDF conversion block here.
-                    // The file safely remains exactly what the admin uploaded (PPT or PDF).
                     
                     // Reset spinner icon for future uploads
                     document.getElementById('upload-spinner').className = "fa-solid fa-cloud-arrow-up text-5xl text-brand-500 mb-4 animate-bounce";
@@ -867,7 +880,7 @@
                 }
 
                 // 3. Save to Database
-                const payload = { title, type, parentId, levels, textContent, status: statusAction };
+                const payload = { title, order: parseInt(orderVal) || 0, type, parentId, levels, textContent, status: statusAction };
                 if (id) payload.id = id;
                 if (s3Key) payload.s3Key = s3Key;
 
