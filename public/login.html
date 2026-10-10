@@ -4,278 +4,400 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geeky Researcher | Secure Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        theme: {
-                            bg: '#f8fafc',      
-                            card: '#ffffff',    
-                            accent: '#4f46e5',  
-                            primary: '#ea580c', 
-                            success: '#10b981'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { 
-            background-color: #f1f5f9;
+        :root {
+            /* Theme Variables mapping to Homepage */
+            --bg-ivory: #FDFCF8;
+            --bg-offwhite: #F4F2EC;
+            --forest-green: #143623;
+            --botanical-green: #255C3E;
+            --leaf-green: #378057;
+            --gold-accent: #C5A059;
+            --gold-light: #E8D3A7;
+            --text-charcoal: #232725;
+            --text-muted: #59655E;
+            --border-light: #E2DFD3;
+            --border-dark: #C6C2B4;
+            --white: #FFFFFF;
+            --error-red: #d9534f;
+            --success-green: #2E7D32;
+            
+            --font-editorial: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-ivory);
+            color: var(--text-charcoal);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 32px 32px;
+            -webkit-font-smoothing: antialiased;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23143623' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
         
-        .nav-btn { background-color: #4f46e5; transition: all 0.2s ease; }
-        .nav-btn:hover { background-color: #4338ca; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(253, 252, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-accent); }
+        .nav-title-group { display: flex; flex-direction: column; }
+        .nav-title { font-family: var(--font-editorial); font-weight: 700; font-size: 1.25rem; color: var(--forest-green); line-height: 1.1; }
+        .nav-subtitle { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; }
+
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); position: relative; padding-bottom: 4px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--forest-green); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 2px;
+            background-color: var(--gold-accent); transition: var(--transition);
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: calc(100vh - 85px);
+        }
+
+        .login-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            position: relative;
+        }
 
         .form-card {
-            background-color: #ffffff;
-            border-radius: 1.5rem; 
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            width: 100%;
+            max-width: 460px;
+            background-color: var(--white);
+            padding: 48px;
+            border-radius: 2px;
+            box-shadow: 0 20px 40px rgba(20, 54, 35, 0.06);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--forest-green);
+            position: relative;
+            z-index: 10;
         }
 
+        .header-logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-light); margin: 0 auto 24px; display: block; box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
+        .form-title { font-family: var(--font-editorial); font-size: 2rem; color: var(--forest-green); text-align: center; margin-bottom: 8px; font-weight: 700; }
+        .form-subtitle { font-size: 0.9rem; color: var(--text-muted); text-align: center; margin-bottom: 32px; }
+
+        /* Form Elements */
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--forest-green); margin-bottom: 8px; }
+        
         .premium-input {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-            color: #1e293b;
-            font-weight: 500;
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--bg-ivory);
+            border: 1px solid var(--border-dark);
+            border-radius: 2px;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            color: var(--text-charcoal);
+            transition: var(--transition);
         }
-        .premium-input:focus {
-            outline: none;
-            background-color: #ffffff;
-            border-color: #ea580c;
-            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);
-        }
+        .premium-input:focus { outline: none; border-color: var(--gold-accent); background-color: var(--white); box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.1); }
+        .premium-input::placeholder { color: #a0a8a3; }
+        
+        #resetOTP { letter-spacing: 0.5em; text-align: center; font-size: 1.25rem; font-weight: 700; }
 
-        .btn-primary {
-            background-color: #ea580c;
-            color: white;
-            transition: all 0.2s;
+        .forgot-link { font-size: 0.75rem; color: var(--gold-accent); text-transform: none; letter-spacing: 0; }
+        .forgot-link:hover { color: var(--forest-green); text-decoration: underline; }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            transition: var(--transition);
+            gap: 10px;
         }
-        .btn-primary:hover {
-            background-color: #c2410c;
-            box-shadow: 0 8px 20px -5px rgba(234, 88, 12, 0.4);
-            transform: translateY(-1px);
-        }
+        
+        .btn-primary { background-color: var(--forest-green); color: var(--white); border: 1px solid var(--forest-green); margin-top: 12px; }
+        .btn-primary:hover { background-color: var(--botanical-green); border-color: var(--botanical-green); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(20, 54, 35, 0.15); }
+        
+        .btn-outline { background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-dark); margin-top: 12px; }
+        .btn-outline:hover { background-color: var(--bg-offwhite); color: var(--forest-green); border-color: var(--forest-green); }
 
         .btn-disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
-        
-        /* View transitions */
-        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .view-section.active { display: block; opacity: 1; }
 
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-            animation: float 6s ease-in-out infinite;
+        /* Role Toggles */
+        .role-toggle-container { display: flex; gap: 8px; background: var(--bg-offwhite); padding: 6px; border-radius: 2px; border: 1px solid var(--border-light); margin-bottom: 32px; }
+        .role-btn { flex: 1; padding: 10px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-radius: 2px; transition: var(--transition); }
+        .role-btn:hover { color: var(--forest-green); }
+        .role-btn.active { background: var(--white); color: var(--forest-green); box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+
+        /* Alerts */
+        .alert-box {
+            display: none;
+            padding: 14px 16px;
+            border-radius: 2px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            align-items: flex-start;
+            gap: 12px;
+            line-height: 1.5;
+            animation: slideDown 0.3s ease-out forwards;
         }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-            100% { transform: translateY(0px); }
+        .alert-box.active { display: flex; }
+        .alert-error { background-color: #fdf2f2; border: 1px solid #f8d7da; color: var(--error-red); border-left: 4px solid var(--error-red); }
+        .alert-success { background-color: #f0fdf4; border: 1px solid #dcfce7; color: var(--success-green); border-left: 4px solid var(--success-green); }
+        .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+
+        /* View Transitions */
+        .view-section { display: none; opacity: 0; }
+        .view-section.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+
+        /* Visual Banner (Desktop) */
+        .visual-section {
+            display: none;
+            position: relative;
+            background-color: var(--forest-green);
+            overflow: hidden;
+        }
+        .visual-bg { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; mix-blend-mode: overlay; }
+        
+        .visual-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(20, 54, 35, 0.95), rgba(20, 54, 35, 0.4)); display: flex; flex-direction: column; justify-content: flex-end; padding: 80px; }
+        
+        .visual-badge { display: inline-block; background-color: var(--gold-accent); color: var(--white); padding: 6px 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; border-radius: 2px; }
+        .visual-quote { font-family: var(--font-editorial); font-size: 3rem; color: var(--white); line-height: 1.1; margin-bottom: 16px; text-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .visual-author { font-size: 1rem; color: var(--gold-light); font-weight: 600; }
+
+        .footer-branding { text-align: center; margin-top: 40px; }
+        .footer-branding p { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 12px; }
+        .footer-branding img { height: 24px; opacity: 0.7; transition: var(--transition); }
+        .footer-branding img:hover { opacity: 1; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (min-width: 1024px) {
+            .main-container { grid-template-columns: 1fr 1.2fr; }
+            .visual-section { display: block; }
+            .nav-links { display: flex; }
+        }
+        @media (max-width: 1023px) {
+            .nav-links { display: none; }
+            .form-card { padding: 32px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        }
+        @media (max-width: 480px) {
+            .navbar { padding: 16px 20px; }
+            .login-section { padding: 24px 16px; }
         }
     </style>
 </head>
-<body class="antialiased text-slate-800">
+<body>
 
-    <nav class="w-full px-6 py-5 flex items-center justify-between z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
-            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Geeky Researcher Logo" class="w-10 h-10 rounded-xl object-cover shadow-sm border border-slate-100">
-            <div class="font-bold text-xl leading-tight">
-                <span class="text-xs block font-bold text-theme-primary -mb-1 tracking-widest uppercase">Geeky</span>
-                <span class="text-slate-900 tracking-tight">Researcher</span>
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Geeky Researcher Logo" class="nav-logo">
+            <div class="nav-title-group">
+                <span class="nav-title">Geeky Researcher</span>
+                <span class="nav-subtitle">Secure Portal</span>
             </div>
-        </div>
+        </a>
 
-        <div class="hidden md:flex items-center gap-8 font-semibold text-slate-600">
-            <a href="index.html" class="hover:text-theme-primary transition">Home</a>
-            <a href="login.html" class="text-theme-primary">Portal Login</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#courses">Programmes</a>
+            <a href="login.html" class="active">Student Login</a>
         </div>
 
         <div>
-            <a href="register.html" class="nav-btn text-white px-6 py-2.5 rounded-xl font-bold text-[13px] tracking-wide shadow-md">
-                ENROLL NOW
-            </a>
+            <a href="register.html" class="btn btn-primary" style="margin-top: 0; padding: 10px 24px;">Enroll Now</a>
         </div>
     </nav>
 
-    <main class="flex-1 flex w-full max-w-7xl mx-auto items-center justify-center lg:justify-between px-6 lg:px-12 py-10 relative">
+    <main class="main-container">
         
-        <!-- Left Side: Form Card -->
-        <div class="w-full max-w-[440px] form-card p-8 sm:p-10 z-10 relative bg-white flex flex-col">
-            
-            <div class="mb-8 text-center flex flex-col items-center">
-                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="w-16 h-16 rounded-2xl object-cover shadow-md border border-slate-100 mb-4">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" id="headerTitle">Welcome Back</h2>
-                <p class="text-slate-500 mt-2 text-sm font-medium" id="headerSub">Sign in to your account</p>
-            </div>
-
-            <!-- Global Alert Message -->
-            <div id="alert-message" class="hidden mb-6 p-3 text-[13px] font-medium rounded-xl border text-center transition-all bg-white shadow-sm"></div>
-
-            <!-- View 1: Login -->
-            <div id="view-login" class="view-section active">
+        <!-- Left Side: Form Container -->
+        <section class="login-section">
+            <div class="form-card">
                 
-                <!-- Role Toggles -->
-                <div class="flex gap-2 mb-8 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                    <button id="tab-student" type="button" class="flex-1 text-sm font-bold text-slate-800 bg-white shadow-sm rounded-lg py-2 transition-all" onclick="setRole('student')">Student Portal</button>
-                    <button id="tab-admin" type="button" class="flex-1 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-lg py-2 transition-all" onclick="setRole('admin')">Administration</button>
-                </div>
+                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="header-logo">
+                <h2 class="form-title" id="headerTitle">Welcome Back</h2>
+                <p class="form-subtitle" id="headerSub">Sign in to continue your academic journey.</p>
 
-                <form onsubmit="handleLogin(event)" class="space-y-5">
-                    <div>
-                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 ml-1">Email Address</label>
-                        <input type="email" id="loginEmail" required class="premium-input w-full px-4 py-3.5 text-sm" placeholder="student@institute.edu">
+                <!-- Global Alert Message -->
+                <div id="alert-message" class="alert-box"></div>
+
+                <!-- VIEW 1: LOGIN -->
+                <div id="view-login" class="view-section active">
+                    
+                    <!-- Role Toggles -->
+                    <div class="role-toggle-container">
+                        <button id="tab-student" type="button" class="role-btn active" onclick="setRole('student')">Student Portal</button>
+                        <button id="tab-admin" type="button" class="role-btn" onclick="setRole('admin')">Administration</button>
                     </div>
-                    <div>
-                        <div class="flex justify-between items-center mb-1.5 ml-1 mr-1">
-                            <label class="block text-[13px] font-bold text-slate-700">Password</label>
-                            <button type="button" onclick="switchToForgot()" class="text-[12px] text-theme-primary hover:text-orange-700 font-bold transition">Forgot Password?</button>
+
+                    <form onsubmit="handleLogin(event)">
+                        <div class="input-group">
+                            <label class="input-label">Email Address</label>
+                            <input type="email" id="loginEmail" required class="premium-input" placeholder="student@institute.edu">
                         </div>
-                        <input type="password" id="loginPassword" required class="premium-input w-full px-4 py-3.5 text-sm" placeholder="••••••••">
-                    </div>
+                        <div class="input-group">
+                            <div class="input-label">
+                                <span>Password</span>
+                                <button type="button" onclick="switchToForgot()" class="forgot-link">Forgot Password?</button>
+                            </div>
+                            <input type="password" id="loginPassword" required class="premium-input" placeholder="••••••••">
+                        </div>
 
-                    <button type="submit" id="submitBtn" class="btn-primary w-full py-4 rounded-xl font-extrabold text-[15px] mt-6 flex justify-center items-center gap-2">
-                        <span id="btnText">Secure Sign In</span>
-                        <i id="btnSpinner" class="fa-solid fa-circle-notch fa-spin hidden"></i>
-                    </button>
-                </form>
-                
-                <p class="text-center text-[13px] font-medium text-slate-500 mt-8" id="register-link">
-                    New to Geeky Researcher? <a href="register.html" class="text-theme-primary font-bold hover:underline">Apply Now</a>
-                </p>
-            </div>
-            
-            <!-- View 4: Force Login -->
-            <div id="view-force-login" class="view-section">
-                <div class="text-center mb-6">
-                    <div class="w-16 h-16 mx-auto bg-orange-50 rounded-2xl flex items-center justify-center mb-4 text-theme-primary border border-orange-100 shadow-sm">
-                        <i class="fa-solid fa-desktop text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-slate-900 text-lg">Active Session Detected</h3>
-                    <p class="text-slate-500 text-sm mt-2 leading-relaxed">Your student account is currently active on another device. Would you like to terminate that session and log in here?</p>
-                    <div class="mt-5 p-4 bg-slate-50 rounded-xl border border-slate-200 text-left">
-                        <span class="block text-[10px] text-slate-400 uppercase tracking-widest font-bold">Currently active on</span>
-                        <span id="activeDeviceLabel" class="block text-slate-800 font-bold text-[15px] mt-1 truncate">Unknown</span>
-                    </div>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">
+                            <span id="btnText">Secure Sign In</span>
+                            <i id="btnSpinner" class="fa-solid fa-circle-notch fa-spin" style="display: none;"></i>
+                        </button>
+                    </form>
+                    
+                    <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 32px;" id="register-link">
+                        New to Geeky Researcher? <a href="register.html" style="color: var(--forest-green); font-weight: 700; text-decoration: underline;">Apply Now</a>
+                    </p>
                 </div>
                 
-                <div class="space-y-3">
-                    <button type="button" onclick="handleLogin(event, true)" id="btnForceLogin" class="btn-primary w-full py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-2">
-                        <span id="textForceLogin">Terminate & Login Here</span>
-                        <i id="spinForceLogin" class="fa-solid fa-circle-notch fa-spin hidden"></i>
-                    </button>
-                    <button type="button" onclick="switchView('view-login')" class="w-full py-3.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-bold transition bg-white rounded-xl border border-slate-200 shadow-sm">Cancel</button>
-                </div>
-            </div>
-
-            <!-- View 2: Forgot Password (Email step) -->
-            <div id="view-forgot-email" class="view-section">
-                <form onsubmit="handleSendResetOTP(event)" class="space-y-5">
-                    <div>
-                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 ml-1">Registered Email</label>
-                        <input type="email" id="resetEmail" required class="premium-input w-full px-4 py-3.5 text-sm" placeholder="email@institute.edu">
-                        <p class="text-[12px] text-slate-500 mt-2 font-medium bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <i class="fa-solid fa-circle-info text-theme-primary mr-1"></i> A secure 6-digit verification code will be sent to this email to verify your identity.
-                        </p>
+                <!-- VIEW 4: FORCE LOGIN -->
+                <div id="view-force-login" class="view-section">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="width: 56px; height: 56px; margin: 0 auto 16px; background: var(--bg-offwhite); border: 1px solid var(--border-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-accent);">
+                            <i class="fa-solid fa-desktop" style="font-size: 1.25rem;"></i>
+                        </div>
+                        <h3 style="font-family: var(--font-editorial); font-size: 1.5rem; color: var(--forest-green); margin-bottom: 8px;">Active Session Detected</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">Your student account is currently active on another device. Would you like to terminate that session and log in here?</p>
+                        
+                        <div style="margin-top: 24px; padding: 16px; background: var(--bg-ivory); border: 1px solid var(--border-light); text-align: left;">
+                            <span style="display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-accent);">Currently active on</span>
+                            <span id="activeDeviceLabel" style="display: block; font-size: 1rem; font-weight: 600; color: var(--text-charcoal); margin-top: 4px;">Unknown</span>
+                        </div>
                     </div>
                     
-                    <div class="space-y-3 mt-4">
-                        <button type="submit" id="btnSendOTP" class="btn-primary w-full py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-2">
-                            <span id="textSendOTP">Send Secure Code</span>
-                            <i id="spinSendOTP" class="fa-solid fa-circle-notch fa-spin hidden"></i>
-                        </button>
-                        <button type="button" onclick="switchView('view-login')" class="w-full py-3.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-bold transition bg-white rounded-xl border border-slate-200 shadow-sm">Return to Login</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- View 3: Reset Password -->
-            <div id="view-reset-password" class="view-section">
-                <form onsubmit="handleResetPassword(event)" class="space-y-5">
-                    <div class="text-center mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                        <p class="text-sm font-semibold text-slate-700">Code sent to your email.</p>
-                        <p class="text-xs text-slate-500 mt-1">Please check your inbox and spam folders.</p>
-                    </div>
-
                     <div>
-                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 ml-1">6-Digit Secure Code</label>
-                        <input type="text" id="resetOTP" required pattern="[0-9]{6}" maxlength="6" class="premium-input w-full px-4 py-4 tracking-[0.5em] font-mono text-center text-xl bg-white" placeholder="••••••">
-                    </div>
-                    <div>
-                        <label class="block text-[13px] font-bold text-slate-700 mb-1.5 ml-1">New Password</label>
-                        <input type="password" id="newPassword" required minlength="6" class="premium-input w-full px-4 py-3.5 text-sm" placeholder="Create a new strong password">
-                    </div>
-                    
-                    <div class="space-y-3 mt-6">
-                        <button type="submit" id="btnResetPass" class="bg-emerald-600 hover:bg-emerald-700 text-white w-full py-3.5 rounded-xl font-bold text-sm flex justify-center items-center gap-2 transition shadow-lg shadow-emerald-600/20">
-                            <span id="textResetPass">Confirm & Update Password</span>
-                            <i id="spinResetPass" class="fa-solid fa-circle-notch fa-spin hidden"></i>
+                        <button type="button" onclick="handleLogin(event, true)" id="btnForceLogin" class="btn btn-primary">
+                            <span id="textForceLogin">Terminate & Login Here</span>
+                            <i id="spinForceLogin" class="fa-solid fa-circle-notch fa-spin" style="display: none;"></i>
                         </button>
-                        <button type="button" onclick="switchView('view-login')" class="w-full py-3.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 text-sm font-bold transition bg-white rounded-xl border border-slate-200 shadow-sm">Cancel</button>
+                        <button type="button" onclick="switchView('view-login')" class="btn btn-outline">Cancel</button>
                     </div>
-                </form>
-            </div>
-
-            <!-- Custom Footer Branding -->
-            <div class="mt-auto pt-8 flex flex-col items-center">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Engineered & Developed By</p>
-                <a href="https://xetatechsolutions.com/" target="_blank" class="hover:opacity-80 transition-opacity">
-                    <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Tech Solutions" class="h-8 object-contain">
-                </a>
-            </div>
-
-        </div>
-
-        <!-- Right Side Banner for Desktop -->
-        <div class="hidden lg:flex w-[55%] relative justify-center items-center h-[650px] pl-10">
-            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Happy Student" class="w-full h-full object-cover rounded-[2.5rem] shadow-2xl">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent rounded-[2.5rem] ml-10"></div>
-            
-            <div class="absolute bottom-12 left-20 z-20 text-white">
-                <span class="bg-theme-primary text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-md mb-4 inline-block shadow-lg">Premium Platform</span>
-                <h1 class="text-4xl font-extrabold leading-tight mb-2">Empowering Scholars Worldwide</h1>
-                <p class="text-slate-200 font-medium max-w-md">Access exclusive modules, participate in securely proctored assessments, and advance your academic journey.</p>
-            </div>
-
-            <!-- Floating Elements -->
-            <div class="stat-card absolute top-16 left-4 px-6 py-4 flex items-center gap-4 z-20 bg-white/95 backdrop-blur-md">
-                <div class="w-12 h-12 bg-theme-accent rounded-xl flex items-center justify-center text-white text-xl shadow-inner">
-                    <i class="fa-solid fa-users"></i>
                 </div>
+
+                <!-- VIEW 2: FORGOT PASSWORD (EMAIL) -->
+                <div id="view-forgot-email" class="view-section">
+                    <form onsubmit="handleSendResetOTP(event)">
+                        <div class="input-group">
+                            <label class="input-label">Registered Email</label>
+                            <input type="email" id="resetEmail" required class="premium-input" placeholder="email@institute.edu">
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; padding: 12px; background: var(--bg-offwhite); border-left: 3px solid var(--gold-accent); line-height: 1.5;">
+                                <i class="fa-solid fa-circle-info" style="color: var(--gold-accent); margin-right: 4px;"></i> A secure 6-digit verification code will be sent to this email to verify your identity.
+                            </p>
+                        </div>
+                        
+                        <div style="margin-top: 32px;">
+                            <button type="submit" id="btnSendOTP" class="btn btn-primary">
+                                <span id="textSendOTP">Send Secure Code</span>
+                                <i id="spinSendOTP" class="fa-solid fa-circle-notch fa-spin" style="display: none;"></i>
+                            </button>
+                            <button type="button" onclick="switchView('view-login')" class="btn btn-outline">Return to Login</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- VIEW 3: RESET PASSWORD -->
+                <div id="view-reset-password" class="view-section">
+                    <form onsubmit="handleResetPassword(event)">
+                        <div style="text-align: center; margin-bottom: 24px; padding: 16px; background: var(--bg-offwhite); border: 1px solid var(--border-light);">
+                            <p style="font-size: 0.9rem; font-weight: 600; color: var(--forest-green);">Code sent to your email.</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Please check your inbox and spam folders.</p>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">6-Digit Secure Code</label>
+                            <input type="text" id="resetOTP" required pattern="[0-9]{6}" maxlength="6" class="premium-input" placeholder="••••••">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">New Password</label>
+                            <input type="password" id="newPassword" required minlength="6" class="premium-input" placeholder="Create a new strong password">
+                        </div>
+                        
+                        <div style="margin-top: 32px;">
+                            <button type="submit" id="btnResetPass" class="btn btn-primary">
+                                <span id="textResetPass">Confirm & Update Password</span>
+                                <i id="spinResetPass" class="fa-solid fa-circle-notch fa-spin" style="display: none;"></i>
+                            </button>
+                            <button type="button" onclick="switchView('view-login')" class="btn btn-outline">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer Branding -->
+                <div class="footer-branding">
+                    <p>Engineered & Developed By</p>
+                    <a href="https://xetatechsolutions.com/" target="_blank">
+                        <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Tech Solutions">
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side: Visual Banner -->
+        <section class="visual-section">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791625706/Plant_Pathology_Microscopy_Collage_q0im4g.png" alt="Plant Pathology Collage" class="visual-bg">
+            <div class="visual-overlay">
                 <div>
-                    <div class="font-black text-2xl text-slate-900 leading-none">5,000+</div>
-                    <div class="text-[11px] font-bold uppercase tracking-wide text-slate-500 mt-1">Active Scholars</div>
+                    <span class="visual-badge">Premium Learning Ecosystem</span>
+                    <h1 class="visual-quote">Master Plant Pathology.<br>Build Your Research Future.</h1>
+                    <p class="visual-author">ASRB-NET, ARS, SMS, STO & Ph.D</p>
                 </div>
             </div>
-
-            <div class="absolute top-1/3 -right-6 w-16 h-16 bg-theme-primary rounded-2xl shadow-xl shadow-orange-500/40 flex items-center justify-center text-white text-2xl z-20 animate-bounce" style="animation-duration: 3s;">
-                <i class="fa-solid fa-award"></i>
-            </div>
-        </div>
+        </section>
 
     </main>
 
     <script>
-        const API_BASE_URL = '/api'; // Update for production
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' ? 'http://localhost:5000/api' : '/api';
         let currentRole = 'student';
 
         // Check authentication status on load
@@ -284,7 +406,7 @@
             const expiredError = urlParams.get('error');
             
             if (expiredError === 'session_conflict') {
-                showAlert('You have been logged out because your account was accessed from another device.');
+                showAlert('You have been logged out because your account was accessed from another device.', 'error');
                 localStorage.clear();
             } else {
                 const token = localStorage.getItem('token');
@@ -326,17 +448,27 @@
 
         function showAlert(msg, type = 'error') {
             const el = document.getElementById('alert-message');
-            el.innerHTML = msg;
-            el.className = `mb-6 p-4 text-[13px] font-bold rounded-xl border text-left flex items-start gap-3 transition-all bg-white shadow-sm ${
-                type === 'error' ? 'text-red-700 border-red-200 bg-red-50' : 'text-emerald-700 border-emerald-200 bg-emerald-50'
-            }`;
             
-            const icon = type === 'error' ? '<i class="fa-solid fa-triangle-exclamation text-lg mt-0.5"></i>' : '<i class="fa-solid fa-circle-check text-lg mt-0.5"></i>';
-            el.innerHTML = `${icon} <span>${msg}</span>`;
-            el.classList.remove('hidden');
+            // Clean up old classes
+            el.className = 'alert-box';
+            
+            // Apply new styling
+            if(type === 'error') {
+                el.classList.add('alert-error');
+                el.innerHTML = `<i class="fa-solid fa-triangle-exclamation alert-icon"></i> <span>${msg}</span>`;
+            } else {
+                el.classList.add('alert-success');
+                el.innerHTML = `<i class="fa-solid fa-circle-check alert-icon"></i> <span>${msg}</span>`;
+            }
+            
+            el.classList.add('active');
         }
 
-        function hideAlert() { document.getElementById('alert-message').classList.add('hidden'); }
+        function hideAlert() { 
+            const el = document.getElementById('alert-message');
+            el.classList.remove('active');
+            setTimeout(() => { el.className = 'alert-box'; }, 300); // Wait for transition
+        }
 
         function switchView(viewId) {
             hideAlert();
@@ -348,17 +480,17 @@
             
             if(viewId === 'view-login') {
                 title.innerText = 'Welcome Back';
-                sub.innerText = 'Sign in to your account';
-                sub.classList.remove('hidden');
+                sub.innerText = 'Sign in to continue your academic journey.';
+                sub.style.display = 'block';
             } else if(viewId === 'view-forgot-email') {
                 title.innerText = 'Password Recovery';
-                sub.classList.add('hidden');
+                sub.style.display = 'none';
             } else if(viewId === 'view-reset-password') {
                 title.innerText = 'Create New Password';
-                sub.classList.add('hidden');
+                sub.style.display = 'none';
             } else if (viewId === 'view-force-login') {
                 title.innerText = 'Session Alert';
-                sub.classList.add('hidden');
+                sub.style.display = 'none';
             }
         }
 
@@ -373,14 +505,14 @@
             hideAlert();
 
             if(role === 'student') {
-                btnS.className = "flex-1 text-sm font-bold text-slate-800 bg-white shadow-sm rounded-lg py-2 transition-all";
-                btnA.className = "flex-1 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-lg py-2 transition-all bg-transparent shadow-none";
+                btnS.classList.add('active');
+                btnA.classList.remove('active');
                 emailInput.placeholder = "student@institute.edu";
                 resetEmail.placeholder = "student@institute.edu";
                 regLink.style.display = 'block';
             } else {
-                btnA.className = "flex-1 text-sm font-bold text-slate-800 bg-white shadow-sm rounded-lg py-2 transition-all";
-                btnS.className = "flex-1 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-lg py-2 transition-all bg-transparent shadow-none";
+                btnA.classList.add('active');
+                btnS.classList.remove('active');
                 emailInput.placeholder = "admin@geekyresearcher.com";
                 resetEmail.placeholder = "admin@geekyresearcher.com";
                 regLink.style.display = 'none';
@@ -406,7 +538,7 @@
             hideAlert();
             submitBtn.classList.add('btn-disabled');
             btnText.innerText = forceLogin ? 'Terminating Session...' : 'Authenticating...';
-            btnSpinner.classList.remove('hidden');
+            btnSpinner.style.display = 'inline-block';
 
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -437,12 +569,12 @@
                     localStorage.setItem('pendingEmail', email);
                     window.location.href = 'payment-pending.html';
                 } else {
-                    showAlert(error.message);
+                    showAlert(error.message, 'error');
                 }
             } finally {
                 submitBtn.classList.remove('btn-disabled');
                 btnText.innerText = originalText;
-                btnSpinner.classList.add('hidden');
+                btnSpinner.style.display = 'none';
             }
         }
 
@@ -456,10 +588,9 @@
             hideAlert();
             btn.classList.add('btn-disabled');
             txt.innerText = 'Requesting...';
-            spin.classList.remove('hidden');
+            spin.style.display = 'inline-block';
 
             try {
-                // Notice: Role is NOT required. Backend automatically finds account by email!
                 const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -472,11 +603,11 @@
                 showAlert(data.message, 'success');
                 setTimeout(() => switchView('view-reset-password'), 1500);
             } catch (error) {
-                showAlert(error.message);
+                showAlert(error.message, 'error');
             } finally {
                 btn.classList.remove('btn-disabled');
                 txt.innerText = 'Send Secure Code';
-                spin.classList.add('hidden');
+                spin.style.display = 'none';
             }
         }
 
@@ -493,7 +624,7 @@
             hideAlert();
             btn.classList.add('btn-disabled');
             txt.innerText = 'Processing...';
-            spin.classList.remove('hidden');
+            spin.style.display = 'inline-block';
 
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
@@ -509,11 +640,11 @@
                 document.getElementById('loginEmail').value = email;
                 setTimeout(() => { switchView('view-login'); }, 2000);
             } catch (error) {
-                showAlert(error.message);
+                showAlert(error.message, 'error');
             } finally {
                 btn.classList.remove('btn-disabled');
                 txt.innerText = 'Confirm & Update Password';
-                spin.classList.add('hidden');
+                spin.style.display = 'none';
             }
         }
     </script>
