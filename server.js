@@ -46,6 +46,7 @@ const TABLE_TESTS = process.env.TABLE_TESTS || 'Geeky_Tests';
 const TABLE_SCORES = process.env.TABLE_SCORES || 'Geeky_TestScores';
 const TABLE_PROGRESS = process.env.TABLE_PROGRESS || 'Geeky_Progress'; 
 const TABLE_TOKENS = process.env.TABLE_TOKENS || 'Geeky_Tokens'; 
+const TABLE_HOMEPAGE_COURSES = process.env.TABLE_HOMEPAGE_COURSES || 'Geeky_HomepageCourses';
 
 const SES_SOURCE_EMAIL = process.env.SES_SOURCE_EMAIL || 'admin@geekyresearcher.com';
 const S3_BUCKET = process.env.S3_BUCKET_NAME || 'geeky-researcher-assets';
@@ -1737,51 +1738,551 @@ app.get('/api/public/levels', async (req, res) => {
     }
 });
 
-app.get('/api/public/homepage-settings', async (req, res) => {
+/* ==========================================================================
+   HOMEPAGE COURSE CARDS API (Step 1 implementation)
+   ========================================================================== */
+
+
+
+// 1. GET Public Endpoint (Used by index.html to render the UI)
+app.get('/api/public/homepage-courses', async (req, res) => {
     try {
-        const result = await dynamoDB.get({ 
-            TableName: TABLE_SETTINGS, 
-            Key: { id: 'main_page_stats' } 
-        }).promise();
+        const result = await dynamoDB.scan({ TableName: TABLE_HOMEPAGE_COURSES }).promise();
+        let courses = (result.Items || [])
+            .filter(item => item.itemType === 'course')
+            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+        // SECURITY FIX: Sign the S3 image URLs so they bypass the "Forbidden" error
+        const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
         
-        // Return default values if table is empty
-        res.json(result.Item || {
-            ecosystem: { videos: '300+', daily: '75+', weekly: '15+', monthly: '4+', subject: '10+', model: '15+', ars: '45+' },
-            achievements: { net: '45+', arsMains: '30', arsInterview: '15' }
-        });
-    } catch (error) { 
-        // Fail gracefully for the frontend
-        res.json({ ecosystem: {}, achievements: {} }); 
-    }
+        courses = await Promise.all(courses.map(async (course) => {
+            if (course.imageUrl && course.imageUrl.startsWith(bucketPrefix)) {
+                try {
+                    const s3Key = decodeURIComponent(course.imageUrl.replace(bucketPrefix, ''));
+                    const urlParams = { Bucket: S3_BUCKET, Key: s3Key, Expires: 3600 }; // 1 hour access
+                    course.imageUrl = await s3.getSignedUrlPromise('getObject', urlParams);
+                } catch (err) {
+                    console.error("Failed to sign URL for course:", course.title);
+                }
+            }
+            return course;
+        }));
+
+        res.json(courses);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch courses.' }); }
 });
 
-// Update dynamic homepage settings (Admin Token required)
+
+app.post('/api/admin/homepage-courses', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { title, subtitle, price, oldPrice, duration, imageUrl, features } = req.body;
+        const newCourse = {
+            id: uuidv4(), itemType: 'course', title, subtitle, price,
+            oldPrice: oldPrice || null, duration, imageUrl, features: features || [],
+            createdAt: new Date().toISOString()
+        };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newCourse }).promise();
+        res.status(201).json({ message: 'Course created.', course: newCourse });
+    } catch (error) { res.status(500).json({ error: 'Failed to create course.' }); }
+});
+
+app.put('/api/admin/homepage-courses/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { title, subtitle, price, oldPrice, duration, imageUrl, features } = req.body;
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        if (!existing.Item || existing.Item.itemType !== 'course') return res.status(404).json({ error: 'Not found' });
+
+        if (imageUrl && existing.Item.imageUrl && existing.Item.imageUrl !== imageUrl) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.imageUrl.startsWith(bucketPrefix)) {
+                await deleteS3ObjectSafely(decodeURIComponent(existing.Item.imageUrl.replace(bucketPrefix, '')));
+            }
+        }
+
+        const updatedCourse = { ...existing.Item, title, subtitle, price, oldPrice, duration, features, imageUrl: imageUrl || existing.Item.imageUrl, updatedAt: new Date().toISOString() };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: updatedCourse }).promise();
+        res.json({ message: 'Course updated.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to update course.' }); }
+});
+
+app.delete('/api/admin/homepage-courses/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        if (existing.Item && existing.Item.imageUrl) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.imageUrl.startsWith(bucketPrefix)) await deleteS3ObjectSafely(decodeURIComponent(existing.Item.imageUrl.replace(bucketPrefix, '')));
+        }
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        res.json({ message: 'Course deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete.' }); }
+});
+
+// --------------------------------------------------------------------------
+// 2. SYLLABUS UNITS (itemType: 'syllabus')
+// --------------------------------------------------------------------------
+app.get('/api/public/syllabus', async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({ TableName: TABLE_HOMEPAGE_COURSES }).promise();
+        const syllabus = (result.Items || [])
+            .filter(item => item.itemType === 'syllabus')
+            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        res.json(syllabus);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch syllabus.' }); }
+});
+
+app.post('/api/admin/syllabus', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { examName, unitTitle, duration, themeColor, chapters } = req.body;
+        const newUnit = {
+            id: uuidv4(), itemType: 'syllabus', 
+            examName: examName || 'General', // Added examName
+            unitTitle, duration, 
+            themeColor: themeColor || 'blue', chapters: chapters || [], createdAt: new Date().toISOString()
+        };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newUnit }).promise();
+        res.status(201).json({ message: 'Syllabus created' });
+    } catch (error) { res.status(500).json({ error: 'Failed to create syllabus.' }); }
+});
+
+app.put('/api/admin/syllabus/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { examName, unitTitle, duration, themeColor, chapters } = req.body;
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        if (!existing.Item || existing.Item.itemType !== 'syllabus') return res.status(404).json({ error: 'Not found' });
+
+        const updatedUnit = { ...existing.Item, examName, unitTitle, duration, themeColor, chapters, updatedAt: new Date().toISOString() };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: updatedUnit }).promise();
+        res.json({ message: 'Syllabus updated' });
+    } catch (error) { res.status(500).json({ error: 'Failed to update syllabus.' }); }
+});
+
+app.delete('/api/admin/syllabus/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        res.json({ message: 'Syllabus deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete.' }); }
+});
+
+app.get('/api/public/syllabus-pdf', async (req, res) => {
+    try {
+        const result = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: 'full_syllabus_pdf' } }).promise();
+        let pdfData = result.Item;
+        
+        if(pdfData && pdfData.url) {
+            const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (pdfData.url.startsWith(bucketPrefix)) {
+                try {
+                    const s3Key = decodeURIComponent(pdfData.url.replace(bucketPrefix, ''));
+                    pdfData.url = await s3.getSignedUrlPromise('getObject', { Bucket: S3_BUCKET, Key: s3Key, Expires: 3600 });
+                } catch (err) { console.error("URL Sign error", err); }
+            }
+        }
+        res.json(pdfData || { url: null });
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch PDF.' }); }
+});
+
+app.post('/api/admin/syllabus-pdf', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { url } = req.body;
+        
+        // Optional: Check if one exists and delete it from S3 first to save space
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: 'full_syllabus_pdf' } }).promise();
+        if (existing.Item && existing.Item.url && url !== existing.Item.url) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.url.startsWith(bucketPrefix)) await deleteS3ObjectSafely(decodeURIComponent(existing.Item.url.replace(bucketPrefix, '')));
+        }
+
+        await dynamoDB.put({ 
+            TableName: TABLE_HOMEPAGE_COURSES, 
+            Item: { id: 'full_syllabus_pdf', itemType: 'syllabus_pdf', url, updatedAt: new Date().toISOString() } 
+        }).promise();
+        
+        res.json({ message: 'Full Syllabus PDF uploaded.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to save PDF.' }); }
+});
+
+app.delete('/api/admin/syllabus-pdf', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: 'full_syllabus_pdf' } }).promise();
+        if (existing.Item && existing.Item.url) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.url.startsWith(bucketPrefix)) await deleteS3ObjectSafely(decodeURIComponent(existing.Item.url.replace(bucketPrefix, '')));
+        }
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: 'full_syllabus_pdf' } }).promise();
+        res.json({ message: 'Full Syllabus PDF deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete PDF.' }); }
+});
+
+// --------------------------------------------------------------------------
+// 3. HOMEPAGE STATS & SETTINGS (itemType: 'setting', id: 'main_page_stats')
+// --------------------------------------------------------------------------
+app.get('/api/public/homepage-settings', async (req, res) => {
+    try {
+        const result = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: 'main_page_stats' } }).promise();
+        res.json(result.Item || {
+            ecosystem: { videos: '300+', daily: '75+', weekly: '15+', monthly: '4+', subject: '10+', model: '15+' },
+            achievements: { net: '45+', arsMains: '30+', arsInterview: '15+' }
+        });
+    } catch (error) { res.json({ ecosystem: {}, achievements: {} }); }
+});
+
 app.put('/api/admin/homepage-settings', authenticateToken, isAdmin, async (req, res) => {
     try {
         const { ecosystem, achievements } = req.body;
-        
         await dynamoDB.put({
-            TableName: TABLE_SETTINGS,
-            Item: {
-                id: 'main_page_stats', // Single row configuration
-                ecosystem: ecosystem || {},
-                achievements: achievements || {},
-                updatedAt: new Date().toISOString()
+            TableName: TABLE_HOMEPAGE_COURSES,
+            Item: { id: 'main_page_stats', itemType: 'setting', ecosystem: ecosystem || {}, achievements: achievements || {}, updatedAt: new Date().toISOString() }
+        }).promise();
+        res.json({ message: 'Settings updated' });
+    } catch (error) { res.status(500).json({ error: 'Failed to update settings.' }); }
+});
+
+// --------------------------------------------------------------------------
+// 4. FREE RESOURCES (itemType: 'resource')
+// --------------------------------------------------------------------------
+app.get('/api/public/free-resources', async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({ TableName: TABLE_HOMEPAGE_COURSES }).promise();
+        const items = (result.Items || []).filter(item => item.itemType === 'resource');
+        
+        const documents = items.filter(i => i.type === 'pdf' || i.type === 'ppt' || i.type === 'pptx');
+        const videos = items.filter(i => i.type === 'video');
+        res.json({ documents, videos });
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch free resources.' }); }
+});
+
+app.post('/api/admin/free-resources', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { title, type, url } = req.body;
+        const newResource = { id: uuidv4(), itemType: 'resource', title, type, url, createdAt: new Date().toISOString() };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newResource }).promise();
+        res.status(201).json({ message: 'Resource created.', resource: newResource });
+    } catch (error) { res.status(500).json({ error: 'Failed to create resource.' }); }
+});
+
+app.delete('/api/admin/free-resources/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        res.json({ message: 'Resource deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete.' }); }
+});
+
+// --------------------------------------------------------------------------
+// 5. RECOMMENDED BOOKS (itemType: 'book')
+// --------------------------------------------------------------------------
+app.get('/api/public/books', async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({ TableName: TABLE_HOMEPAGE_COURSES }).promise();
+        let books = (result.Items || []).filter(item => item.itemType === 'book').sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+        const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+        books = await Promise.all(books.map(async (book) => {
+            if (book.imageUrl && book.imageUrl.startsWith(bucketPrefix)) {
+                try {
+                    const s3Key = decodeURIComponent(book.imageUrl.replace(bucketPrefix, ''));
+                    book.imageUrl = await s3.getSignedUrlPromise('getObject', { Bucket: S3_BUCKET, Key: s3Key, Expires: 3600 });
+                } catch (err) { }
+            }
+            return book;
+        }));
+        res.json(books);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch books.' }); }
+});
+
+app.post('/api/admin/books', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { title, imageUrl } = req.body;
+        const newBook = { id: uuidv4(), itemType: 'book', title, imageUrl, createdAt: new Date().toISOString() };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newBook }).promise();
+        res.status(201).json({ message: 'Book added.', book: newBook });
+    } catch (error) { res.status(500).json({ error: 'Failed to add book.' }); }
+});
+
+app.delete('/api/admin/books/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        if (existing.Item && existing.Item.imageUrl) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.imageUrl.startsWith(bucketPrefix)) await deleteS3ObjectSafely(decodeURIComponent(existing.Item.imageUrl.replace(bucketPrefix, '')));
+        }
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        res.json({ message: 'Book deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete book.' }); }
+});
+
+// --------------------------------------------------------------------------
+// 6. ACHIEVEMENTS / BANNERS (itemType: 'achievement')
+// --------------------------------------------------------------------------
+app.get('/api/public/achievements', async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({ TableName: TABLE_HOMEPAGE_COURSES }).promise();
+        let achievements = (result.Items || []).filter(item => item.itemType === 'achievement').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+        achievements = await Promise.all(achievements.map(async (ach) => {
+            if (ach.imageUrl && ach.imageUrl.startsWith(bucketPrefix)) {
+                try {
+                    const s3Key = decodeURIComponent(ach.imageUrl.replace(bucketPrefix, ''));
+                    ach.imageUrl = await s3.getSignedUrlPromise('getObject', { Bucket: S3_BUCKET, Key: s3Key, Expires: 3600 });
+                } catch (err) { }
+            }
+            return ach;
+        }));
+        res.json(achievements);
+    } catch (error) { res.status(500).json({ error: 'Failed to fetch achievements.' }); }
+});
+
+app.post('/api/admin/achievements', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { category, title, description, imageUrl } = req.body;
+        const newAchievement = { id: uuidv4(), itemType: 'achievement', category, title, description, imageUrl, createdAt: new Date().toISOString() };
+        await dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newAchievement }).promise();
+        res.status(201).json({ message: 'Achievement banner added.', achievement: newAchievement });
+    } catch (error) { res.status(500).json({ error: 'Failed to add achievement.' }); }
+});
+
+app.delete('/api/admin/achievements/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        if (existing.Item && existing.Item.imageUrl) {
+            const bucketPrefix = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+            if (existing.Item.imageUrl.startsWith(bucketPrefix)) await deleteS3ObjectSafely(decodeURIComponent(existing.Item.imageUrl.replace(bucketPrefix, '')));
+        }
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id: req.params.id } }).promise();
+        res.json({ message: 'Achievement deleted.' });
+    } catch (error) { res.status(500).json({ error: 'Failed to delete achievement.' }); }
+});
+
+// NEW: Bulk Upload Endpoint for Achievements
+app.post('/api/admin/achievements/bulk', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { achievements } = req.body;
+        if (!Array.isArray(achievements)) return res.status(400).json({error: 'Expected an array of achievements.'});
+        
+        const putPromises = achievements.map(ach => {
+            const newAch = { 
+                id: uuidv4(), 
+                itemType: 'achievement', 
+                category: ach.category || 'General', 
+                title: ach.title || '', 
+                description: ach.description || '', 
+                imageUrl: ach.imageUrl, 
+                createdAt: new Date().toISOString() 
+            };
+            return dynamoDB.put({ TableName: TABLE_HOMEPAGE_COURSES, Item: newAch }).promise();
+        });
+        
+        await Promise.all(putPromises);
+        res.status(201).json({ message: `${achievements.length} banners added successfully.` });
+    } catch (error) { 
+        console.error("Bulk upload error:", error);
+        res.status(500).json({ error: 'Failed to add achievements in bulk.' }); 
+    }
+});
+/* ==========================================================================
+   FREE RESOURCES API (ADMIN MULTIPART UPLOADS)
+   ========================================================================== */
+
+// 1. Fetch All (Using SCAN to avoid Sort Key crashes on HomepageCourses table)
+app.get('/api/admin/free-resources/all', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({
+            TableName: TABLE_HOMEPAGE_COURSES,
+            FilterExpression: 'itemType = :t1 OR itemType = :t2',
+            ExpressionAttributeValues: { 
+                ':t1': 'free_resource_folder',
+                ':t2': 'free_resource_file'
             }
         }).promise();
         
-        res.json({ message: 'Homepage settings updated successfully' });
+        const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+        
+        const items = await Promise.all((result.Items || []).map(async (item) => {
+            if (item.url && item.url.startsWith(bucketPrefix)) {
+                try {
+                    const s3Key = decodeURIComponent(item.url.replace(bucketPrefix, ''));
+                    item.url = await s3.getSignedUrlPromise('getObject', { Bucket: S3_BUCKET, Key: s3Key, Expires: 3600 });
+                } catch (e) { console.error(e); }
+            }
+            return item;
+        }));
+
+        res.json(items);
     } catch (error) {
-        console.error("Homepage settings update error:", error);
-        // Hint for AWS setup
-        if (error.code === 'ResourceNotFoundException') {
-            return res.status(500).json({ error: `Table '${TABLE_SETTINGS}' does not exist in AWS DynamoDB. Please create it with 'id' as the Primary Key.` });
-        }
-        res.status(500).json({ error: 'Failed to update settings' });
+        console.error("Fetch resources error:", error);
+        res.status(500).json({ error: "Could not retrieve resources" });
     }
 });
 
+// NEW: Bulk Upload Endpoint for Achievements
+app.post('/api/admin/achievements/bulk', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { id, name } = req.body;
+        if (!name) return res.status(400).json({ error: "Folder name is required" });
 
+        const folderId = id || uuidv4();
+        await dynamoDB.put({
+            TableName: TABLE_HOMEPAGE_COURSES,
+            Item: {
+                id: folderId, // Primary Key (Unique UUID)
+                itemType: 'free_resource_folder',
+                type: 'folder',
+                name: name,
+                createdAt: new Date().toISOString()
+            }
+        }).promise();
+        res.status(201).json({ message: "Folder saved", id: folderId });
+    } catch (error) {
+        res.status(500).json({ error: "Could not save folder" });
+    }
+});
+
+// 3. Initiate Multipart Upload
+app.post('/api/admin/free-resources/upload/start', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { fileName, fileType } = req.body;
+        const fileKey = `free-resources/${uuidv4()}-${fileName.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
+
+        const uploadParams = { Bucket: S3_BUCKET, Key: fileKey, ContentType: fileType };
+        const upload = await s3.createMultipartUpload(uploadParams).promise();
+        res.status(200).json({ uploadId: upload.UploadId, key: upload.Key });
+    } catch (error) {
+        console.error("Start upload error:", error);
+        res.status(500).json({ error: "Failed to start upload" });
+    }
+});
+
+// 4. Get Presigned URL for Chunk
+app.post('/api/admin/free-resources/upload/presign', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { key, uploadId, partNumber } = req.body;
+        const params = { Bucket: S3_BUCKET, Key: key, PartNumber: partNumber, UploadId: uploadId, Expires: 3600 };
+        const presignedUrl = await s3.getSignedUrlPromise('uploadPart', params);
+        res.status(200).json({ presignedUrl });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to presign chunk" });
+    }
+});
+
+// 5. Complete Multipart Upload
+app.post('/api/admin/free-resources/upload/complete', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { key, uploadId, parts } = req.body;
+        const formattedParts = parts.map(p => ({ PartNumber: parseInt(p.PartNumber), ETag: String(p.ETag) }));
+        const params = { Bucket: S3_BUCKET, Key: key, MultipartUpload: { Parts: formattedParts }, UploadId: uploadId };
+        
+        await s3.completeMultipartUpload(params).promise();
+        const fileUrl = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+        res.status(200).json({ fileUrl, s3Key: key });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to complete upload" });
+    }
+});
+
+// 6. Save or Update File Metadata
+app.post('/api/admin/free-resources/file', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { id, folderId, title, resourceType, url, s3Key, size } = req.body;
+        if (!folderId || !title || (!url && !id) || !resourceType) return res.status(400).json({ error: "Missing fields" });
+
+        const fileId = id || uuidv4();
+        
+        if (id && s3Key) {
+            const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id } }).promise();
+            if (existing.Item && existing.Item.s3Key && existing.Item.s3Key !== s3Key) {
+                await deleteS3ObjectSafely(existing.Item.s3Key);
+            }
+        }
+
+        let createdAt = new Date().toISOString();
+        let finalUrl = url;
+        let finalS3Key = s3Key;
+
+        if (id) {
+             const existing = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id } }).promise();
+             if (existing.Item) {
+                 if(existing.Item.createdAt) createdAt = existing.Item.createdAt;
+                 if(!url) finalUrl = existing.Item.url; 
+                 if(!s3Key) finalS3Key = existing.Item.s3Key;
+             }
+        }
+
+        await dynamoDB.put({
+            TableName: TABLE_HOMEPAGE_COURSES,
+            Item: {
+                id: fileId, // Primary Key (Unique UUID)
+                itemType: 'free_resource_file',
+                type: 'file',
+                folderId, title, resourceType, 
+                url: finalUrl, s3Key: finalS3Key, size: size || 0,
+                createdAt: createdAt, updatedAt: new Date().toISOString()
+            }
+        }).promise();
+
+        res.status(201).json({ message: "File saved", id: fileId });
+    } catch (error) {
+        res.status(500).json({ error: "Could not save file details" });
+    }
+});
+
+// 7. Delete Folder or File
+app.delete('/api/admin/free-resources/:type/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const { type, id } = req.params;
+        
+        if (type === 'file') {
+            const fileData = await dynamoDB.get({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id } }).promise();
+            if (fileData.Item && fileData.Item.s3Key) {
+                await deleteS3ObjectSafely(fileData.Item.s3Key);
+            }
+        }
+        
+        await dynamoDB.delete({ TableName: TABLE_HOMEPAGE_COURSES, Key: { id } }).promise();
+        res.status(200).json({ message: "Deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Could not delete item" });
+    }
+});
+
+// 8. Public Endpoint for Frontend Viewer
+app.get('/api/public/free-resources-tree', async (req, res) => {
+    try {
+        const result = await dynamoDB.scan({
+            TableName: TABLE_HOMEPAGE_COURSES,
+            FilterExpression: 'itemType = :t1 OR itemType = :t2',
+            ExpressionAttributeValues: { ':t1': 'free_resource_folder', ':t2': 'free_resource_file' }
+        }).promise();
+
+        const items = result.Items || [];
+        const bucketPrefix = `https://${S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+
+        const folders = items.filter(i => i.type === 'folder').map(f => ({
+            id: f.id, name: f.name, items: []
+        }));
+
+        const files = items.filter(i => i.type === 'file').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+        for (const file of files) {
+            const folder = folders.find(f => f.id === file.folderId);
+            if (folder) {
+                let secureUrl = file.url;
+                if (file.s3Key) {
+                    try {
+                        secureUrl = await s3.getSignedUrlPromise('getObject', { Bucket: S3_BUCKET, Key: file.s3Key, Expires: 7200 }); 
+                    } catch (e) {}
+                }
+
+                folder.items.push({
+                    id: file.id, title: file.title, type: file.resourceType, url: secureUrl
+                });
+            }
+        }
+
+        res.status(200).json(folders);
+    } catch (error) {
+        res.status(500).json({ error: "Could not retrieve tree" });
+    }
+});
 /* ==========================================================================
    GLOBAL ERROR HANDLER
    ========================================================================== */
