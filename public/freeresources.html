@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Geeky Researcher | Free Demo Materials</title>
+    
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF.js Library for Secure Canvas Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    fontFamily: { 
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['Lora', 'serif']
+                    }, 
+                    colors: { 
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
+                        surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' } 
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
+                        'card': '0 2px 12px rgba(0,0,0,0.03)',
+                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideInRight: { '0%': { transform: 'translateX(20px)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
+                    }
+                } 
+            } 
+        }
+    </script>
+    
+    <style>
+        body { 
+            background-color: #f8fafc; 
+            color: #334155; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .panel { background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .tree-node { transition: all 0.2s ease; border-radius: 0.75rem; }
+        .tree-node:active { transform: scale(0.98); }
+        .tree-node:hover { background: #f8fafc; }
+        .tree-node.active-node { background: #f0fdf4; color: #16a34a; font-weight: 600; border: 1px solid #bbf7d0; }
+
+        /* THEME STYLES */
+        .reader-paper { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; border-radius: 1.25rem; }
+        .pdf-page-canvas, iframe, #main-video-player { transition: filter 0.4s ease; transform: translateZ(0); }
+        .pdf-page-canvas { display: block; }
+        
+        .theme-light { background-color: #ffffff; color: #334155; border: 1px solid #e2e8f0; }
+        .theme-light .pdf-page-canvas, .theme-light iframe { filter: none; }
+        .video-theme-light { filter: none; }
+        
+        .theme-sepia { background-color: #FBF0D9; color: #5F4B32; border: 1px solid #EADAB8; }
+        .theme-sepia .pdf-page-canvas, .theme-sepia iframe { filter: sepia(0.4) contrast(0.95) brightness(0.95); }
+        .video-theme-sepia { filter: sepia(0.4) contrast(0.95) brightness(0.9); }
+        
+        .theme-sage { background-color: #E6EFE9; color: #2C4C3B; border: 1px solid #C4D9CD; }
+        .theme-sage .pdf-page-canvas, .theme-sage iframe { filter: sepia(0.2) hue-rotate(90deg) contrast(0.95) brightness(0.95); }
+        .video-theme-sage { filter: sepia(0.15) hue-rotate(15deg) brightness(0.9) contrast(0.9); }
+
+        .theme-dark { background-color: #0f172a; color: #94a3b8; border: 1px solid #1e293b; }
+        .theme-dark .pdf-page-canvas, .theme-dark iframe { filter: invert(0.92) hue-rotate(180deg) contrast(1.05) brightness(0.9); }
+        .video-theme-dark { filter: brightness(0.7) contrast(1.05); }
+
+        .theme-bluelight { background-color: #FFF3E0; color: #4E342E; border: 1px solid #FFE0B2; }
+        .video-theme-bluelight { filter: sepia(0.5) hue-rotate(-15deg) contrast(0.95) brightness(0.85); }
+
+        .theme-eink { background-color: #F5F5F5; color: #333333; border: 1px solid #E0E0E0; }
+        .video-theme-eink { filter: grayscale(100%) contrast(1.1) brightness(0.9); }
+
+        .theme-hcdark { background-color: #000000; color: #FFFF00; border: 1px solid #333333; }
+        .video-theme-hcdark { filter: invert(0.9) grayscale(100%) contrast(1.5); }
+
+        .speed-btn.active { background-color: #10b981; color: #ffffff; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
+        .video-container-wrapper { background: #000000; border-radius: 1rem; overflow: hidden; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); width: 100%; transition: all 0.4s ease; }
+
+        body.expanded-mode header { display: none !important; }
+        body.expanded-mode #syllabus-panel { display: none !important; }
+        body.expanded-mode #workspace { padding: 0 !important; gap: 0 !important; }
+        body.expanded-mode #reader-panel { border-radius: 0 !important; border: none !important; margin: 0 !important; max-width: 100%; height: 100vh; }
+        body.expanded-mode #reader-viewport { padding-top: 4.5rem; padding-bottom: 2rem; max-width: 100%; }
+        body.expanded-mode .video-container-wrapper { border-radius: 0; max-height: calc(100vh - 100px); height: calc(100vh - 100px); }
+        body.expanded-mode #doc-ui { max-width: 100%; }
+        body.expanded-mode #content-reader { max-width: 100%; border-radius: 0; min-height: 100vh; }
+
+        @media (max-width: 1023px) {
+            .mobile-hide { display: none !important; }
+            .video-container-wrapper { border-radius: 0; box-shadow: none; border-bottom: 1px solid #334155; }
+        }
+    </style>
+</head>
+
+<body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
+
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50">
+        
+        <header class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center glass sticky top-0 border-b border-surface-200/50 shrink-0">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="w-10 h-10 rounded-xl flex items-center justify-center text-surface-500 hover:bg-surface-100 transition-colors shadow-sm bg-white border border-surface-200">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div class="flex items-center gap-3 ml-2">
+                    <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm hidden sm:block">
+                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-surface-900 font-bold tracking-tight text-[15px]">Geeky Researcher</span>
+                        <span class="text-brand-600 text-[10px] font-bold tracking-wider uppercase">Free Demo Resources</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="workspace" class="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 p-0 lg:p-6 overflow-hidden transition-all duration-300">
+            
+            <!-- PANEL 1: SYLLABUS -->
+            <div id="syllabus-panel" class="panel w-full lg:w-[340px] flex flex-col h-full shrink-0 overflow-hidden shadow-none lg:shadow-card border-x-0 border-t-0 rounded-none lg:rounded-xl z-10 transition-all duration-300">
+                <div class="px-5 py-4 border-b border-surface-100 flex justify-between items-center bg-surface-50/50">
+                    <h3 class="font-bold text-surface-900 text-[16px] tracking-tight">Demo Materials</h3>
+                    <span class="text-[10px] font-bold bg-brand-50 text-brand-600 px-2 py-1 rounded border border-brand-100 shadow-sm"><i class="fa-solid fa-gift"></i> Public</span>
+                </div>
+                <div id="tree-container" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white hide-scrollbar">
+                    <div class="text-center text-surface-400 py-8 text-sm font-medium flex flex-col items-center">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> Loading materials...
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 2: UNIFIED READER/VIEWER -->
+            <div id="reader-panel" class="mobile-hide panel flex-1 flex flex-col h-full relative overflow-hidden shadow-none lg:shadow-card border-none lg:border-solid rounded-none lg:rounded-xl bg-surface-50/30 lg:bg-white transition-all duration-300">
+                
+                <!-- Floating Controls -->
+                <div class="absolute top-2 lg:top-4 inset-x-2 lg:inset-x-6 z-50 flex items-center justify-between pointer-events-none drop-shadow-sm">
+                    
+                    <div class="flex items-center gap-2 pointer-events-auto">
+                        <button type="button" onclick="showMobileSyllabus()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/95 backdrop-blur-xl border border-surface-200 text-surface-600 shadow-sm">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <div class="bg-white/90 backdrop-blur-xl border border-surface-200 shadow-sm rounded-xl px-3 lg:px-4 py-2 flex items-center gap-2 text-surface-600 text-[12px] lg:text-[13px] font-semibold truncate max-w-[150px] sm:max-w-[250px] lg:max-w-[300px]">
+                            <span id="reader-breadcrumbs" class="truncate">Select a resource...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Theme & Tools -->
+                    <div class="flex items-center gap-2 pointer-events-auto">
+                        <div class="relative dropdown-wrapper">
+                            <button type="button" onclick="toggleThemeMenu(event)" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
+                                <i class="fa-solid fa-eye text-brand-500" id="current-theme-icon"></i> 
+                                <span class="hidden lg:inline text-[13px] font-semibold">Eye Care</span>
+                            </button>
+                            
+                            <div id="theme-menu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-surface-200 rounded-2xl shadow-float overflow-hidden py-1.5 z-[60] transform origin-top-right transition-all">
+                                <div class="px-4 py-2 mb-1 border-b border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Environment</div>
+                                <button type="button" onclick="setTheme('light')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-surface-100 flex items-center justify-center border border-surface-200"><i class="fa-solid fa-sun text-[12px] text-surface-500"></i></div> Daylight
+                                </button>
+                                <button type="button" onclick="setTheme('sepia')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center border border-amber-200"><i class="fa-solid fa-book-bookmark text-[12px] text-amber-700"></i></div> Warm Sepia
+                                </button>
+                                <button type="button" onclick="setTheme('sage')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center border border-emerald-200"><i class="fa-solid fa-leaf text-[12px] text-emerald-700"></i></div> Soft Sage
+                                </button>
+                                <button type="button" onclick="setTheme('dark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center border border-slate-700"><i class="fa-solid fa-moon text-[12px] text-slate-300"></i></div> Night Slate
+                                </button>
+                                <div class="px-4 py-2 mt-1 mb-1 border-y border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Advanced Protection</div>
+                                <button type="button" onclick="setTheme('bluelight')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-orange-100 flex items-center justify-center border border-orange-200"><i class="fa-solid fa-glasses text-[12px] text-orange-700"></i></div> Blue Light Shield
+                                </button>
+                                <button type="button" onclick="setTheme('eink')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-gray-200 flex items-center justify-center border border-gray-300"><i class="fa-solid fa-tablet-screen-button text-[12px] text-gray-700"></i></div> E-Ink Grayscale
+                                </button>
+                                <button type="button" onclick="setTheme('hcdark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
+                                    <div class="w-6 h-6 rounded-md bg-black flex items-center justify-center border border-gray-700"><i class="fa-solid fa-circle-half-stroke text-[12px] text-yellow-400"></i></div> High Contrast
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
+                            <i class="fa-solid fa-expand text-brand-500" id="fullscreen-icon"></i> 
+                            <span class="hidden lg:inline text-[13px] font-semibold" id="fullscreen-text">Expand</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Floating Zoom Controls (Documents Only) -->
+                <div id="zoom-controls" class="hidden absolute bottom-8 right-8 z-40 bg-white/95 backdrop-blur-xl border border-surface-200 shadow-float rounded-full flex items-center p-1.5 transition-all">
+                    <button type="button" onclick="changeZoom(-0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-minus text-[14px]"></i></button>
+                    <span id="zoom-level-text" class="text-[12px] font-bold text-surface-700 w-12 text-center font-mono">100%</span>
+                    <button type="button" onclick="changeZoom(0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-plus text-[14px]"></i></button>
+                </div>
+
+                <!-- Sticky Reading Progress -->
+                <div class="absolute top-0 left-0 w-full h-[3px] bg-transparent z-40">
+                    <div id="reading-progress" class="h-full bg-brand-500 w-0 transition-all duration-150 rounded-r-full shadow-[0_0_8px_#22c55e]"></div>
+                </div>
+
+                <div id="reader-viewport" class="flex-1 overflow-y-auto w-full relative pt-16 lg:pt-24 pb-8 lg:pb-12 px-2 lg:px-8 scroll-smooth hide-scrollbar lg:bg-transparent flex flex-col items-center">
+                    
+                    <div id="placeholder" class="m-auto text-surface-400 flex flex-col items-center p-6 text-center mt-32">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-surface-200">
+                            <i class="fa-solid fa-book-open-reader text-3xl text-surface-300"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-surface-900 mb-1">Welcome to Demo Resources</h2>
+                        <p class="text-[13px] font-medium max-w-xs text-surface-500">Select a file from the left to view our teaching methodology.</p>
+                    </div>
+
+                    <!-- Video UI Container -->
+                    <div id="video-ui" class="hidden w-full max-w-5xl mx-auto flex-col gap-4">
+                        <div class="video-container-wrapper aspect-video flex items-center justify-center group w-full mx-auto relative">
+                            <video id="main-video-player" preload="metadata" playsinline class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload"></video>
+                        </div>
+                        <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-3 px-3 lg:px-0 lg:py-1 bg-surface-50/50 lg:bg-white/50 rounded-none lg:rounded-2xl border-b lg:border border-surface-200 backdrop-blur-sm">
+                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-surface-200 shrink-0 shadow-sm">
+                                <span class="hidden sm:inline text-[10px] font-bold text-surface-400 uppercase tracking-widest px-2"><i class="fa-solid fa-gauge-high mr-1 text-brand-500"></i> Speed</span>
+                                <button onclick="setSpeed(0.75, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">0.75x</button>
+                                <button onclick="setSpeed(1, this)" class="speed-btn active px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.0x</button>
+                                <button onclick="setSpeed(1.25, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.25x</button>
+                                <button onclick="setSpeed(1.5, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.5x</button>
+                            </div>
+                            <button onclick="skipVideo(-10)" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-rotate-left"></i> 10s</button>
+                            <button onclick="skipVideo(10)" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-rotate-right"></i> 10s</button>
+                            <button onclick="togglePip()" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-clone text-brand-500"></i> PiP</button>
+                        </div>
+                    </div>
+
+                    <!-- Document UI Container -->
+                    <div id="doc-ui" class="hidden w-full max-w-6xl mx-auto flex-col">
+                        <div id="content-reader" class="reader-paper theme-light p-2 sm:p-4 lg:p-6 w-full min-h-[85vh] h-full flex flex-col relative shadow-sm lg:shadow-card bg-white">
+                            <!-- Dynamic Content Rendered Here -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE_URL = '/api';
+        let allResources = [];
+        let currentZoom = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTheme(localStorage.getItem('reader-theme') || 'light');
+            fetchResources();
+            initReadingProgress();
+        });
+
+        function showMobileReader() {
+            if(window.innerWidth < 1024) {
+                document.getElementById('syllabus-panel').classList.add('mobile-hide');
+                document.getElementById('reader-panel').classList.remove('mobile-hide');
+                window.scrollTo(0,0);
+            }
+        }
+        function showMobileSyllabus() {
+            if(window.innerWidth < 1024) {
+                document.getElementById('syllabus-panel').classList.remove('mobile-hide');
+                document.getElementById('reader-panel').classList.add('mobile-hide');
+                const vid = document.getElementById('main-video-player'); if(vid && !document.pictureInPictureElement) vid.pause();
+            }
+        }
+        window.addEventListener('resize', () => {
+            if(window.innerWidth >= 1024) {
+                document.getElementById('syllabus-panel').classList.remove('mobile-hide');
+                document.getElementById('reader-panel').classList.remove('mobile-hide');
+            }
+        });
+
+        function toggleThemeMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('theme-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden'); menu.style.opacity = 0; menu.style.transform = 'translateY(-10px) scale(0.95)';
+                requestAnimationFrame(() => {
+                    menu.style.transition = 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'; menu.style.opacity = 1; menu.style.transform = 'translateY(0) scale(1)';
+                });
+            } else { menu.classList.add('hidden'); }
+        }
+        window.addEventListener('click', () => document.getElementById('theme-menu')?.classList.add('hidden'));
+
+        function setTheme(themeName) {
+            const paper = document.getElementById('content-reader');
+            paper.className = `reader-paper w-full min-h-[85vh] h-full flex flex-col relative shadow-sm lg:shadow-card bg-white p-2 sm:p-4 lg:p-6 theme-${themeName}`;
+            
+            const video = document.getElementById('main-video-player');
+            if(video) {
+                video.className = `w-full h-full object-contain relative z-10 video-theme-${themeName}`;
+            }
+            localStorage.setItem('reader-theme', themeName);
+        }
+
+        function toggleFullScreen() {
+            const body = document.body;
+            body.classList.toggle('expanded-mode');
+            
+            const icon = document.getElementById('fullscreen-icon');
+            const text = document.getElementById('fullscreen-text');
+            
+            if (body.classList.contains('expanded-mode')) {
+                icon.className = 'fa-solid fa-compress text-brand-500'; 
+                text.textContent = 'Collapse';
+                try { 
+                    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+                    else if(document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+                } catch(e){}
+            } else {
+                icon.className = 'fa-solid fa-expand text-brand-500'; 
+                text.textContent = 'Expand';
+                try { 
+                    if(document.exitFullscreen) document.exitFullscreen();
+                    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+                } catch(e){}
+            }
+            
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
+        }
+
+        async function fetchResources() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/public/free-resources-tree`);
+                if(!res.ok) throw new Error("Failed");
+                allResources = await res.json();
+                renderTree();
+            } catch (e) { document.getElementById('tree-container').innerHTML = '<p class="text-red-500 text-center py-4 text-sm">Failed to load materials.</p>'; }
+        }
+
+        function renderTree() {
+            const tree = document.getElementById('tree-container');
+            let html = '';
+            if(allResources.length === 0) { tree.innerHTML = '<p class="text-center text-slate-400 mt-4 text-sm">No materials available.</p>'; return; }
+
+            allResources.forEach(folder => {
+                html += `
+                <div class="mb-1">
+                    <div class="tree-node group flex items-stretch cursor-pointer border border-transparent">
+                        <div onclick="toggleFolder(this); event.stopPropagation();" class="px-3 py-3 lg:py-2.5 text-surface-400 hover:text-surface-800 flex items-center justify-center w-10 lg:w-8">
+                            <i class="fa-solid fa-chevron-down text-[13px] lg:text-[11px] transition-transform duration-200"></i>
+                        </div>
+                        <div onclick="toggleFolder(this.previousElementSibling); event.stopPropagation();" class="flex-1 pr-3 py-3 lg:py-2.5 text-[15px] lg:text-[14px] font-semibold text-surface-700 flex items-center group-hover:text-surface-900 transition-colors">
+                            <i class="fa-solid fa-folder-closed text-brand-500/80 mr-3 text-lg lg:text-base"></i> 
+                            <span class="truncate">${folder.name}</span>
+                        </div>
+                    </div>
+                    <div class="tree-children hidden ml-[24px] lg:ml-[22px] border-l border-surface-200 pl-3 mt-1 space-y-1 lg:space-y-0.5">`;
+                
+                folder.items.forEach(file => {
+                    const isVideo = file.type === 'video';
+                    const icon = isVideo ? 'fa-circle-play text-purple-500' : 'fa-file-pdf text-red-500';
+                    const iconBg = isVideo ? 'bg-purple-50 border-purple-100' : 'bg-red-50 border-red-100';
+
+                    const fileData = encodeURIComponent(JSON.stringify(file));
+                    html += `
+                    <div onclick="viewContent('${fileData}', this)" class="tree-node cursor-pointer px-3 py-3 lg:py-2.5 text-[14px] lg:text-[13.5px] font-medium text-surface-600 flex items-center group transition-colors mt-0.5 border border-transparent">
+                        <div class="w-8 h-8 lg:w-7 lg:h-7 rounded-lg border ${iconBg} flex items-center justify-center mr-3 shrink-0 shadow-sm transition-colors group-hover:bg-white">
+                            <i class="fa-solid ${icon} text-[14px] lg:text-[13px]"></i>
+                        </div>
+                        <span class="truncate flex-1 group-hover:text-surface-900">${file.title}</span>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            tree.innerHTML = html;
+        }
+
+        function toggleFolder(iconElement) {
+            const childrenContainer = iconElement.parentElement.nextElementSibling;
+            childrenContainer.classList.toggle('hidden');
+            iconElement.querySelector('i').classList.toggle('-rotate-90');
+            const folderIcon = iconElement.parentElement.querySelector('.fa-folder-closed, .fa-folder-open');
+            if(folderIcon) {
+                folderIcon.classList.toggle('fa-folder-closed'); folderIcon.classList.toggle('fa-folder-open');
+            }
+        }
+
+        function viewContent(encodedData, element) {
+            document.querySelectorAll('.tree-node').forEach(el => el.classList.remove('active-node'));
+            element.classList.add('active-node');
+
+            const file = JSON.parse(decodeURIComponent(encodedData));
+            document.getElementById('reader-breadcrumbs').innerText = file.title;
+            document.getElementById('placeholder').style.display = 'none';
+            
+            const videoUI = document.getElementById('video-ui');
+            const docUI = document.getElementById('doc-ui');
+            const zoomControls = document.getElementById('zoom-controls');
+            
+            if (file.type === 'video') {
+                docUI.classList.add('hidden');
+                zoomControls.classList.add('hidden');
+                videoUI.classList.remove('hidden');
+                videoUI.classList.add('flex');
+                
+                const player = document.getElementById('main-video-player');
+                player.src = file.url;
+                player.play().catch(e => {});
+
+            } else {
+                videoUI.classList.add('hidden');
+                videoUI.classList.remove('flex');
+                docUI.classList.remove('hidden');
+                docUI.classList.add('flex');
+                zoomControls.classList.remove('hidden');
+                
+                currentZoom = window.innerWidth < 768 ? 1.0 : 1.25;
+                document.getElementById('content-reader').style.zoom = currentZoom;
+                document.getElementById('zoom-level-text').innerText = Math.round(currentZoom * 100) + '%';
+                
+                const urlLower = file.url.split('?')[0].toLowerCase();
+                const isPPT = file.type === 'ppt' || urlLower.match(/\.(ppt|pptx)$/);
+
+                if (isPPT) {
+                    renderGooglePPT(file.url, 'content-reader');
+                } else {
+                    document.getElementById('content-reader').innerHTML = `
+                        <div id="doc-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-surface-50 z-10">
+                            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
+                            <span class="text-sm font-medium text-slate-500">Rendering document...</span>
+                        </div>
+                        <div id="pdf-viewer-container" class="w-full flex-1 p-0 overflow-y-auto relative z-0 hide-scrollbar flex flex-col items-center"></div>
+                    `;
+                    setTimeout(() => loadSecurePDF(file.url, 'pdf-viewer-container'), 100);
+                }
+            }
+            showMobileReader();
+            document.getElementById('reader-viewport').scrollTop = 0;
+        }
+
+        async function loadSecurePDF(url, containerId) {
+            const container = document.getElementById(containerId);
+            const loader = document.getElementById('doc-loader');
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                loader.style.display = 'none'; 
+                
+                /* PERFORMANCE & QUALITY UPGRADE: 
+                   Force a high internal rendering density (minimum 2.5x).
+                   This draws the PDF huge in memory, then CSS squishes it to fit the screen, 
+                   resulting in ultra-crisp "retina" quality text without jagged edges. */
+                const pixelRatio = Math.max(window.devicePixelRatio || 1, 2.5); 
+                
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    
+                    let containerWidth = container.clientWidth;
+                    if(containerWidth === 0) containerWidth = window.innerWidth > 1024 ? window.innerWidth - 400 : window.innerWidth - 32;
+                    
+                    const unscaledViewport = page.getViewport({ scale: 1.0 });
+                    
+                    // Display Scale: How big it physically sits on the screen
+                    const displayScale = (containerWidth - 20) / unscaledViewport.width; 
+                    const displayViewport = page.getViewport({ scale: displayScale });
+
+                    // Render Scale: How many pixels are actually drawn in the canvas engine
+                    const renderViewport = page.getViewport({ scale: displayScale * pixelRatio });
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'relative mb-6 mx-auto shadow-md bg-white overflow-hidden';
+                    wrapper.style.width = Math.floor(displayViewport.width) + 'px';
+                    wrapper.style.height = Math.floor(displayViewport.height) + 'px';
+
+                    const canvas = document.createElement('canvas');
+                    
+                    // Give canvas massive internal dimensions for high-res text
+                    canvas.width = Math.floor(renderViewport.width);
+                    canvas.height = Math.floor(renderViewport.height);
+                    
+                    // Constrain it via CSS to fit perfectly inside the wrapper
+                    canvas.style.width = Math.floor(displayViewport.width) + 'px';
+                    canvas.style.height = Math.floor(displayViewport.height) + 'px';
+                    canvas.className = 'absolute inset-0 w-full h-full pdf-page-canvas block';
+
+                    wrapper.appendChild(canvas); 
+                    container.appendChild(wrapper);
+                    
+                    const renderContext = {
+                        canvasContext: canvas.getContext('2d'),
+                        viewport: renderViewport
+                    };
+                    await page.render(renderContext).promise;
+                }
+            } catch (err) {
+                loader.style.display = 'none';
+                container.innerHTML = `<div class="bg-rose-50 border border-rose-200 p-4 rounded text-center w-full max-w-md mt-10"><p class="text-rose-600 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Document Engine Error</p><p class="text-xs text-rose-500">CORS restriction or invalid format.</p></div>`;
+            }
+        }
+
+        function renderGooglePPT(url, containerId) {
+            const container = document.getElementById(containerId);
+            const embedUrl = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+            
+            container.innerHTML = `
+                <div class="w-full h-full min-h-[85vh] relative flex flex-col rounded-xl overflow-hidden border border-surface-200 shadow-inner bg-slate-50">
+                    <div class="p-3 bg-white border-b border-surface-200 flex justify-between items-center shrink-0">
+                        <span class="font-bold text-surface-800 text-[13px] flex items-center">
+                            <i class="fa-solid fa-file-powerpoint text-brand-600 mr-2"></i> Document Viewer
+                        </span>
+                    </div>
+                    
+                    <div class="flex-1 w-full relative">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-0">
+                            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-500 mb-4"></i>
+                            <span class="text-sm font-bold text-slate-700">Loading document...</span>
+                        </div>
+                        <iframe src="${embedUrl}" class="w-full h-full absolute inset-0 border-none z-10" allowfullscreen></iframe>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeZoom(delta) {
+            currentZoom += delta;
+            if (currentZoom < 0.5) currentZoom = 0.5; if (currentZoom > 3.0) currentZoom = 3.0;
+            document.getElementById('content-reader').style.zoom = currentZoom;
+            document.getElementById('zoom-level-text').innerText = Math.round(currentZoom * 100) + '%';
+        }
+
+        function setSpeed(speed, btnElement) {
+            document.getElementById('main-video-player').playbackRate = speed;
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-brand-500', 'text-white'); btn.classList.add('text-surface-600');
+            });
+            btnElement.classList.remove('text-surface-600'); btnElement.classList.add('active', 'bg-brand-500', 'text-white');
+        }
+        function skipVideo(seconds) {
+            const player = document.getElementById('main-video-player');
+            if (player) player.currentTime += seconds;
+        }
+        async function togglePip() {
+            const player = document.getElementById('main-video-player');
+            try {
+                if (document.pictureInPictureElement) await document.exitPictureInPicture();
+                else if (document.pictureInPictureEnabled) await player.requestPictureInPicture();
+            } catch (err) {}
+        }
+
+        function initReadingProgress() {
+            const viewport = document.getElementById('reader-viewport');
+            const progressBar = document.getElementById('reading-progress');
+            viewport.addEventListener('scroll', () => {
+                const scrollTop = viewport.scrollTop;
+                const scrollHeight = viewport.scrollHeight - viewport.clientHeight;
+                if (scrollHeight <= 0) { progressBar.style.width = '100%'; return; }
+                progressBar.style.width = ((scrollTop / scrollHeight) * 100) + '%';
+            });
+        }
+    </script>
+</body>
+</html>
