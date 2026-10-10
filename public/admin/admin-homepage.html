@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Manage Home Page</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 900: '#134e4a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { background-color: #f1f5f9; color: #1e293b; }
+        
+        .input-field {
+            width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem;
+            background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .input-field:focus {
+            background-color: #ffffff; border-color: #14b8a6; outline: none;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
+            color: #64748b; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s;
+        }
+        .nav-link:hover { background-color: #f1f5f9; color: #0f766e; }
+        .nav-link.active {
+            background-color: #f0fdfa; color: #0d9488;
+            border-right: 3px solid #14b8a6;
+        }
+
+        .tab-btn { position: relative; transition: all 0.3s ease; white-space: nowrap; }
+        .tab-btn::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px;
+            background-color: #14b8a6; transform: scaleX(0); transition: transform 0.3s ease;
+        }
+        .tab-btn.active { color: #0f766e; font-weight: 700; }
+        .tab-btn.active::after { transform: scaleX(1); }
+        
+        /* Custom scrollbar for inner card content */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased w-full h-screen flex overflow-hidden">
+
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300">
+        <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-100">
+            <div class="w-8 h-8 bg-brand-600 rounded flex items-center justify-center text-white"><i class="fa-solid fa-leaf"></i></div>
+            <div>
+                <div class="font-bold text-slate-800 leading-tight text-sm">Geeky Admin</div>
+            </div>
+        </div>
+        
+         <nav class="flex-1 overflow-y-auto no-scrollbar py-4 px-3 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-4">Menu</p>
+            <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard</a>
+            <a href="students.html" class="nav-link"><i class="fa-solid fa-user-graduate w-5 text-center"></i> Student Directory</a>
+            <a href="approvals.html" class="nav-link"><i class="fa-solid fa-users w-5 text-center"></i> Access Control</a>
+            <a href="content-builder.html" class="nav-link"><i class="fa-solid fa-book-open w-5 text-center"></i> Curriculum Builder</a>
+            <a href="recorded-classes.html" class="nav-link"><i class="fa-solid fa-video w-5 text-center"></i> Recorded Classes</a>
+            <a href="test-creator.html" class="nav-link "><i class="fa-solid fa-clipboard-list w-5 text-center"></i> Assessments</a>
+            <a href="reports.html" class="nav-link"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+                        <a href="admin-homepage.html" class="nav-link active"><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+            <a href="free-resources-admin.html" class="nav-link "><i class="fa-solid fa-file-invoice w-5 text-center"></i> Reports</a>
+
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full w-full overflow-y-auto bg-slate-50/50 p-4 md:p-8">
+        <div class="max-w-7xl mx-auto w-full">
+            
+            <div class="mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Public Content Manager</h1>
+                <p class="text-slate-500 text-sm mt-1">Manage courses, exam-wise syllabus, recommended books, and achievements.</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-slate-200 mb-8 space-x-6 overflow-x-auto">
+                <button onclick="window.switchTab('courses')" id="tab-courses" class="tab-btn active pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-address-card"></i> Course Cards
+                </button>
+                <button onclick="window.switchTab('syllabus')" id="tab-syllabus" class="tab-btn pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i> Syllabus Structure
+                </button>
+                <button onclick="window.switchTab('books')" id="tab-books" class="tab-btn pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark"></i> Recommended Books
+                </button>
+                <button onclick="window.switchTab('achievements')" id="tab-achievements" class="tab-btn pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy"></i> Achievement Banners
+                </button>
+            </div>
+
+            <!-- TAB 1: COURSES -->
+            <div id="section-courses" class="grid lg:grid-cols-3 gap-6 animate-[fadeIn_0.3s_ease-out]">
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+                            <h3 id="form-title-course" class="text-base font-semibold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-square-plus text-brand-500"></i> Add Course Card</h3>
+                            <button type="button" id="cancel-edit-course-btn" onclick="window.cancelEditCourse()" class="hidden text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-medium transition-colors">Cancel Edit</button>
+                        </div>
+                        <div class="p-5 max-h-[75vh] overflow-y-auto">
+                            <form id="course-card-form" onsubmit="window.saveCourseCard(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Card Image</label>
+                                    <input type="file" id="card-image" accept="image/*" required class="input-field p-2 bg-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-brand-50 file:text-brand-700">
+                                    <p id="edit-image-hint" class="hidden text-[11px] text-slate-500 mt-1">Leave empty to keep current image. 16:9 ratio recommended.</p>
+                                </div>
+                                <div><label class="block text-sm font-medium text-slate-700 mb-1">Course Title</label><input type="text" id="card-title" required placeholder="e.g. ASRB-NET" class="input-field"></div>
+                                <div><label class="block text-sm font-medium text-slate-700 mb-1">Subtitle / Subject</label><input type="text" id="card-subtitle" required placeholder="e.g. Plant Pathology" class="input-field"></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-sm font-medium text-slate-700 mb-1">Price (₹)</label><input type="number" id="card-price" required placeholder="3000" class="input-field"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 mb-1">Old Price (₹)</label><input type="number" id="card-old-price" placeholder="4000" class="input-field"></div>
+                                </div>
+                                <div><label class="block text-sm font-medium text-slate-700 mb-1">Duration Tag</label><input type="text" id="card-duration" required placeholder="e.g. 365 Days Program" class="input-field"></div>
+                                <div class="border-t border-slate-200 pt-4 mt-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <label class="block text-sm font-medium text-slate-700">Features List</label>
+                                        <button type="button" onclick="window.addFeatureInput()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded shadow-sm border border-slate-200"><i class="fa-solid fa-plus"></i> Add</button>
+                                    </div>
+                                    <div id="features-container" class="space-y-2"></div>
+                                </div>
+                                <button type="submit" id="save-course-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2 mt-6 shadow-md"><i class="fa-solid fa-floppy-disk"></i> Publish to Home Page</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full p-5 flex flex-col">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Live Home Page Cards</h3>
+                        <div id="cards-list" class="grid sm:grid-cols-2 gap-6 pt-2 overflow-y-auto custom-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SYLLABUS -->
+            <div id="section-syllabus" class="hidden grid xl:grid-cols-2 gap-6 animate-[fadeIn_0.3s_ease-out]">
+                <div class="space-y-6">
+                    
+                    <!-- Form 1: Add Unit -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex justify-between items-center">
+                            <h3 id="form-title-syllabus" class="text-base font-semibold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-layer-group text-brand-500"></i> Add Syllabus Unit</h3>
+                            <button type="button" id="cancel-edit-syllabus-btn" onclick="window.cancelEditSyllabus()" class="hidden text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded font-medium transition-colors">Cancel Edit</button>
+                        </div>
+                        <div class="p-5">
+                            <form id="syllabus-form" onsubmit="window.saveSyllabus(event)" class="space-y-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Exam Name (Category)</label>
+                                    <input type="text" id="unit-exam" required placeholder="e.g. ASRB-NET, ARS Mains" class="input-field" list="existing-exams">
+                                    <datalist id="existing-exams"></datalist>
+                                    <p class="text-[11px] text-slate-500 mt-1">Units will be grouped by this Exam Name on the public page.</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-2"><label class="block text-sm font-medium text-slate-700 mb-1">Unit Title</label><input type="text" id="unit-title" required placeholder="e.g. Unit 1: History & Principles" class="input-field"></div>
+                                    <div><label class="block text-sm font-medium text-slate-700 mb-1">Expected Time Box</label><input type="text" id="unit-duration" required placeholder="e.g. Days 1-14" class="input-field"></div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1">Theme (Color/Icon)</label>
+                                        <select id="unit-theme" class="input-field cursor-pointer">
+                                            <option value="blue">Blue (Book)</option><option value="orange">Orange (Microscope)</option><option value="green">Green (Bacteria)</option><option value="purple">Purple (DNA)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="border-t border-slate-200 pt-5">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div><label class="block text-sm font-bold text-slate-800">Chapters & Subtopics</label><p class="text-[11px] text-slate-500">Press ENTER in the subtopics box for a new point.</p></div>
+                                        <button type="button" onclick="window.addChapterBlock()" class="text-xs bg-brand-50 text-brand-700 hover:bg-brand-100 px-3 py-1.5 rounded-lg border border-brand-200 font-medium"><i class="fa-solid fa-plus"></i> Add Chapter</button>
+                                    </div>
+                                    <div id="chapters-container" class="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-2"></div>
+                                </div>
+                                <button type="submit" id="save-syllabus-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-md"><i class="fa-solid fa-cloud-arrow-up"></i> Publish Unit to Exam</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Form 2: Full PDF Upload -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                         <div class="bg-slate-50 px-5 py-3 border-b border-slate-200">
+                             <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-pdf text-red-500"></i> Full Detailed Syllabus PDF</h3>
+                         </div>
+                         <div class="p-5 flex flex-col gap-4">
+                             <!-- Status View -->
+                             <div id="syllabus-pdf-status" class="hidden bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex justify-between items-center">
+                                 <div class="flex items-center gap-2 text-emerald-700 text-sm font-semibold"><i class="fa-solid fa-circle-check"></i> PDF Currently Attached</div>
+                                 <div class="flex gap-2">
+                                     <a id="syllabus-pdf-link" href="#" target="_blank" class="text-xs bg-white border border-emerald-200 px-2 py-1 rounded shadow-sm hover:bg-emerald-100">View</a>
+                                     <button type="button" onclick="window.deleteSyllabusPdf()" class="text-xs bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded shadow-sm hover:bg-red-100 cursor-pointer">Delete</button>
+                                 </div>
+                             </div>
+
+                             <form id="syllabus-pdf-form" onsubmit="window.uploadSyllabusPdf(event)" class="flex gap-2 items-center">
+                                 <input type="file" id="syllabus-pdf-file" accept="application/pdf" required class="input-field p-1.5 text-sm bg-white file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-brand-50 file:text-brand-700 flex-1">
+                                 <button type="submit" id="save-syllabus-pdf-btn" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2 px-4 rounded-lg text-sm shrink-0 shadow-sm transition cursor-pointer">Upload</button>
+                             </form>
+                             <p class="text-[11px] text-slate-500">This PDF will open when students click "View Full Detailed Syllabus". Uploading a new one overwrites the old one.</p>
+                         </div>
+                    </div>
+
+                </div>
+
+                <div>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm h-full flex flex-col max-h-[85vh]">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200">
+                            <h3 class="text-base font-semibold text-slate-800">Live Exam Syllabus Sequence</h3>
+                        </div>
+                        <div class="p-5 flex-1 bg-slate-50/50 overflow-y-auto custom-scrollbar">
+                            <div id="units-list" class="space-y-6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: BOOKS MANAGER -->
+            <div id="section-books" class="hidden grid lg:grid-cols-3 gap-6 animate-[fadeIn_0.3s_ease-out]">
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200"><h3 class="text-base font-semibold text-slate-800"><i class="fa-solid fa-book-bookmark text-brand-500 mr-2"></i>Add Recommended Book</h3></div>
+                        <div class="p-5">
+                            <form id="book-form" onsubmit="window.saveBook(event)" class="space-y-4">
+                                <div><label class="block text-sm font-medium text-slate-700 mb-1">Book Title / Author</label><input type="text" id="book-title" required placeholder="e.g. Fundamentals of Plant Pathology" class="input-field"></div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Book Cover Image</label>
+                                    <input type="file" id="book-image" accept="image/*" required class="input-field p-2 bg-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-brand-50 file:text-brand-700">
+                                </div>
+                                <button type="submit" id="save-book-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg mt-4 shadow-md flex justify-center items-center gap-2"><i class="fa-solid fa-upload"></i> Upload Book</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 h-full">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Live Books on Homepage</h3>
+                        <div id="books-list" class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ACHIEVEMENTS BANNERS MANAGER -->
+            <div id="section-achievements" class="hidden grid lg:grid-cols-3 gap-6 animate-[fadeIn_0.3s_ease-out]">
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6">
+                        <div class="bg-slate-50 px-5 py-4 border-b border-slate-200"><h3 class="text-base font-semibold text-slate-800"><i class="fa-solid fa-trophy text-brand-500 mr-2"></i>Bulk Upload Banners</h3></div>
+                        <div class="p-5">
+                            <form id="achievement-form" onsubmit="window.saveAchievement(event)" class="space-y-4">
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Category Name</label>
+                                    <input type="text" id="achievement-category" required placeholder="e.g. NET Cleared 2025" class="input-field" list="existing-categories">
+                                    <datalist id="existing-categories"></datalist>
+                                    <p class="text-[11px] text-slate-500 mt-1">Type a new category or select an existing one.</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Title / Name <span class="text-slate-400 font-normal">(Optional)</span></label>
+                                    <input type="text" id="achievement-title" placeholder="Optional batch title..." class="input-field">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Description <span class="text-slate-400 font-normal">(Optional)</span></label>
+                                    <input type="text" id="achievement-desc" placeholder="Optional description..." class="input-field">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Banner Images (Select Multiple)</label>
+                                    <input type="file" id="achievement-image" accept="image/*" multiple required class="input-field p-2 bg-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-brand-50 file:text-brand-700">
+                                </div>
+
+                                <button type="submit" id="save-achievement-btn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg mt-4 shadow-md flex justify-center items-center gap-2"><i class="fa-solid fa-upload"></i> Upload to Homepage</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 h-full max-h-[85vh] overflow-y-auto custom-scrollbar">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 border-b border-slate-100 pb-2">Live Banners on Homepage</h3>
+                        <div id="achievements-list" class="space-y-6 pt-2"></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform origin-center">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Confirm Deletion</h3>
+                <p id="delete-modal-msg" class="text-sm text-slate-500 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button type="button" onclick="window.closeDeleteModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-lg transition-colors cursor-pointer">Cancel</button>
+                    <button type="button" onclick="window.confirmDelete()" id="confirm-delete-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[200] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+        const API_BASE_URL = isLocal ? 'http://localhost:5000/api' : '/api';
+        const token = localStorage.getItem('token'); 
+
+        let allCards = [], allUnits = [], allBooks = [], allAchievements = [];
+        let editingCardId = null, editingUnitId = null;
+        let deleteItemType = null, deleteItemId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCards(); fetchUnits(); fetchSyllabusPdfStatus(); fetchBooks(); fetchAchievements();
+            window.addChapterBlock();
+        });
+
+        window.showToast = function(msg, type='success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `bg-white border-l-4 ${type==='success'?'border-emerald-500':'border-red-500'} shadow-lg rounded px-4 py-3 text-sm text-slate-700 font-medium z-[300]`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            ['courses', 'syllabus', 'books', 'achievements'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+        }
+
+        // ================== DELETE LOGIC ==================
+        window.openDeleteModal = function(type, id, itemName) {
+            deleteItemType = type; deleteItemId = id;
+            document.getElementById('delete-modal-msg').innerText = `Are you sure you want to delete ${itemName}? This action cannot be undone.`;
+            document.getElementById('delete-modal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('delete-modal').querySelector('div > div').classList.remove('scale-95'); document.getElementById('delete-modal').querySelector('div > div').classList.add('scale-100'); }, 10);
+        }
+        
+        window.closeDeleteModal = function() {
+            document.getElementById('delete-modal').querySelector('div > div').classList.remove('scale-100'); document.getElementById('delete-modal').querySelector('div > div').classList.add('scale-95');
+            setTimeout(() => { document.getElementById('delete-modal').classList.add('hidden'); deleteItemType = null; deleteItemId = null; }, 150);
+        }
+        
+        window.confirmDelete = async function() {
+            if(!deleteItemId || !deleteItemType) return;
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>'; btn.disabled = true;
+
+            try {
+                let endpoint = '';
+                if(deleteItemType === 'card') endpoint = `${API_BASE_URL}/admin/homepage-courses/${deleteItemId}`;
+                else if(deleteItemType === 'unit') endpoint = `${API_BASE_URL}/admin/syllabus/${deleteItemId}`;
+                else if(deleteItemType === 'book') endpoint = `${API_BASE_URL}/admin/books/${deleteItemId}`;
+                else if(deleteItemType === 'achievement') endpoint = `${API_BASE_URL}/admin/achievements/${deleteItemId}`;
+                else if(deleteItemType === 'syllabus_pdf') endpoint = `${API_BASE_URL}/admin/syllabus-pdf`;
+
+                const res = await fetch(endpoint, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                if(!res.ok) throw new Error("Deletion failed");
+                
+                if(deleteItemType === 'card') fetchCards();
+                else if(deleteItemType === 'unit') fetchUnits();
+                else if(deleteItemType === 'book') fetchBooks();
+                else if(deleteItemType === 'achievement') fetchAchievements();
+                else if(deleteItemType === 'syllabus_pdf') window.fetchSyllabusPdfStatus();
+
+                window.showToast('Deleted successfully.'); 
+                window.closeDeleteModal();
+            } catch(e) { window.showToast('Error deleting item.', 'error'); } 
+            finally { btn.innerHTML = 'Delete'; btn.disabled = false; }
+        }
+
+        // ================== COURSES LOGIC ==================
+        window.addFeatureInput = function(value = '') {
+            const div = document.createElement('div'); div.className = 'flex gap-2 feature-row';
+            div.innerHTML = `<input type="text" placeholder="New feature..." class="input-field feature-input" required value="${value}"><button type="button" onclick="this.parentElement.remove()" class="w-10 flex-shrink-0 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 flex items-center justify-center border border-red-100 cursor-pointer"><i class="fa-solid fa-trash pointer-events-none"></i></button>`;
+            document.getElementById('features-container').appendChild(div);
+        }
+        
+        async function fetchCards() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/public/homepage-courses`);
+                if (!res.ok) throw new Error("Failed to fetch");
+                allCards = await res.json();
+                renderCards(allCards);
+            } catch (e) { document.getElementById('cards-list').innerHTML = '<p class="text-red-500 text-sm">Failed to load cards.</p>'; }
+        }
+        
+        function renderCards(cards) {
+            const container = document.getElementById('cards-list'); 
+            if(cards.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-sm col-span-full">No cards published yet.</p>';
+                return;
+            }
+
+            let html = '';
+            cards.forEach(card => {
+                const featureArray = card.features || [];
+                let fHtml = featureArray.map(f => `<li class="text-xs text-slate-600 truncate"><i class="fa-solid fa-check text-brand-500 mr-1"></i> ${f}</li>`).join('');
+                
+                html += `
+                    <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white relative group flex flex-col">
+                        <div class="aspect-video w-full bg-slate-200 relative overflow-hidden shrink-0">
+                            
+                            <!-- FIX: Absolute button container physically INSIDE the image relative container with massive z-index -->
+                            <div class="absolute top-3 right-3 flex gap-2 z-[60] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <button type="button" onclick="window.editCard('${card.id}')" class="w-8 h-8 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center hover:bg-brand-100 shadow-md border border-brand-200 cursor-pointer">
+                                    <i class="fa-solid fa-pen text-xs pointer-events-none"></i>
+                                </button>
+                                <button type="button" onclick="window.openDeleteModal('card', '${card.id}', 'course')" class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md border border-red-600 cursor-pointer">
+                                    <i class="fa-solid fa-trash text-xs pointer-events-none"></i>
+                                </button>
+                            </div>
+                            
+                            <img src="${card.imageUrl}" onerror="this.src='https://placehold.co/600x338/e2e8f0/475569?text=Image+Missing'" class="w-full h-full object-cover absolute inset-0 z-0">
+                            
+                            <!-- Pointer events none prevents the overlay from swallowing clicks meant for buttons -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none"></div>
+                            <h4 class="absolute bottom-3 left-4 text-white font-bold text-lg drop-shadow-md z-20 pointer-events-none">${card.title}</h4>
+                        </div>
+                        
+                        <div class="p-4 flex-1 flex flex-col">
+                            <p class="text-brand-600 text-[11px] uppercase font-bold mb-2">${card.subtitle}</p>
+                            <ul class="space-y-1 mb-3 flex-1">${fHtml}</ul>
+                            <div class="flex justify-between items-center pt-3 border-t border-slate-100 mt-auto">
+                                <span class="font-bold text-slate-800">₹${card.price}</span>
+                                <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">${card.duration}</span>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        window.editCard = function(id) {
+            const card = allCards.find(c => c.id === id); 
+            if (!card) { window.showToast("Card not found", "error"); return; }
+            
+            editingCardId = card.id;
+            document.getElementById('form-title-course').innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-500"></i> Edit Course';
+            document.getElementById('cancel-edit-course-btn').classList.remove('hidden');
+            
+            const saveBtn = document.getElementById('save-course-btn'); 
+            saveBtn.innerHTML = 'Update Course'; 
+            saveBtn.className = "w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg mt-6 shadow-md transition-colors flex justify-center items-center gap-2";
+            
+            document.getElementById('card-image').required = false; 
+            document.getElementById('edit-image-hint').classList.remove('hidden');
+            
+            document.getElementById('card-title').value = card.title || ''; 
+            document.getElementById('card-subtitle').value = card.subtitle || '';
+            document.getElementById('card-price').value = card.price || ''; 
+            document.getElementById('card-old-price').value = card.oldPrice || ''; 
+            document.getElementById('card-duration').value = card.duration || '';
+            
+            document.getElementById('features-container').innerHTML = ''; 
+            const featureArray = card.features || [];
+            if(featureArray.length > 0) {
+                featureArray.forEach(f => window.addFeatureInput(f));
+            } else {
+                window.addFeatureInput();
+            }
+
+            // Immediately scroll the user to the form so they see it changed to Edit Mode
+            document.getElementById('section-courses').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        window.cancelEditCourse = function() {
+            editingCardId = null; 
+            document.getElementById('course-card-form').reset();
+            
+            document.getElementById('form-title-course').innerHTML = '<i class="fa-solid fa-square-plus text-brand-500"></i> Add Course Card';
+            document.getElementById('cancel-edit-course-btn').classList.add('hidden');
+            
+            const saveBtn = document.getElementById('save-course-btn'); 
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Publish to Home Page'; 
+            saveBtn.className = "w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg mt-6 shadow-md transition-colors flex justify-center items-center gap-2";
+            
+            document.getElementById('card-image').required = true; 
+            document.getElementById('edit-image-hint').classList.add('hidden');
+            
+            document.getElementById('features-container').innerHTML = ''; 
+            window.addFeatureInput(); 
+        }
+        
+        window.saveCourseCard = async function(e) {
+            e.preventDefault(); const btn = document.getElementById('save-course-btn'); const originalBtnHtml = btn.innerHTML;
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+            try {
+                const features = Array.from(document.querySelectorAll('.feature-input')).map(inp => inp.value.trim()).filter(v => v);
+                const file = document.getElementById('card-image').files[0]; let finalImageUrl = null;
+                if (file) {
+                    const { uploadUrl, readUrl } = await (await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) })).json();
+                    await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    finalImageUrl = readUrl;
+                }
+                const payload = { title: document.getElementById('card-title').value, subtitle: document.getElementById('card-subtitle').value, price: document.getElementById('card-price').value, oldPrice: document.getElementById('card-old-price').value, duration: document.getElementById('card-duration').value, features };
+                if (finalImageUrl) payload.imageUrl = finalImageUrl;
+                await fetch(editingCardId ? `${API_BASE_URL}/admin/homepage-courses/${editingCardId}` : `${API_BASE_URL}/admin/homepage-courses`, { method: editingCardId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+                window.showToast(editingCardId ? 'Card Updated!' : 'Card Published!'); window.cancelEditCourse(); fetchCards();
+            } catch (err) { window.showToast(err.message, 'error'); } finally { btn.innerHTML = originalBtnHtml; btn.disabled = false; } 
+        }
+
+        // ================== SYLLABUS LOGIC ==================
+        window.addChapterBlock = function(title = '', topics = '') {
+            const div = document.createElement('div'); div.className = 'chapter-block bg-slate-50 p-4 rounded-xl border border-slate-200 relative group';
+            div.innerHTML = `<button type="button" onclick="this.parentElement.remove()" class="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 shadow-sm border border-red-200 cursor-pointer"><i class="fa-solid fa-xmark text-xs pointer-events-none"></i></button><div class="mb-3"><input type="text" placeholder="Chapter Name" class="input-field font-semibold chapter-title" required value="${title}"></div><div><textarea placeholder="Subtopics (one per line)" class="input-field h-24 resize-none chapter-topics text-sm" required>${topics}</textarea></div>`;
+            document.getElementById('chapters-container').appendChild(div);
+        }
+        function extractChapters() {
+            return Array.from(document.querySelectorAll('.chapter-block')).map(block => {
+                const title = block.querySelector('.chapter-title').value.trim();
+                const topics = block.querySelector('.chapter-topics').value.split('\n').map(t => t.replace(/^- /, '').trim()).filter(t => t.length > 0);
+                return title ? { title, topics } : null;
+            }).filter(Boolean);
+        }
+        async function fetchUnits() {
+            try {
+                allUnits = await (await fetch(`${API_BASE_URL}/public/syllabus`)).json();
+                const container = document.getElementById('units-list'); 
+                if(allUnits.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-sm">No units created yet.</p>';
+                    return;
+                }
+                
+                let html = '';
+                const grouped = allUnits.reduce((acc, unit) => { 
+                    const exam = unit.examName || 'General';
+                    (acc[exam] = acc[exam] || []).push(unit); 
+                    return acc; 
+                }, {});
+
+                const datalist = document.getElementById('existing-exams');
+                if(datalist) datalist.innerHTML = Object.keys(grouped).map(e => `<option value="${e}">`).join('');
+
+                for (const [exam, units] of Object.entries(grouped)) {
+                    let itemsHtml = units.map(unit => {
+                        let cHtml = unit.chapters.map(ch => `<div class="mb-2"><p class="text-xs font-bold text-slate-700">${ch.title}</p></div>`).join('');
+                        return `
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm relative group">
+                                <div class="absolute top-3 right-3 flex gap-2 z-10">
+                                    <button type="button" onclick="window.editUnit('${unit.id}')" class="w-7 h-7 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 border border-amber-200 cursor-pointer"><i class="fa-solid fa-pen text-[10px] pointer-events-none"></i></button>
+                                    <button type="button" onclick="window.openDeleteModal('unit', '${unit.id}', 'unit')" class="w-7 h-7 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 border border-red-200 cursor-pointer"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-sm pr-16">${unit.unitTitle}</h4>
+                                <div class="bg-slate-50 rounded-lg p-3 mt-3 border border-slate-100">${cHtml || '<p class="text-xs">No chapters</p>'}</div>
+                            </div>`;
+                    }).join('');
+
+                    html += `
+                        <div class="mb-6">
+                            <h4 class="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 px-2 flex items-center gap-2"><i class="fa-solid fa-graduation-cap"></i> ${exam}</h4>
+                            <div class="space-y-4 pl-2 border-l-2 border-brand-100">${itemsHtml}</div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+
+            } catch (e) { document.getElementById('units-list').innerHTML = '<p class="text-red-500 text-sm">Failed to load syllabus.</p>'; }
+        }
+        window.saveSyllabus = async function(e) {
+            e.preventDefault(); const btn = document.getElementById('save-syllabus-btn'); const originalHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
+            try {
+                const payload = { 
+                    examName: document.getElementById('unit-exam').value,
+                    unitTitle: document.getElementById('unit-title').value, 
+                    duration: document.getElementById('unit-duration').value, 
+                    themeColor: document.getElementById('unit-theme').value, 
+                    chapters: extractChapters() 
+                };
+                await fetch(editingUnitId ? `${API_BASE_URL}/admin/syllabus/${editingUnitId}` : `${API_BASE_URL}/admin/syllabus`, { method: editingUnitId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+                window.showToast(editingUnitId ? 'Unit Updated!' : 'Unit Published!'); window.cancelEditSyllabus(); fetchUnits();
+            } catch (err) { window.showToast('Error saving unit', 'error'); } finally { btn.innerHTML = originalHtml; btn.disabled = false; } 
+        }
+        window.editUnit = function(id) {
+            const unit = allUnits.find(u => u.id === id); if (!unit) return;
+            editingUnitId = unit.id; 
+            document.getElementById('cancel-edit-syllabus-btn').classList.remove('hidden'); 
+            document.getElementById('unit-exam').value = unit.examName || 'General';
+            document.getElementById('unit-title').value = unit.unitTitle; 
+            document.getElementById('unit-duration').value = unit.duration; 
+            document.getElementById('unit-theme').value = unit.themeColor;
+            document.getElementById('chapters-container').innerHTML = ''; unit.chapters.forEach(ch => window.addChapterBlock(ch.title, ch.topics.join('\n')));
+            const btn = document.getElementById('save-syllabus-btn'); btn.innerHTML = 'Update Unit'; btn.className = "w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-md";
+            document.getElementById('section-syllabus').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        window.cancelEditSyllabus = function() {
+            editingUnitId = null; document.getElementById('syllabus-form').reset(); document.getElementById('cancel-edit-syllabus-btn').classList.add('hidden'); document.getElementById('chapters-container').innerHTML = ''; window.addChapterBlock();
+            const btn = document.getElementById('save-syllabus-btn'); btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Unit to Exam'; btn.className = "w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-lg shadow-md";
+        }
+
+        // PDF SYLLABUS LOGIC
+        window.fetchSyllabusPdfStatus = async function() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/public/syllabus-pdf`);
+                const data = await res.json();
+                if(data && data.url) {
+                    document.getElementById('syllabus-pdf-status').classList.remove('hidden');
+                    document.getElementById('syllabus-pdf-link').href = data.url;
+                } else {
+                    document.getElementById('syllabus-pdf-status').classList.add('hidden');
+                }
+            } catch (e) {}
+        }
+
+        window.uploadSyllabusPdf = async function(e) {
+            e.preventDefault(); const btn = document.getElementById('save-syllabus-pdf-btn'); const origHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+            try {
+                const file = document.getElementById('syllabus-pdf-file').files[0];
+                const { uploadUrl, readUrl } = await (await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) })).json();
+                await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                await fetch(`${API_BASE_URL}/admin/syllabus-pdf`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ url: readUrl }) });
+                window.showToast('Full Syllabus PDF Attached!'); document.getElementById('syllabus-pdf-form').reset(); window.fetchSyllabusPdfStatus();
+            } catch(err) { window.showToast('Error attaching PDF', 'error'); } finally { btn.innerHTML = origHtml; btn.disabled = false; }
+        }
+        window.deleteSyllabusPdf = function() { window.openDeleteModal('syllabus_pdf', 'pdf', 'Full Syllabus PDF'); }
+
+        // ================== BOOKS LOGIC ==================
+        async function fetchBooks() {
+            try {
+                allBooks = await (await fetch(`${API_BASE_URL}/public/books`)).json();
+                const container = document.getElementById('books-list'); 
+                if(allBooks.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-sm col-span-full">No books added yet.</p>';
+                    return;
+                }
+                
+                let html = '';
+                allBooks.forEach(b => {
+                    html += `
+                        <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white relative group">
+                            <button type="button" onclick="window.openDeleteModal('book', '${b.id}', 'book')" class="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 z-50 shadow opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer"><i class="fa-solid fa-trash text-[10px] pointer-events-none"></i></button>
+                            <div class="aspect-[3/4] w-full bg-slate-100 relative"><img src="${b.imageUrl}" onerror="this.src='https://placehold.co/300x400/e2e8f0/475569?text=Cover'" class="w-full h-full object-cover"></div>
+                            <div class="p-3"><p class="text-slate-800 text-sm font-bold leading-snug line-clamp-2">${b.title}</p></div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            } catch (e) { document.getElementById('books-list').innerHTML = '<p class="text-red-500 text-sm">Failed to load books.</p>'; }
+        }
+        window.saveBook = async function(e) {
+            e.preventDefault(); const btn = document.getElementById('save-book-btn'); const origHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Uploading...';
+            try {
+                const file = document.getElementById('book-image').files[0];
+                const { uploadUrl, readUrl } = await (await fetch(`${API_BASE_URL}/admin/content/upload-url`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ fileName: file.name, fileType: file.type }) })).json();
+                await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                await fetch(`${API_BASE_URL}/admin/books`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title: document.getElementById('book-title').value, imageUrl: readUrl }) });
+                window.showToast('Book Added!'); e.target.reset(); fetchBooks();
+            } catch(err) { window.showToast('Error adding book', 'error'); } finally { btn.innerHTML = origHtml; btn.disabled = false; }
+        }
+
+        // ================== ACHIEVEMENTS LOGIC ==================
+        async function fetchAchievements() {
+            try {
+                allAchievements = await (await fetch(`${API_BASE_URL}/public/achievements`)).json();
+                const container = document.getElementById('achievements-list'); 
+                if(allAchievements.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-sm">No banners uploaded yet.</p>';
+                    return;
+                }
+                
+                let html = '';
+                const grouped = allAchievements.reduce((acc, ach) => { (acc[ach.category] = acc[ach.category] || []).push(ach); return acc; }, {});
+                
+                const datalist = document.getElementById('existing-categories');
+                if(datalist) datalist.innerHTML = Object.keys(grouped).map(c => `<option value="${c}">`).join('');
+                
+                for (const [category, items] of Object.entries(grouped)) {
+                    let itemsHtml = items.map(ach => `
+                        <div class="flex items-center gap-4 p-3 bg-white border border-slate-200 rounded-xl shadow-sm relative group">
+                            <div class="w-24 h-14 shrink-0 bg-slate-100 rounded-lg overflow-hidden relative border border-slate-200">
+                                <img src="${ach.imageUrl}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                ${ach.title ? `<h4 class="font-bold text-slate-800 text-sm truncate">${ach.title}</h4>` : '<p class="text-xs text-slate-400 italic">No Title</p>'}
+                                ${ach.description ? `<p class="text-xs text-slate-500 truncate">${ach.description}</p>` : ''}
+                            </div>
+                            <button type="button" onclick="window.openDeleteModal('achievement', '${ach.id}', 'banner')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-100 border border-red-100 shrink-0 cursor-pointer"><i class="fa-solid fa-trash text-xs pointer-events-none"></i></button>
+                        </div>
+                    `).join('');
+                    
+                    html += `
+                        <div class="mb-6">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">${category}</h4>
+                            <div class="space-y-3">${itemsHtml}</div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch (e) { document.getElementById('achievements-list').innerHTML = '<p class="text-red-500 text-sm">Failed to load achievements.</p>'; }
+        }
+        
+        window.saveAchievement = async function(e) {
+            e.preventDefault(); 
+            const btn = document.getElementById('save-achievement-btn'); 
+            const origHtml = btn.innerHTML; 
+            btn.disabled = true; 
+            
+            try {
+                const files = document.getElementById('achievement-image').files;
+                if(files.length === 0) throw new Error("Please select at least one image.");
+                
+                const category = document.getElementById('achievement-category').value.trim();
+                const title = document.getElementById('achievement-title').value.trim();
+                const description = document.getElementById('achievement-desc').value.trim();
+                
+                const achievementsPayload = [];
+                
+                for(let i=0; i<files.length; i++) {
+                    const file = files[i];
+                    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Uploading Image ${i+1}/${files.length}...`;
+                    
+                    const { uploadUrl, readUrl } = await (await fetch(`${API_BASE_URL}/admin/content/upload-url`, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                        body: JSON.stringify({ fileName: file.name, fileType: file.type }) 
+                    })).json();
+                    
+                    await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file });
+                    
+                    achievementsPayload.push({ category, title, description, imageUrl: readUrl });
+                }
+                
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving Database...';
+                
+                await fetch(`${API_BASE_URL}/admin/achievements/bulk`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                    body: JSON.stringify({ achievements: achievementsPayload }) 
+                });
+                
+                window.showToast(`Successfully uploaded ${files.length} banner(s)!`); 
+                e.target.reset(); 
+                fetchAchievements();
+            } catch(err) { 
+                window.showToast(err.message || 'Error adding banners', 'error'); 
+            } finally { 
+                btn.innerHTML = origHtml; 
+                btn.disabled = false; 
+            }
+        }
+    </script>
+</body>
+</html>
