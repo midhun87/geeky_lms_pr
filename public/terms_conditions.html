@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Terms & Conditions</title>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Theme Variables */
+            --bg-ivory: #FDFCF8;
+            --bg-offwhite: #F4F2EC;
+            --forest-green: #143623;
+            --botanical-green: #255C3E;
+            --leaf-green: #378057;
+            --gold-accent: #C5A059;
+            --gold-light: #E8D3A7;
+            --text-charcoal: #232725;
+            --text-muted: #59655E;
+            --border-light: #E2DFD3;
+            --border-dark: #C6C2B4;
+            --white: #FFFFFF;
+            --error-red: #d9534f;
+            
+            --font-editorial: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-ivory);
+            color: var(--text-charcoal);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23143623' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
+
+        .navbar {
+            width: 100%;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(253, 252, 248, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-logo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-accent); }
+        .nav-title-group { display: flex; flex-direction: column; }
+        .nav-title { font-family: var(--font-editorial); font-weight: 700; font-size: 1.25rem; color: var(--forest-green); line-height: 1.1; }
+        .nav-subtitle { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-accent); font-weight: 700; margin-top: 2px; }
+
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; border-radius: 2px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-btn-outline { border: 1px solid var(--border-dark); color: var(--forest-green); background: var(--white); }
+        .nav-btn-outline:hover { border-color: var(--forest-green); background: var(--bg-offwhite); }
+        .nav-btn-primary { background-color: var(--forest-green); color: var(--white); border: 1px solid var(--forest-green); }
+        .nav-btn-primary:hover { background-color: var(--botanical-green); border-color: var(--botanical-green); }
+
+        /* Hero Banner */
+        .legal-hero {
+            background-color: var(--forest-green);
+            color: var(--white);
+            padding: 64px 24px;
+            text-align: center;
+            border-bottom: 5px solid var(--gold-accent);
+        }
+        .eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(232, 211, 167, 0.3);
+        }
+        .legal-hero h1 {
+            font-family: var(--font-editorial);
+            font-size: 2.75rem;
+            color: var(--white);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        .legal-hero p {
+            max-width: 680px;
+            margin: 0 auto;
+            color: rgba(253, 252, 248, 0.85);
+            font-size: 0.98rem;
+        }
+        .effective-meta {
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold-light);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 8px 18px;
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Main Content Layout */
+        .legal-wrapper {
+            width: 100%;
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 56px 24px 80px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Sidebar Table of Contents */
+        .toc-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--forest-green);
+            padding: 24px;
+            position: sticky;
+            top: 104px;
+            box-shadow: 0 12px 30px rgba(20, 54, 35, 0.04);
+        }
+        .toc-title {
+            font-family: var(--font-editorial);
+            font-size: 1.15rem;
+            color: var(--forest-green);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 700;
+        }
+        .toc-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+        }
+        .toc-list a {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 7px 10px;
+            border-radius: 2px;
+            border-left: 2px solid transparent;
+            line-height: 1.35;
+        }
+        .toc-list a:hover {
+            color: var(--forest-green);
+            background-color: var(--bg-offwhite);
+            border-left-color: var(--gold-accent);
+        }
+        .toc-list a.highlight-link {
+            color: var(--forest-green);
+            background-color: #fcf8ee;
+            border-left-color: var(--gold-accent);
+            font-weight: 700;
+        }
+
+        /* Legal Document Paper */
+        .legal-document {
+            background-color: var(--white);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--gold-accent);
+            padding: 56px;
+            box-shadow: 0 20px 40px rgba(20, 54, 35, 0.05);
+        }
+
+        .preamble-box {
+            background-color: var(--bg-ivory);
+            border: 1px solid var(--border-dark);
+            border-left: 4px solid var(--forest-green);
+            padding: 24px;
+            margin-bottom: 40px;
+            font-size: 0.92rem;
+            color: var(--text-charcoal);
+        }
+
+        .clause-section {
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-light);
+            scroll-margin-top: 100px;
+        }
+        .clause-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .clause-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .clause-number {
+            background-color: var(--forest-green);
+            color: var(--gold-light);
+            font-family: var(--font-editorial);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .clause-title {
+            font-family: var(--font-editorial);
+            font-size: 1.45rem;
+            color: var(--forest-green);
+            font-weight: 700;
+        }
+
+        .clause-section p {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        .clause-section p strong {
+            color: var(--text-charcoal);
+        }
+
+        .clause-list {
+            list-style: none;
+            margin: 14px 0;
+            padding-left: 8px;
+        }
+        .clause-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+        .clause-list li::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--gold-accent);
+            font-size: 0.85rem;
+        }
+
+        /* Special Protection Highlight Box for Xeta Tech Solutions & Payment Liability */
+        .critical-liability-box {
+            background-color: #FCF9F2;
+            border: 2px solid var(--gold-accent);
+            border-left: 6px solid var(--forest-green);
+            padding: 28px;
+            margin: 20px 0;
+            border-radius: 2px;
+            box-shadow: 0 10px 25px rgba(197, 160, 89, 0.12);
+        }
+        .critical-liability-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--forest-green);
+            color: var(--white);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 5px 12px;
+            border-radius: 2px;
+            margin-bottom: 14px;
+        }
+        .critical-liability-box h4 {
+            font-family: var(--font-editorial);
+            font-size: 1.2rem;
+            color: var(--forest-green);
+            margin-bottom: 10px;
+        }
+        .critical-liability-box p {
+            color: var(--text-charcoal) !important;
+            font-size: 0.92rem;
+            margin-bottom: 12px;
+        }
+        .critical-liability-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Acceptance Footer inside Document */
+        .acceptance-cta {
+            margin-top: 48px;
+            padding: 32px;
+            background-color: var(--bg-offwhite);
+            border: 1px solid var(--border-dark);
+            text-align: center;
+        }
+        .acceptance-cta h3 {
+            font-family: var(--font-editorial);
+            font-size: 1.4rem;
+            color: var(--forest-green);
+            margin-bottom: 8px;
+        }
+        .acceptance-cta p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .cta-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer Branding */
+        .agency-credit {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border-light);
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+        .agency-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; }
+        .agency-credit img { height: 38px; opacity: 0.85; transition: var(--transition); margin: 4px 0; }
+        .agency-credit img:hover { opacity: 1; transform: scale(1.05); }
+        .agency-tagline { font-size: 0.85rem; color: var(--gold-accent); font-style: italic; font-family: var(--font-editorial); }
+        .agency-contact { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .agency-contact a { color: var(--forest-green); font-weight: 700; transition: var(--transition); letter-spacing: 0.5px; }
+        .agency-contact a:hover { color: var(--gold-accent); }
+
+        @media (max-width: 992px) {
+            .legal-wrapper {
+                grid-template-columns: 1fr;
+                padding: 32px 16px 60px;
+            }
+            .toc-card {
+                position: static;
+            }
+            .toc-list {
+                max-height: none;
+            }
+            .legal-document {
+                padding: 36px 24px;
+            }
+        }
+        @media (max-width: 640px) {
+            .navbar { padding: 14px 16px; }
+            .nav-btn { padding: 8px 12px; font-size: 0.7rem; }
+            .legal-hero { padding: 48px 16px; }
+            .legal-hero h1 { font-size: 2rem; }
+            .clause-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .clause-title { font-size: 1.25rem; }
+            .critical-liability-box { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo" class="nav-logo">
+            <div class="nav-title-group">
+                <span class="nav-title">Geeky Researcher</span>
+                <span class="nav-subtitle">Legal &amp; Compliance</span>
+            </div>
+        </a>
+
+        <div class="nav-actions">
+            <a href="index.html" class="nav-btn nav-btn-outline">
+                <i class="fa-solid fa-house"></i> <span>Home</span>
+            </a>
+            <a href="register.html" class="nav-btn nav-btn-primary">
+                <i class="fa-solid fa-user-check"></i> <span>Back to Enrollment</span>
+            </a>
+        </div>
+    </nav>
+
+    <header class="legal-hero">
+        <span class="eyebrow">Academic &amp; Platform Governance</span>
+        <h1>Terms &amp; Conditions of Enrollment</h1>
+        <p>Please read these terms carefully before registering, making any fee payment, or accessing lectures, study materials, and examination series on Geeky Researcher.</p>
+        <div class="effective-meta">
+            <span><i class="fa-regular fa-calendar-check"></i> Effective Date: October 2026</span>
+            <span>|</span>
+            <span><i class="fa-solid fa-scale-balanced"></i> Jurisdiction: India</span>
+        </div>
+    </header>
+
+    <main class="legal-wrapper">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="toc-card">
+            <div class="toc-title">Document Clauses</div>
+            <ul class="toc-list">
+                <li><a href="#clause-1">1. Acceptance of Agreement</a></li>
+                <li><a href="#clause-2">2. Platform Ownership &amp; Scope</a></li>
+                <li><a href="#clause-3" class="highlight-link">3. Payment Responsibility &amp; Fee Policy</a></li>
+                <li><a href="#clause-4" class="highlight-link">4. Role &amp; Non-Liability of Xeta Tech Solutions</a></li>
+                <li><a href="#clause-5">5. Installment Plans (100%, 75%, 50%)</a></li>
+                <li><a href="#clause-6">6. Non-Refundable &amp; Non-Transferable Policy</a></li>
+                <li><a href="#clause-7">7. Single-Device &amp; Account Security</a></li>
+                <li><a href="#clause-8">8. Strict Anti-Piracy &amp; IP Protection</a></li>
+                <li><a href="#clause-9">9. Read-Only &amp; Non-Downloadable Content</a></li>
+                <li><a href="#clause-10">10. No Guarantee of Examination Ranks</a></li>
+                <li><a href="#clause-11">11. Student Code of Conduct</a></li>
+                <li><a href="#clause-12">12. Service Availability &amp; Maintenance</a></li>
+                <li><a href="#clause-13">13. Data Privacy &amp; Communications</a></li>
+                <li><a href="#clause-14">14. Account Suspension &amp; Termination</a></li>
+                <li><a href="#clause-15">15. Governing Law &amp; Dispute Resolution</a></li>
+            </ul>
+        </aside>
+
+        <!-- Legal Clauses Content -->
+        <article class="legal-document">
+            
+            <div class="preamble-box">
+                <strong>IMPORTANT LEGAL NOTICE:</strong> This Terms &amp; Conditions Agreement ("Agreement") constitutes a legally binding contract between you ("Student", "User", "Aspirant", or "You") and <strong>Geeky Researcher (operated under Geeky Services)</strong> regarding your enrollment and use of the Geeky Researcher Plant Pathology Learning Management System (LMS). By checking the "I have read and agree to the Terms &amp; Conditions" box on the registration page or by remitting any course fee, you unconditionally accept all terms stated herein.
+            </div>
+
+            <!-- Clause 1 -->
+            <section id="clause-1" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 01</span>
+                    <h2 class="clause-title">Acceptance of Agreement &amp; Eligibility</h2>
+                </div>
+                <p>By registering an account, accessing free demo resources, or enrolling in any paid academic level (Level 1 through Level 5) on the Geeky Researcher portal, you affirm that you have read, understood, and agreed to abide by these Terms &amp; Conditions.</p>
+                <ul class="clause-list">
+                    <li>You must provide accurate, complete, and verifiable registration details including your full legal name, active email address, mobile number, and academic institution/organization.</li>
+                    <li>Accounts registered with fake identities, disposable email addresses, or unverifiable phone numbers are subject to immediate cancellation without refund.</li>
+                    <li>Geeky Researcher reserves the right to update, modify, or replace any part of these Terms at its sole discretion.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 2 -->
+            <section id="clause-2" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 02</span>
+                    <h2 class="clause-title">Platform Ownership &amp; Academic Scope</h2>
+                </div>
+                <p><strong>Geeky Researcher (Geeky Services)</strong> is an independent educational platform dedicated to Plant Pathology coaching and preparation for competitive examinations including ASRB-NET, ARS, SMS, STO, SAUs, JRF, SRF, and Ph.D. entrances.</p>
+                <p>All curriculum structures, video lectures, live sessions, daily/weekly/monthly tests, model papers, syllabus schedules, and academic guidance are created, managed, and delivered exclusively by the faculty and management of <strong>Geeky Researcher</strong>.</p>
+            </section>
+
+            <!-- Clause 3 -->
+            <section id="clause-3" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 03</span>
+                    <h2 class="clause-title">Financial Transactions &amp; Payment Responsibility</h2>
+                </div>
+                <p>All course fees, enrollment charges, and installment payments displayed on the portal are collected directly by and into the authorized bank/UPI accounts of <strong>Geeky Researcher (Geeky Services)</strong>.</p>
+                
+                <div class="critical-liability-box">
+                    <span class="critical-liability-badge"><i class="fa-solid fa-building-shield"></i> Financial Responsibility Declaration</span>
+                    <h4>100% Payment Responsibility of Geeky Researcher</h4>
+                    <p>All payments made by students via UPI QR codes, GPay, PhonePe, Paytm, bank transfers, or any other payment mode during registration or renewal are received directly by <strong>Geeky Researcher (Geeky Services)</strong>.</p>
+                    <p><strong>Geeky Researcher</strong> is solely and exclusively responsible for payment verification, fee receipts, account approval, course activation, tax compliance, billing inquiries, and any payment-related disputes. Students must direct all payment proofs, transaction IDs, and fee queries exclusively to Geeky Researcher administration (<a href="mailto:researchergeeky@gmail.com" style="text-decoration: underline; font-weight: 700;">researchergeeky@gmail.com</a> / <strong>8807862773</strong>).</p>
+                </div>
+
+                <ul class="clause-list">
+                    <li>After scanning the UPI QR code and completing payment, accounts enter a "Verification Pending" state until manually verified and approved by the Geeky Researcher administration team.</li>
+                    <li>Submitting fabricated payment screenshots, reversed transactions, or unauthorized UPI claims will result in permanent blacklisting and legal action.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 4 -->
+            <section id="clause-4" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 04</span>
+                    <h2 class="clause-title">Role &amp; Complete Non-Liability of Xeta Tech Solutions Pvt Ltd.</h2>
+                </div>
+                <p>To ensure complete transparency regarding platform operations, all users, students, and third parties hereby acknowledge the strict separation between the academic/business owner and the software development vendor:</p>
+
+                <div class="critical-liability-box">
+                    <span class="critical-liability-badge"><i class="fa-solid fa-shield-halved"></i> Technology Vendor Indemnification</span>
+                    <h4>Xeta Tech Solutions Pvt Ltd. is Strictly the Product Builder</h4>
+                    <p><strong>Xeta Tech Solutions Pvt Ltd.</strong> ("Developer" / "Technology Partner") has acted strictly as an independent software engineering and IT service provider hired to design, develop, and build the web application for Geeky Researcher.</p>
+                    <p><strong>Xeta Tech Solutions Pvt Ltd. does NOT collect, hold, process, manage, or receive any student payments or course fees.</strong> Furthermore, Xeta Tech Solutions Pvt Ltd. has zero involvement in, and bears zero liability for:</p>
+                    <ul class="clause-list" style="margin-top: 10px;">
+                        <li>Any financial transactions, UPI transfers, fee collection, payment delays, failed verifications, or refund claims;</li>
+                        <li>The accuracy, completeness, scheduling, or delivery of academic lectures, study materials, books, or test series;</li>
+                        <li>Administrative decisions made by Geeky Researcher, including student approval, suspension, or fee structure changes;</li>
+                        <li>Any academic outcomes, examination results, or commercial commitments made by Geeky Researcher.</li>
+                    </ul>
+                    <p style="margin-top: 10px;">By using this website, you irrevocably agree to hold harmless and indemnify <strong>Xeta Tech Solutions Pvt Ltd.</strong>, its directors, employees, and affiliates from any and all legal claims, financial disputes, consumer complaints, damages, or liabilities of any kind arising out of your enrollment or financial transactions with Geeky Researcher.</p>
+                </div>
+            </section>
+
+            <!-- Clause 5 -->
+            <section id="clause-5" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 05</span>
+                    <h2 class="clause-title">Installment Structure (100%, 75%, &amp; 50% Plans)</h2>
+                </div>
+                <p>Geeky Researcher offers flexible payment structures (100% Full Payment, 75% Term Advance, and 50% Half Fee Advance) for student convenience, subject to strict access duration rules:</p>
+                <ul class="clause-list">
+                    <li><strong>100% Full Payment:</strong> Grants access for the complete stipulated duration of the selected Academic Level.</li>
+                    <li><strong>75% &amp; 50% Partial Payment Plans:</strong> Grant prorated initial access duration proportional to the percentage of fee paid (plus any applicable grace period determined by administration).</li>
+                    <li>To maintain uninterrupted access for the remainder of the course duration, students enrolled under the 75% or 50% plan must clear their remaining balance before their prorated access window expires.</li>
+                    <li>Failure to pay the balance installment on time will result in automatic lock-out of the student dashboard until the pending dues are cleared. No refund of the initial installment will be provided if a student chooses not to pay the remaining balance.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 6 -->
+            <section id="clause-6" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 06</span>
+                    <h2 class="clause-title">Strict No-Refund &amp; Non-Transferable Policy</h2>
+                </div>
+                <p>Because digital study materials, proprietary lectures, and test series are unlocked immediately upon account approval, <strong>all fees paid to Geeky Researcher are strictly non-refundable and non-transferable under any circumstances</strong>.</p>
+                <ul class="clause-list">
+                    <li>Free demo resources and syllabus directories are publicly available on the website so prospective students can evaluate the teaching methodology before enrolling.</li>
+                    <li>Once a payment is made (whether 50%, 75%, or 100%), no requests for refunds, chargebacks, course downgrades, or transfers of subscription to another student will be entertained.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 7 -->
+            <section id="clause-7" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 07</span>
+                    <h2 class="clause-title">Single-Device Login &amp; Account Security</h2>
+                </div>
+                <p>Your Geeky Researcher account is strictly personal and licensed for use by <strong>one single individual only</strong>.</p>
+                <ul class="clause-list">
+                    <li>The platform enforces an automated <strong>Single-Active-Session Security Protocol</strong>. Logging into your account on a second device will automatically detect a session conflict and terminate previous sessions.</li>
+                    <li>Sharing your login credentials (email/password) with friends, classmates, study groups, or third parties is strictly prohibited.</li>
+                    <li>Our security systems actively monitor abnormal login patterns, simultaneous IP hops, and credential sharing. Accounts flagged for credential sharing will be permanently banned without notice or refund.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 8 -->
+            <section id="clause-8" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 08</span>
+                    <h2 class="clause-title">Intellectual Property &amp; Strict Anti-Piracy Policy</h2>
+                </div>
+                <p>All content hosted on Geeky Researcher—including recorded video lectures, live class recordings, PDFs, presentation slides, question banks, mock tests, logos, and publications—is the exclusive intellectual property of <strong>Geeky Researcher (Geeky Services)</strong> and its founders, protected under the Indian Copyright Act, 1957.</p>
+                <ul class="clause-list">
+                    <li><strong>Prohibited Actions:</strong> You are strictly forbidden from screen-recording, capturing screenshots, downloading via third-party browser extensions, copying, printing, reproducing, or redistributing any video, PDF, or test question.</li>
+                    <li>Uploading or sharing Geeky Researcher materials on Telegram channels, WhatsApp groups, YouTube, Google Drive, or any torrent/file-sharing platform constitutes a serious criminal and civil copyright offense.</li>
+                    <li>Violators will face immediate account termination, forfeiture of all fees paid, and strict legal prosecution seeking monetary damages and criminal penalties.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 9 -->
+            <section id="clause-9" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 09</span>
+                    <h2 class="clause-title">Read-Only &amp; Non-Downloadable Platform Access</h2>
+                </div>
+                <p>Unless explicitly provided with a "Download" button (such as the Master Syllabus brochure), all study materials, PDFs, presentations, and video lectures on both the Free Resources portal and the Student Dashboard are provided strictly on a <strong>Read-Only / Stream-Only basis</strong> within our secure in-browser viewer during your active subscription period.</p>
+            </section>
+
+            <!-- Clause 10 -->
+            <section id="clause-10" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 10</span>
+                    <h2 class="clause-title">Academic Disclaimer &amp; No Guarantee of Rank/Selection</h2>
+                </div>
+                <p>While Geeky Researcher takes pride in its rigorous pedagogy and past student achievements in ASRB-NET, ARS, and JRF examinations, enrollment in any programme does not constitute a legal guarantee of clearing an examination, securing a specific rank, or obtaining government/academic employment.</p>
+                <p>Examination success depends on each individual student's dedication, consistent study, practice, and performance on examination day.</p>
+            </section>
+
+            <!-- Clause 11 -->
+            <section id="clause-11" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 11</span>
+                    <h2 class="clause-title">Student Code of Conduct &amp; Academic Integrity</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>Students must maintain respectful, professional decorum during live classes, doubt-clearing sessions, and interactions with faculty or support staff.</li>
+                    <li>Any form of abusive language, harassment, spamming, defamation, or disruption of academic sessions will result in immediate expulsion from the platform without refund.</li>
+                    <li>Attempting to cheat, scrape questions, or manipulate timers in online daily/weekly/monthly tests is strictly prohibited.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 12 -->
+            <section id="clause-12" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 12</span>
+                    <h2 class="clause-title">System Availability, Internet Requirements &amp; Force Majeure</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>Students are responsible for arranging their own compatible computing/mobile devices and a stable broadband/4G/5G internet connection to stream lectures and render documents.</li>
+                    <li>Periodic server maintenance, cloud upgrades, or unexpected upstream outages (such as CDN, cloud hosting, or internet service provider disruptions) may occasionally restrict temporary access. Neither Geeky Researcher nor its technology vendor shall be liable for temporary downtime or force majeure events beyond reasonable control.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 13 -->
+            <section id="clause-13" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 13</span>
+                    <h2 class="clause-title">Data Privacy, Promotional Consent &amp; Communications</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>By registering, you consent to receive transactional emails, OTP verification codes, payment status updates, test reminders, and academic announcements via Email, SMS, or WhatsApp from Geeky Researcher.</li>
+                    <li>In the event that you qualify or secure a rank in competitive examinations (such as ASRB-NET, ARS, JRF, SRF, etc.) while enrolled as a student of Geeky Researcher, you grant Geeky Researcher the right to publish your name, photograph, and achievement details on our "Wall of Fame" and academic promotional materials.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 14 -->
+            <section id="clause-14" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 14</span>
+                    <h2 class="clause-title">Account Suspension &amp; Right to Terminate</h2>
+                </div>
+                <p>Geeky Researcher reserves the unconditional right to suspend, restrict, or permanently terminate any student account found in breach of any clause in this Agreement—particularly regarding non-payment of installments, piracy, credential sharing, or misconduct—without any liability to refund fees.</p>
+            </section>
+
+            <!-- Clause 15 -->
+            <section id="clause-15" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 15</span>
+                    <h2 class="clause-title">Governing Law, Jurisdiction &amp; Grievance Redressal</h2>
+                </div>
+                <p>This Agreement shall be governed by and construed in accordance with the laws of India. Any dispute, claim, or controversy arising out of or relating to course enrollment, fee payments, or academic services shall be directed solely to <strong>Geeky Researcher (Geeky Services)</strong> and shall be subject to the exclusive jurisdiction of the competent courts chosen by Geeky Researcher management.</p>
+                <p><strong>Official Grievance &amp; Support Contact (Geeky Researcher):</strong><br>
+                Email: <a href="mailto:researchergeeky@gmail.com" style="color: var(--forest-green); font-weight: 700; text-decoration: underline;">researchergeeky@gmail.com</a> | Phone: <a href="tel:8807862773" style="color: var(--forest-green); font-weight: 700;">+91 8807862773</a></p>
+            </section>
+
+            <!-- Acceptance Box -->
+            <div class="acceptance-cta">
+                <h3>Ready to Complete Your Enrollment?</h3>
+                <p>Having reviewed our Terms &amp; Conditions, you may return to the registration portal, check the agreement box, and proceed with your enrollment.</p>
+                <div class="cta-btn-group">
+                    <a href="register.html" class="nav-btn nav-btn-primary" style="padding: 14px 28px;">
+                        <i class="fa-solid fa-check-double"></i> Return to Registration Page
+                    </a>
+                    <a href="index.html" class="nav-btn nav-btn-outline" style="padding: 14px 28px;">
+                        <i class="fa-solid fa-house"></i> Back to Homepage
+                    </a>
+                </div>
+            </div>
+
+        </article>
+    </main>
+
+    <!-- Agency Credit -->
+    <footer class="agency-credit">
+        <p class="agency-title">Technology Platform Engineered &amp; Developed by</p>
+        <a href="https://xetatechsolutions.com/" target="_blank">
+            <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Tech Solutions">
+        </a>
+        <p class="agency-tagline">Engineering the Future of Enterprise Technologies</p>
+        <div class="agency-contact">
+            <a href="mailto:info@xetatechsolutions.com">info@xetatechsolutions.com</a> 
+            <span style="margin: 0 8px; color: var(--border-dark);">|</span> 
+            <a href="tel:9010408899">9010408899</a>
+        </div>
+    </footer>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geeky Researcher | Terms & Conditions</title>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Theme Variables */
+            --bg-ivory: #FDFCF8;
+            --bg-offwhite: #F4F2EC;
+            --forest-green: #143623;
+            --botanical-green: #255C3E;
+            --leaf-green: #378057;
+            --gold-accent: #C5A059;
+            --gold-light: #E8D3A7;
+            --text-charcoal: #232725;
+            --text-muted: #59655E;
+            --border-light: #E2DFD3;
+            --border-dark: #C6C2B4;
+            --white: #FFFFFF;
+            --error-red: #d9534f;
+            
+            --font-editorial: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-ivory);
+            color: var(--text-charcoal);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23143623' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
+
+        .navbar {
+            width: 100%;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(253, 252, 248, 0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-logo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-accent); }
+        .nav-title-group { display: flex; flex-direction: column; }
+        .nav-title { font-family: var(--font-editorial); font-weight: 700; font-size: 1.25rem; color: var(--forest-green); line-height: 1.1; }
+        .nav-subtitle { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-accent); font-weight: 700; margin-top: 2px; }
+
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; border-radius: 2px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-btn-outline { border: 1px solid var(--border-dark); color: var(--forest-green); background: var(--white); }
+        .nav-btn-outline:hover { border-color: var(--forest-green); background: var(--bg-offwhite); }
+        .nav-btn-primary { background-color: var(--forest-green); color: var(--white); border: 1px solid var(--forest-green); }
+        .nav-btn-primary:hover { background-color: var(--botanical-green); border-color: var(--botanical-green); }
+
+        /* Hero Banner */
+        .legal-hero {
+            background-color: var(--forest-green);
+            color: var(--white);
+            padding: 64px 24px;
+            text-align: center;
+            border-bottom: 5px solid var(--gold-accent);
+        }
+        .eyebrow {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(232, 211, 167, 0.3);
+        }
+        .legal-hero h1 {
+            font-family: var(--font-editorial);
+            font-size: 2.75rem;
+            color: var(--white);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        .legal-hero p {
+            max-width: 680px;
+            margin: 0 auto;
+            color: rgba(253, 252, 248, 0.85);
+            font-size: 0.98rem;
+        }
+        .effective-meta {
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold-light);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 8px 18px;
+            border-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Main Content Layout */
+        .legal-wrapper {
+            width: 100%;
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 56px 24px 80px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Sidebar Table of Contents */
+        .toc-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--forest-green);
+            padding: 24px;
+            position: sticky;
+            top: 104px;
+            box-shadow: 0 12px 30px rgba(20, 54, 35, 0.04);
+        }
+        .toc-title {
+            font-family: var(--font-editorial);
+            font-size: 1.15rem;
+            color: var(--forest-green);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
+            font-weight: 700;
+        }
+        .toc-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+        }
+        .toc-list a {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 7px 10px;
+            border-radius: 2px;
+            border-left: 2px solid transparent;
+            line-height: 1.35;
+        }
+        .toc-list a:hover {
+            color: var(--forest-green);
+            background-color: var(--bg-offwhite);
+            border-left-color: var(--gold-accent);
+        }
+        .toc-list a.highlight-link {
+            color: var(--forest-green);
+            background-color: #fcf8ee;
+            border-left-color: var(--gold-accent);
+            font-weight: 700;
+        }
+
+        /* Legal Document Paper */
+        .legal-document {
+            background-color: var(--white);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--gold-accent);
+            padding: 56px;
+            box-shadow: 0 20px 40px rgba(20, 54, 35, 0.05);
+        }
+
+        .preamble-box {
+            background-color: var(--bg-ivory);
+            border: 1px solid var(--border-dark);
+            border-left: 4px solid var(--forest-green);
+            padding: 24px;
+            margin-bottom: 40px;
+            font-size: 0.92rem;
+            color: var(--text-charcoal);
+        }
+
+        .clause-section {
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border-light);
+            scroll-margin-top: 100px;
+        }
+        .clause-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .clause-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .clause-number {
+            background-color: var(--forest-green);
+            color: var(--gold-light);
+            font-family: var(--font-editorial);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .clause-title {
+            font-family: var(--font-editorial);
+            font-size: 1.45rem;
+            color: var(--forest-green);
+            font-weight: 700;
+        }
+
+        .clause-section p {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        .clause-section p strong {
+            color: var(--text-charcoal);
+        }
+
+        .clause-list {
+            list-style: none;
+            margin: 14px 0;
+            padding-left: 8px;
+        }
+        .clause-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+        .clause-list li::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--gold-accent);
+            font-size: 0.85rem;
+        }
+
+        /* Special Protection Highlight Box for Xeta Tech Solutions & Payment Liability */
+        .critical-liability-box {
+            background-color: #FCF9F2;
+            border: 2px solid var(--gold-accent);
+            border-left: 6px solid var(--forest-green);
+            padding: 28px;
+            margin: 20px 0;
+            border-radius: 2px;
+            box-shadow: 0 10px 25px rgba(197, 160, 89, 0.12);
+        }
+        .critical-liability-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--forest-green);
+            color: var(--white);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 5px 12px;
+            border-radius: 2px;
+            margin-bottom: 14px;
+        }
+        .critical-liability-box h4 {
+            font-family: var(--font-editorial);
+            font-size: 1.2rem;
+            color: var(--forest-green);
+            margin-bottom: 10px;
+        }
+        .critical-liability-box p {
+            color: var(--text-charcoal) !important;
+            font-size: 0.92rem;
+            margin-bottom: 12px;
+        }
+        .critical-liability-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Acceptance Footer inside Document */
+        .acceptance-cta {
+            margin-top: 48px;
+            padding: 32px;
+            background-color: var(--bg-offwhite);
+            border: 1px solid var(--border-dark);
+            text-align: center;
+        }
+        .acceptance-cta h3 {
+            font-family: var(--font-editorial);
+            font-size: 1.4rem;
+            color: var(--forest-green);
+            margin-bottom: 8px;
+        }
+        .acceptance-cta p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .cta-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer Branding */
+        .agency-credit {
+            text-align: center;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border-light);
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+        .agency-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; }
+        .agency-credit img { height: 38px; opacity: 0.85; transition: var(--transition); margin: 4px 0; }
+        .agency-credit img:hover { opacity: 1; transform: scale(1.05); }
+        .agency-tagline { font-size: 0.85rem; color: var(--gold-accent); font-style: italic; font-family: var(--font-editorial); }
+        .agency-contact { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .agency-contact a { color: var(--forest-green); font-weight: 700; transition: var(--transition); letter-spacing: 0.5px; }
+        .agency-contact a:hover { color: var(--gold-accent); }
+
+        @media (max-width: 992px) {
+            .legal-wrapper {
+                grid-template-columns: 1fr;
+                padding: 32px 16px 60px;
+            }
+            .toc-card {
+                position: static;
+            }
+            .toc-list {
+                max-height: none;
+            }
+            .legal-document {
+                padding: 36px 24px;
+            }
+        }
+        @media (max-width: 640px) {
+            .navbar { padding: 14px 16px; }
+            .nav-btn { padding: 8px 12px; font-size: 0.7rem; }
+            .legal-hero { padding: 48px 16px; }
+            .legal-hero h1 { font-size: 2rem; }
+            .clause-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .clause-title { font-size: 1.25rem; }
+            .critical-liability-box { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo" class="nav-logo">
+            <div class="nav-title-group">
+                <span class="nav-title">Geeky Researcher</span>
+                <span class="nav-subtitle">Legal &amp; Compliance</span>
+            </div>
+        </a>
+
+        <div class="nav-actions">
+            <a href="index.html" class="nav-btn nav-btn-outline">
+                <i class="fa-solid fa-house"></i> <span>Home</span>
+            </a>
+            <a href="register.html" class="nav-btn nav-btn-primary">
+                <i class="fa-solid fa-user-check"></i> <span>Back to Enrollment</span>
+            </a>
+        </div>
+    </nav>
+
+    <header class="legal-hero">
+        <span class="eyebrow">Academic &amp; Platform Governance</span>
+        <h1>Terms &amp; Conditions of Enrollment</h1>
+        <p>Please read these terms carefully before registering, making any fee payment, or accessing lectures, study materials, and examination series on Geeky Researcher.</p>
+        <div class="effective-meta">
+            <span><i class="fa-regular fa-calendar-check"></i> Effective Date: October 2026</span>
+            <span>|</span>
+            <span><i class="fa-solid fa-scale-balanced"></i> Jurisdiction: India</span>
+        </div>
+    </header>
+
+    <main class="legal-wrapper">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="toc-card">
+            <div class="toc-title">Document Clauses</div>
+            <ul class="toc-list">
+                <li><a href="#clause-1">1. Acceptance of Agreement</a></li>
+                <li><a href="#clause-2">2. Platform Ownership &amp; Scope</a></li>
+                <li><a href="#clause-3" class="highlight-link">3. Payment Responsibility &amp; Fee Policy</a></li>
+                <li><a href="#clause-4" class="highlight-link">4. Role &amp; Non-Liability of Xeta Tech Solutions</a></li>
+                <li><a href="#clause-5">5. Installment Plans (100%, 75%, 50%)</a></li>
+                <li><a href="#clause-6">6. Non-Refundable &amp; Non-Transferable Policy</a></li>
+                <li><a href="#clause-7">7. Single-Device &amp; Account Security</a></li>
+                <li><a href="#clause-8">8. Strict Anti-Piracy &amp; IP Protection</a></li>
+                <li><a href="#clause-9">9. Read-Only &amp; Non-Downloadable Content</a></li>
+                <li><a href="#clause-10">10. No Guarantee of Examination Ranks</a></li>
+                <li><a href="#clause-11">11. Student Code of Conduct</a></li>
+                <li><a href="#clause-12">12. Service Availability &amp; Maintenance</a></li>
+                <li><a href="#clause-13">13. Data Privacy &amp; Communications</a></li>
+                <li><a href="#clause-14">14. Account Suspension &amp; Termination</a></li>
+                <li><a href="#clause-15">15. Governing Law &amp; Dispute Resolution</a></li>
+            </ul>
+        </aside>
+
+        <!-- Legal Clauses Content -->
+        <article class="legal-document">
+            
+            <div class="preamble-box">
+                <strong>IMPORTANT LEGAL NOTICE:</strong> This Terms &amp; Conditions Agreement ("Agreement") constitutes a legally binding contract between you ("Student", "User", "Aspirant", or "You") and <strong>Geeky Researcher (operated under Geeky Services)</strong> regarding your enrollment and use of the Geeky Researcher Plant Pathology Learning Management System (LMS). By checking the "I have read and agree to the Terms &amp; Conditions" box on the registration page or by remitting any course fee, you unconditionally accept all terms stated herein.
+            </div>
+
+            <!-- Clause 1 -->
+            <section id="clause-1" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 01</span>
+                    <h2 class="clause-title">Acceptance of Agreement &amp; Eligibility</h2>
+                </div>
+                <p>By registering an account, accessing free demo resources, or enrolling in any paid academic level (Level 1 through Level 5) on the Geeky Researcher portal, you affirm that you have read, understood, and agreed to abide by these Terms &amp; Conditions.</p>
+                <ul class="clause-list">
+                    <li>You must provide accurate, complete, and verifiable registration details including your full legal name, active email address, mobile number, and academic institution/organization.</li>
+                    <li>Accounts registered with fake identities, disposable email addresses, or unverifiable phone numbers are subject to immediate cancellation without refund.</li>
+                    <li>Geeky Researcher reserves the right to update, modify, or replace any part of these Terms at its sole discretion.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 2 -->
+            <section id="clause-2" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 02</span>
+                    <h2 class="clause-title">Platform Ownership &amp; Academic Scope</h2>
+                </div>
+                <p><strong>Geeky Researcher (Geeky Services)</strong> is an independent educational platform dedicated to Plant Pathology coaching and preparation for competitive examinations including ASRB-NET, ARS, SMS, STO, SAUs, JRF, SRF, and Ph.D. entrances.</p>
+                <p>All curriculum structures, video lectures, live sessions, daily/weekly/monthly tests, model papers, syllabus schedules, and academic guidance are created, managed, and delivered exclusively by the faculty and management of <strong>Geeky Researcher</strong>.</p>
+            </section>
+
+            <!-- Clause 3 -->
+            <section id="clause-3" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 03</span>
+                    <h2 class="clause-title">Financial Transactions &amp; Payment Responsibility</h2>
+                </div>
+                <p>All course fees, enrollment charges, and installment payments displayed on the portal are collected directly by and into the authorized bank/UPI accounts of <strong>Geeky Researcher (Geeky Services)</strong>.</p>
+                
+                <div class="critical-liability-box">
+                    <span class="critical-liability-badge"><i class="fa-solid fa-building-shield"></i> Financial Responsibility Declaration</span>
+                    <h4>100% Payment Responsibility of Geeky Researcher</h4>
+                    <p>All payments made by students via UPI QR codes, GPay, PhonePe, Paytm, bank transfers, or any other payment mode during registration or renewal are received directly by <strong>Geeky Researcher (Geeky Services)</strong>.</p>
+                    <p><strong>Geeky Researcher</strong> is solely and exclusively responsible for payment verification, fee receipts, account approval, course activation, tax compliance, billing inquiries, and any payment-related disputes. Students must direct all payment proofs, transaction IDs, and fee queries exclusively to Geeky Researcher administration (<a href="mailto:researchergeeky@gmail.com" style="text-decoration: underline; font-weight: 700;">researchergeeky@gmail.com</a> / <strong>8807862773</strong>).</p>
+                </div>
+
+                <ul class="clause-list">
+                    <li>After scanning the UPI QR code and completing payment, accounts enter a "Verification Pending" state until manually verified and approved by the Geeky Researcher administration team.</li>
+                    <li>Submitting fabricated payment screenshots, reversed transactions, or unauthorized UPI claims will result in permanent blacklisting and legal action.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 4 -->
+            <section id="clause-4" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 04</span>
+                    <h2 class="clause-title">Role &amp; Complete Non-Liability of Xeta Tech Solutions Pvt Ltd.</h2>
+                </div>
+                <p>To ensure complete transparency regarding platform operations, all users, students, and third parties hereby acknowledge the strict separation between the academic/business owner and the software development vendor:</p>
+
+                <div class="critical-liability-box">
+                    <span class="critical-liability-badge"><i class="fa-solid fa-shield-halved"></i> Technology Vendor Indemnification</span>
+                    <h4>Xeta Tech Solutions Pvt Ltd. is Strictly the Product Builder</h4>
+                    <p><strong>Xeta Tech Solutions Pvt Ltd.</strong> ("Developer" / "Technology Partner") has acted strictly as an independent software engineering and IT service provider hired to design, develop, and build the web application for Geeky Researcher.</p>
+                    <p><strong>Xeta Tech Solutions Pvt Ltd. does NOT collect, hold, process, manage, or receive any student payments or course fees.</strong> Furthermore, Xeta Tech Solutions Pvt Ltd. has zero involvement in, and bears zero liability for:</p>
+                    <ul class="clause-list" style="margin-top: 10px;">
+                        <li>Any financial transactions, UPI transfers, fee collection, payment delays, failed verifications, or refund claims;</li>
+                        <li>The accuracy, completeness, scheduling, or delivery of academic lectures, study materials, books, or test series;</li>
+                        <li>Administrative decisions made by Geeky Researcher, including student approval, suspension, or fee structure changes;</li>
+                        <li>Any academic outcomes, examination results, or commercial commitments made by Geeky Researcher.</li>
+                    </ul>
+                    <p style="margin-top: 10px;">By using this website, you irrevocably agree to hold harmless and indemnify <strong>Xeta Tech Solutions Pvt Ltd.</strong>, its directors, employees, and affiliates from any and all legal claims, financial disputes, consumer complaints, damages, or liabilities of any kind arising out of your enrollment or financial transactions with Geeky Researcher.</p>
+                </div>
+            </section>
+
+            <!-- Clause 5 -->
+            <section id="clause-5" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 05</span>
+                    <h2 class="clause-title">Installment Structure (100%, 75%, &amp; 50% Plans)</h2>
+                </div>
+                <p>Geeky Researcher offers flexible payment structures (100% Full Payment, 75% Term Advance, and 50% Half Fee Advance) for student convenience, subject to strict access duration rules:</p>
+                <ul class="clause-list">
+                    <li><strong>100% Full Payment:</strong> Grants access for the complete stipulated duration of the selected Academic Level.</li>
+                    <li><strong>75% &amp; 50% Partial Payment Plans:</strong> Grant prorated initial access duration proportional to the percentage of fee paid (plus any applicable grace period determined by administration).</li>
+                    <li>To maintain uninterrupted access for the remainder of the course duration, students enrolled under the 75% or 50% plan must clear their remaining balance before their prorated access window expires.</li>
+                    <li>Failure to pay the balance installment on time will result in automatic lock-out of the student dashboard until the pending dues are cleared. No refund of the initial installment will be provided if a student chooses not to pay the remaining balance.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 6 -->
+            <section id="clause-6" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 06</span>
+                    <h2 class="clause-title">Strict No-Refund &amp; Non-Transferable Policy</h2>
+                </div>
+                <p>Because digital study materials, proprietary lectures, and test series are unlocked immediately upon account approval, <strong>all fees paid to Geeky Researcher are strictly non-refundable and non-transferable under any circumstances</strong>.</p>
+                <ul class="clause-list">
+                    <li>Free demo resources and syllabus directories are publicly available on the website so prospective students can evaluate the teaching methodology before enrolling.</li>
+                    <li>Once a payment is made (whether 50%, 75%, or 100%), no requests for refunds, chargebacks, course downgrades, or transfers of subscription to another student will be entertained.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 7 -->
+            <section id="clause-7" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 07</span>
+                    <h2 class="clause-title">Single-Device Login &amp; Account Security</h2>
+                </div>
+                <p>Your Geeky Researcher account is strictly personal and licensed for use by <strong>one single individual only</strong>.</p>
+                <ul class="clause-list">
+                    <li>The platform enforces an automated <strong>Single-Active-Session Security Protocol</strong>. Logging into your account on a second device will automatically detect a session conflict and terminate previous sessions.</li>
+                    <li>Sharing your login credentials (email/password) with friends, classmates, study groups, or third parties is strictly prohibited.</li>
+                    <li>Our security systems actively monitor abnormal login patterns, simultaneous IP hops, and credential sharing. Accounts flagged for credential sharing will be permanently banned without notice or refund.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 8 -->
+            <section id="clause-8" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 08</span>
+                    <h2 class="clause-title">Intellectual Property &amp; Strict Anti-Piracy Policy</h2>
+                </div>
+                <p>All content hosted on Geeky Researcher—including recorded video lectures, live class recordings, PDFs, presentation slides, question banks, mock tests, logos, and publications—is the exclusive intellectual property of <strong>Geeky Researcher (Geeky Services)</strong> and its founders, protected under the Indian Copyright Act, 1957.</p>
+                <ul class="clause-list">
+                    <li><strong>Prohibited Actions:</strong> You are strictly forbidden from screen-recording, capturing screenshots, downloading via third-party browser extensions, copying, printing, reproducing, or redistributing any video, PDF, or test question.</li>
+                    <li>Uploading or sharing Geeky Researcher materials on Telegram channels, WhatsApp groups, YouTube, Google Drive, or any torrent/file-sharing platform constitutes a serious criminal and civil copyright offense.</li>
+                    <li>Violators will face immediate account termination, forfeiture of all fees paid, and strict legal prosecution seeking monetary damages and criminal penalties.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 9 -->
+            <section id="clause-9" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 09</span>
+                    <h2 class="clause-title">Read-Only &amp; Non-Downloadable Platform Access</h2>
+                </div>
+                <p>Unless explicitly provided with a "Download" button (such as the Master Syllabus brochure), all study materials, PDFs, presentations, and video lectures on both the Free Resources portal and the Student Dashboard are provided strictly on a <strong>Read-Only / Stream-Only basis</strong> within our secure in-browser viewer during your active subscription period.</p>
+            </section>
+
+            <!-- Clause 10 -->
+            <section id="clause-10" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 10</span>
+                    <h2 class="clause-title">Academic Disclaimer &amp; No Guarantee of Rank/Selection</h2>
+                </div>
+                <p>While Geeky Researcher takes pride in its rigorous pedagogy and past student achievements in ASRB-NET, ARS, and JRF examinations, enrollment in any programme does not constitute a legal guarantee of clearing an examination, securing a specific rank, or obtaining government/academic employment.</p>
+                <p>Examination success depends on each individual student's dedication, consistent study, practice, and performance on examination day.</p>
+            </section>
+
+            <!-- Clause 11 -->
+            <section id="clause-11" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 11</span>
+                    <h2 class="clause-title">Student Code of Conduct &amp; Academic Integrity</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>Students must maintain respectful, professional decorum during live classes, doubt-clearing sessions, and interactions with faculty or support staff.</li>
+                    <li>Any form of abusive language, harassment, spamming, defamation, or disruption of academic sessions will result in immediate expulsion from the platform without refund.</li>
+                    <li>Attempting to cheat, scrape questions, or manipulate timers in online daily/weekly/monthly tests is strictly prohibited.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 12 -->
+            <section id="clause-12" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 12</span>
+                    <h2 class="clause-title">System Availability, Internet Requirements &amp; Force Majeure</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>Students are responsible for arranging their own compatible computing/mobile devices and a stable broadband/4G/5G internet connection to stream lectures and render documents.</li>
+                    <li>Periodic server maintenance, cloud upgrades, or unexpected upstream outages (such as CDN, cloud hosting, or internet service provider disruptions) may occasionally restrict temporary access. Neither Geeky Researcher nor its technology vendor shall be liable for temporary downtime or force majeure events beyond reasonable control.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 13 -->
+            <section id="clause-13" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 13</span>
+                    <h2 class="clause-title">Data Privacy, Promotional Consent &amp; Communications</h2>
+                </div>
+                <ul class="clause-list">
+                    <li>By registering, you consent to receive transactional emails, OTP verification codes, payment status updates, test reminders, and academic announcements via Email, SMS, or WhatsApp from Geeky Researcher.</li>
+                    <li>In the event that you qualify or secure a rank in competitive examinations (such as ASRB-NET, ARS, JRF, SRF, etc.) while enrolled as a student of Geeky Researcher, you grant Geeky Researcher the right to publish your name, photograph, and achievement details on our "Wall of Fame" and academic promotional materials.</li>
+                </ul>
+            </section>
+
+            <!-- Clause 14 -->
+            <section id="clause-14" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 14</span>
+                    <h2 class="clause-title">Account Suspension &amp; Right to Terminate</h2>
+                </div>
+                <p>Geeky Researcher reserves the unconditional right to suspend, restrict, or permanently terminate any student account found in breach of any clause in this Agreement—particularly regarding non-payment of installments, piracy, credential sharing, or misconduct—without any liability to refund fees.</p>
+            </section>
+
+            <!-- Clause 15 -->
+            <section id="clause-15" class="clause-section">
+                <div class="clause-header">
+                    <span class="clause-number">Clause 15</span>
+                    <h2 class="clause-title">Governing Law, Jurisdiction &amp; Grievance Redressal</h2>
+                </div>
+                <p>This Agreement shall be governed by and construed in accordance with the laws of India. Any dispute, claim, or controversy arising out of or relating to course enrollment, fee payments, or academic services shall be directed solely to <strong>Geeky Researcher (Geeky Services)</strong> and shall be subject to the exclusive jurisdiction of the competent courts chosen by Geeky Researcher management.</p>
+                <p><strong>Official Grievance &amp; Support Contact (Geeky Researcher):</strong><br>
+                Email: <a href="mailto:researchergeeky@gmail.com" style="color: var(--forest-green); font-weight: 700; text-decoration: underline;">researchergeeky@gmail.com</a> | Phone: <a href="tel:8807862773" style="color: var(--forest-green); font-weight: 700;">+91 8807862773</a></p>
+            </section>
+
+            <!-- Acceptance Box -->
+            <div class="acceptance-cta">
+                <h3>Ready to Complete Your Enrollment?</h3>
+                <p>Having reviewed our Terms &amp; Conditions, you may return to the registration portal, check the agreement box, and proceed with your enrollment.</p>
+                <div class="cta-btn-group">
+                    <a href="register.html" class="nav-btn nav-btn-primary" style="padding: 14px 28px;">
+                        <i class="fa-solid fa-check-double"></i> Return to Registration Page
+                    </a>
+                    <a href="index.html" class="nav-btn nav-btn-outline" style="padding: 14px 28px;">
+                        <i class="fa-solid fa-house"></i> Back to Homepage
+                    </a>
+                </div>
+            </div>
+
+        </article>
+    </main>
+
+    <!-- Agency Credit -->
+    <footer class="agency-credit">
+        <p class="agency-title">Technology Platform Engineered &amp; Developed by</p>
+        <a href="https://xetatechsolutions.com/" target="_blank">
+            <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Tech Solutions">
+        </a>
+        <p class="agency-tagline">Engineering the Future of Enterprise Technologies</p>
+        <div class="agency-contact">
+            <a href="mailto:info@xetatechsolutions.com">info@xetatechsolutions.com</a> 
+            <span style="margin: 0 8px; color: var(--border-dark);">|</span> 
+            <a href="tel:9010408899">9010408899</a>
+        </div>
+    </footer>
+
+</body>
+</html>
