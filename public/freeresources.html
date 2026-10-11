@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Geeky Researcher | Free Demo Materials</title>
     
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- PDF.js Library for Secure Canvas Rendering -->
@@ -19,67 +17,711 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = { 
-            theme: { 
-                extend: { 
-                    fontFamily: { 
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        serif: ['Lora', 'serif']
-                    }, 
-                    colors: { 
-                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', DEFAULT: '#10b981' }, 
-                        surface: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' } 
-                    },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-                        'float': '0 10px 40px -10px rgba(0,0,0,0.12)',
-                        'card': '0 2px 12px rgba(0,0,0,0.03)',
-                        'soft-inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.4s ease-out forwards',
-                        'slide-in-right': 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideInRight: { '0%': { transform: 'translateX(20px)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } }
-                    }
-                } 
-            } 
-        }
-    </script>
+    <!-- Editorial Typography matching Homepage -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
+        :root {
+            /* Theme Variables */
+            --bg-ivory: #FDFCF8;
+            --bg-offwhite: #F4F2EC;
+            --forest-green: #143623;
+            --botanical-green: #255C3E;
+            --leaf-green: #378057;
+            --gold-accent: #C5A059;
+            --gold-light: #E8D3A7;
+            --text-charcoal: #232725;
+            --text-muted: #59655E;
+            --border-light: #E2DFD3;
+            --border-dark: #C6C2B4;
+            --white: #FFFFFF;
+            --error-red: #d9534f;
+            
+            --font-editorial: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body { 
-            background-color: #f8fafc; 
-            color: #334155; 
+            font-family: var(--font-sans);
+            background-color: var(--bg-ivory); 
+            color: var(--text-charcoal); 
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            font-size: 15px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23143623' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+
+        ::selection {
+            background-color: var(--forest-green);
+            color: var(--white);
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold-accent); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .panel { background-color: #ffffff; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 1.5rem; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hidden { display: none !important; }
+        .flex { display: flex !important; }
 
-        .tree-node { transition: all 0.2s ease; border-radius: 0.75rem; }
-        .tree-node:active { transform: scale(0.98); }
-        .tree-node:hover { background: #f8fafc; }
-        .tree-node.active-node { background: #f0fdf4; color: #16a34a; font-weight: 600; border: 1px solid #bbf7d0; }
+        /* Main Shell */
+        .app-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
 
-        /* THEME STYLES */
-        .reader-paper { transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; border-radius: 1.25rem; }
+        /* Header */
+        .app-header {
+            height: 76px;
+            width: 100%;
+            z-index: 20;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(253, 252, 248, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--forest-green);
+            background-color: var(--white);
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .back-btn:hover {
+            background-color: var(--forest-green);
+            color: var(--white);
+            border-color: var(--forest-green);
+            transform: translateX(-2px);
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--gold-accent);
+            box-shadow: 0 4px 10px rgba(20, 54, 35, 0.1);
+            background: var(--white);
+            flex-shrink: 0;
+        }
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand-titles {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand-name {
+            font-family: var(--font-editorial);
+            color: var(--forest-green);
+            font-weight: 700;
+            font-size: 1.25rem;
+            line-height: 1.1;
+        }
+        .brand-sub {
+            color: var(--gold-accent);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 100px;
+            background-color: var(--forest-green);
+            color: var(--white);
+            border: 1px solid var(--forest-green);
+        }
+        .header-cta:hover {
+            background-color: var(--botanical-green);
+            border-color: var(--botanical-green);
+            transform: translateY(-1px);
+        }
+
+        /* Workspace Layout */
+        #workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            padding: 20px 24px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .panel { 
+            background-color: var(--white); 
+            border: 1px solid var(--border-light); 
+            border-radius: 4px; 
+            box-shadow: 0 12px 30px rgba(20, 54, 35, 0.04); 
+            transition: var(--transition); 
+        }
+
+        /* Panel 1: Syllabus Directory */
+        #syllabus-panel {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
+            overflow: hidden;
+            z-index: 10;
+            border-top: 4px solid var(--forest-green);
+        }
+
+        .syllabus-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-ivory);
+        }
+        .syllabus-header h3 {
+            font-family: var(--font-editorial);
+            font-weight: 700;
+            color: var(--forest-green);
+            font-size: 1.15rem;
+        }
+        .public-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: var(--bg-offwhite);
+            color: var(--botanical-green);
+            padding: 5px 10px;
+            border-radius: 2px;
+            border: 1px solid var(--border-dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .public-badge i { color: var(--gold-accent); }
+
+        #tree-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background-color: var(--white);
+        }
+
+        /* Tree Nodes */
+        .tree-folder-group { margin-bottom: 6px; }
+        .tree-node { 
+            transition: all 0.2s ease; 
+            border-radius: 4px; 
+            border: 1px solid transparent;
+        }
+        .tree-node:active { transform: scale(0.99); }
+        .tree-node:hover { background: var(--bg-offwhite); }
+        .tree-node.active-node { 
+            background: var(--bg-ivory); 
+            color: var(--forest-green); 
+            font-weight: 700; 
+            border: 1px solid var(--gold-accent); 
+            border-left: 4px solid var(--forest-green);
+            box-shadow: 0 4px 12px rgba(20, 54, 35, 0.05);
+        }
+
+        .folder-row {
+            display: flex;
+            align-items: stretch;
+            cursor: pointer;
+        }
+        .folder-chevron {
+            padding: 10px 8px 10px 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+        }
+        .folder-chevron i {
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+        .-rotate-90 { transform: rotate(-90deg); }
+
+        .folder-label {
+            flex: 1;
+            padding: 10px 12px 10px 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-charcoal);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .folder-label i {
+            color: var(--gold-accent);
+            margin-right: 10px;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tree-children {
+            margin-left: 22px;
+            border-left: 1px dashed var(--border-dark);
+            padding-left: 10px;
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .file-row {
+            cursor: pointer;
+            padding: 9px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+        .file-row:hover { color: var(--forest-green); }
+
+        .file-icon-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+            background-color: var(--bg-ivory);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .file-icon-video { color: var(--botanical-green); background: #eef6f1; border-color: #cde3d6; }
+        .file-icon-pdf { color: #b93829; background: #fdf2f0; border-color: #f5d0cb; }
+
+        /* Panel 2: Unified Reader / Viewer */
+        #reader-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--bg-offwhite);
+            border-top: 4px solid var(--gold-accent);
+        }
+
+        /* Floating Controls Bar */
+        .floating-toolbar {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .mobile-back-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid var(--border-dark);
+            color: var(--forest-green);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .breadcrumb-pill {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 4px 12px rgba(20, 54, 35, 0.06);
+            border-radius: 4px;
+            padding: 9px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--forest-green);
+            font-size: 0.82rem;
+            font-weight: 700;
+            max-width: 340px;
+        }
+        .breadcrumb-pill i { color: var(--gold-accent); }
+
+        .tool-btn {
+            height: 40px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-dark);
+            color: var(--text-charcoal);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(20, 54, 35, 0.06);
+        }
+        .tool-btn:hover {
+            border-color: var(--forest-green);
+            color: var(--forest-green);
+            background: var(--white);
+        }
+        .tool-btn i { color: var(--botanical-green); }
+
+        /* Eye Care Dropdown */
+        .dropdown-wrapper { position: relative; }
+        #theme-menu {
+            position: absolute;
+            right: 0;
+            margin-top: 8px;
+            width: 220px;
+            background: var(--white);
+            border: 1px solid var(--border-dark);
+            border-top: 3px solid var(--forest-green);
+            border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(20, 54, 35, 0.15);
+            overflow: hidden;
+            padding: 6px 0;
+            z-index: 60;
+            transform-origin: top right;
+        }
+        .menu-section-label {
+            padding: 8px 16px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-ivory);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .theme-option-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 16px;
+            text-align: left;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-charcoal);
+        }
+        .theme-option-btn:hover {
+            background-color: var(--bg-offwhite);
+            color: var(--forest-green);
+        }
+        .theme-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-dark);
+            font-size: 0.75rem;
+        }
+
+        /* Floating Zoom Controls */
+        #zoom-controls {
+            position: absolute;
+            bottom: 28px;
+            right: 28px;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 10px 30px rgba(20, 54, 35, 0.15);
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: var(--forest-green);
+        }
+        .zoom-btn:hover { background-color: var(--bg-offwhite); }
+        #zoom-level-text {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-charcoal);
+            width: 50px;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        /* Sticky Reading Progress */
+        .progress-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            z-index: 40;
+        }
+        #reading-progress {
+            height: 100%;
+            background: var(--gold-accent);
+            width: 0;
+            transition: width 0.15s ease;
+            box-shadow: 0 0 8px rgba(197, 160, 89, 0.6);
+        }
+
+        /* Reader Viewport */
+        #reader-viewport {
+            flex: 1;
+            overflow-y: auto;
+            width: 100%;
+            position: relative;
+            padding: 80px 32px 48px;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Empty Placeholder */
+        #placeholder {
+            margin: auto;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px;
+            text-align: center;
+            max-width: 380px;
+        }
+        .placeholder-icon {
+            width: 68px;
+            height: 68px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(20, 54, 35, 0.06);
+            border: 1px solid var(--border-dark);
+            color: var(--gold-accent);
+            font-size: 1.75rem;
+        }
+        #placeholder h2 {
+            font-family: var(--font-editorial);
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--forest-green);
+            margin-bottom: 8px;
+        }
+        #placeholder p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* Video UI */
+        #video-ui {
+            width: 100%;
+            max-width: 1024px;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .video-container-wrapper { 
+            background: #0a140e; 
+            border-radius: 4px; 
+            overflow: hidden; 
+            position: relative; 
+            box-shadow: 0 20px 45px rgba(20, 54, 35, 0.22); 
+            border: 1px solid var(--border-dark);
+            width: 100%; 
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease; 
+        }
+        #main-video-player {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: relative;
+            z-index: 10;
+        }
+
+        .video-controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 12px 16px;
+            background: var(--white);
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .speed-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg-ivory);
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+            flex-shrink: 0;
+        }
+        .speed-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 8px;
+        }
+        .speed-label i { color: var(--gold-accent); margin-right: 4px; }
+        .speed-btn {
+            padding: 6px 12px;
+            border-radius: 2px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .speed-btn:hover { color: var(--forest-green); }
+        .speed-btn.active { 
+            background-color: var(--forest-green); 
+            color: var(--white); 
+            box-shadow: 0 2px 6px rgba(20, 54, 35, 0.2); 
+        }
+
+        .vid-action-btn {
+            flex-shrink: 0;
+            padding: 8px 14px;
+            border-radius: 4px;
+            background: var(--bg-ivory);
+            border: 1px solid var(--border-dark);
+            color: var(--forest-green);
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .vid-action-btn:hover {
+            background: var(--forest-green);
+            color: var(--white);
+            border-color: var(--forest-green);
+        }
+
+        /* Document UI */
+        #doc-ui {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            flex-direction: column;
+        }
+
+        /* THEME STYLES (Preserved for Eye Care) */
+        .reader-paper { 
+            transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; 
+            border-radius: 4px; 
+            padding: 24px;
+            width: 100%;
+            min-height: 85vh;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(20, 54, 35, 0.05);
+            background: var(--white);
+        }
         .pdf-page-canvas, iframe, #main-video-player { transition: filter 0.4s ease; transform: translateZ(0); }
         .pdf-page-canvas { display: block; }
         
-        .theme-light { background-color: #ffffff; color: #334155; border: 1px solid #e2e8f0; }
+        .theme-light { background-color: #ffffff; color: #334155; border: 1px solid var(--border-light); }
         .theme-light .pdf-page-canvas, .theme-light iframe { filter: none; }
         .video-theme-light { filter: none; }
         
@@ -104,9 +746,42 @@
         .theme-hcdark { background-color: #000000; color: #FFFF00; border: 1px solid #333333; }
         .video-theme-hcdark { filter: invert(0.9) grayscale(100%) contrast(1.5); }
 
-        .speed-btn.active { background-color: #10b981; color: #ffffff; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
-        .video-container-wrapper { background: #000000; border-radius: 1rem; overflow: hidden; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25); width: 100%; transition: all 0.4s ease; }
+        /* PDF Page Wrapper */
+        .pdf-page-wrapper {
+            position: relative;
+            margin: 0 auto 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            background: var(--white);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
 
+        /* Loader & Error Boxes */
+        .doc-loader-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-ivory);
+            z-index: 10;
+            color: var(--forest-green);
+        }
+        .error-box {
+            background: #fdf2f2;
+            border: 1px solid #f8d7da;
+            border-left: 4px solid var(--error-red);
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+            margin: 40px auto 0;
+            color: var(--error-red);
+        }
+
+        /* Expanded Fullscreen Mode */
         body.expanded-mode header { display: none !important; }
         body.expanded-mode #syllabus-panel { display: none !important; }
         body.expanded-mode #workspace { padding: 0 !important; gap: 0 !important; }
@@ -117,149 +792,169 @@
         body.expanded-mode #content-reader { max-width: 100%; border-radius: 0; min-height: 100vh; }
 
         @media (max-width: 1023px) {
+            .app-header { padding: 0 16px; height: 66px; }
+            #workspace { padding: 0; gap: 0; }
+            #syllabus-panel { width: 100%; border-radius: 0; border-left: none; border-right: none; }
+            #reader-panel { border-radius: 0; border: none; }
             .mobile-hide { display: none !important; }
-            .video-container-wrapper { border-radius: 0; box-shadow: none; border-bottom: 1px solid #334155; }
+            .mobile-back-btn { display: flex; }
+            .tool-btn span { display: none; }
+            .tool-btn { width: 40px; padding: 0; }
+            .floating-toolbar { top: 10px; left: 10px; right: 10px; }
+            #reader-viewport { padding: 64px 8px 32px; }
+            .reader-paper { padding: 8px; }
+            .video-container-wrapper { border-radius: 0; box-shadow: none; border-left: none; border-right: none; }
+            .breadcrumb-pill { max-width: 190px; padding: 8px 12px; }
         }
     </style>
 </head>
 
-<body class="w-full h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white text-[15px]">
+<body>
 
-    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-surface-50/50">
+    <main class="app-main">
         
-        <header class="h-16 md:h-20 w-full z-20 px-4 md:px-8 flex justify-between items-center glass sticky top-0 border-b border-surface-200/50 shrink-0">
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="w-10 h-10 rounded-xl flex items-center justify-center text-surface-500 hover:bg-surface-100 transition-colors shadow-sm bg-white border border-surface-200">
+        <header class="app-header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn" title="Back to Homepage">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
-                <div class="flex items-center gap-3 ml-2">
-                    <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm hidden sm:block">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" class="w-full h-full object-cover">
+                <a href="index.html" class="brand-wrap">
+                    <div class="brand-logo">
+                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo">
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-surface-900 font-bold tracking-tight text-[15px]">Geeky Researcher</span>
-                        <span class="text-brand-600 text-[10px] font-bold tracking-wider uppercase">Free Demo Resources</span>
+                    <div class="brand-titles">
+                        <span class="brand-name">Geeky Researcher</span>
+                        <span class="brand-sub">Free Demo Resources</span>
                     </div>
-                </div>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <a href="register.html" class="header-cta">
+                    <span>Enroll Now</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
         </header>
 
-        <div id="workspace" class="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 p-0 lg:p-6 overflow-hidden transition-all duration-300">
+        <div id="workspace">
             
             <!-- PANEL 1: SYLLABUS -->
-            <div id="syllabus-panel" class="panel w-full lg:w-[340px] flex flex-col h-full shrink-0 overflow-hidden shadow-none lg:shadow-card border-x-0 border-t-0 rounded-none lg:rounded-xl z-10 transition-all duration-300">
-                <div class="px-5 py-4 border-b border-surface-100 flex justify-between items-center bg-surface-50/50">
-                    <h3 class="font-bold text-surface-900 text-[16px] tracking-tight">Demo Materials</h3>
-                    <span class="text-[10px] font-bold bg-brand-50 text-brand-600 px-2 py-1 rounded border border-brand-100 shadow-sm"><i class="fa-solid fa-gift"></i> Public</span>
+            <div id="syllabus-panel" class="panel">
+                <div class="syllabus-header">
+                    <h3>Demo Materials</h3>
+                    <span class="public-badge"><i class="fa-solid fa-gift"></i> Read-Only</span>
                 </div>
-                <div id="tree-container" class="flex-1 overflow-y-auto p-4 space-y-1 bg-white hide-scrollbar">
-                    <div class="text-center text-surface-400 py-8 text-sm font-medium flex flex-col items-center">
-                        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-brand-500 mb-3"></i> Loading materials...
+                <div id="tree-container" class="hide-scrollbar">
+                    <div style="text-align: center; color: var(--text-muted); padding: 40px 16px; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center;">
+                        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 1.5rem; color: var(--gold-accent); margin-bottom: 12px;"></i>
+                        <span>Loading academic materials...</span>
                     </div>
                 </div>
             </div>
 
             <!-- PANEL 2: UNIFIED READER/VIEWER -->
-            <div id="reader-panel" class="mobile-hide panel flex-1 flex flex-col h-full relative overflow-hidden shadow-none lg:shadow-card border-none lg:border-solid rounded-none lg:rounded-xl bg-surface-50/30 lg:bg-white transition-all duration-300">
+            <div id="reader-panel" class="mobile-hide panel">
                 
                 <!-- Floating Controls -->
-                <div class="absolute top-2 lg:top-4 inset-x-2 lg:inset-x-6 z-50 flex items-center justify-between pointer-events-none drop-shadow-sm">
+                <div class="floating-toolbar">
                     
-                    <div class="flex items-center gap-2 pointer-events-auto">
-                        <button type="button" onclick="showMobileSyllabus()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/95 backdrop-blur-xl border border-surface-200 text-surface-600 shadow-sm">
+                    <div class="toolbar-group">
+                        <button type="button" onclick="showMobileSyllabus()" class="mobile-back-btn" aria-label="Back to Resource List">
                             <i class="fa-solid fa-arrow-left"></i>
                         </button>
-                        <div class="bg-white/90 backdrop-blur-xl border border-surface-200 shadow-sm rounded-xl px-3 lg:px-4 py-2 flex items-center gap-2 text-surface-600 text-[12px] lg:text-[13px] font-semibold truncate max-w-[150px] sm:max-w-[250px] lg:max-w-[300px]">
+                        <div class="breadcrumb-pill">
+                            <i class="fa-solid fa-book-open"></i>
                             <span id="reader-breadcrumbs" class="truncate">Select a resource...</span>
                         </div>
                     </div>
                     
                     <!-- Theme & Tools -->
-                    <div class="flex items-center gap-2 pointer-events-auto">
-                        <div class="relative dropdown-wrapper">
-                            <button type="button" onclick="toggleThemeMenu(event)" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
-                                <i class="fa-solid fa-eye text-brand-500" id="current-theme-icon"></i> 
-                                <span class="hidden lg:inline text-[13px] font-semibold">Eye Care</span>
+                    <div class="toolbar-group">
+                        <div class="dropdown-wrapper">
+                            <button type="button" onclick="toggleThemeMenu(event)" class="tool-btn">
+                                <i class="fa-solid fa-eye" id="current-theme-icon"></i> 
+                                <span>Eye Care</span>
                             </button>
                             
-                            <div id="theme-menu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-surface-200 rounded-2xl shadow-float overflow-hidden py-1.5 z-[60] transform origin-top-right transition-all">
-                                <div class="px-4 py-2 mb-1 border-b border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Environment</div>
-                                <button type="button" onclick="setTheme('light')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-surface-100 flex items-center justify-center border border-surface-200"><i class="fa-solid fa-sun text-[12px] text-surface-500"></i></div> Daylight
+                            <div id="theme-menu" class="hidden">
+                                <div class="menu-section-label">Reading Mode</div>
+                                <button type="button" onclick="setTheme('light')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #FDFCF8;"><i class="fa-solid fa-sun" style="color: #C5A059;"></i></div> Daylight Ivory
                                 </button>
-                                <button type="button" onclick="setTheme('sepia')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center border border-amber-200"><i class="fa-solid fa-book-bookmark text-[12px] text-amber-700"></i></div> Warm Sepia
+                                <button type="button" onclick="setTheme('sepia')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #FBF0D9;"><i class="fa-solid fa-book-bookmark" style="color: #8C6239;"></i></div> Warm Sepia
                                 </button>
-                                <button type="button" onclick="setTheme('sage')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-emerald-100 flex items-center justify-center border border-emerald-200"><i class="fa-solid fa-leaf text-[12px] text-emerald-700"></i></div> Soft Sage
+                                <button type="button" onclick="setTheme('sage')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #E6EFE9;"><i class="fa-solid fa-leaf" style="color: #255C3E;"></i></div> Botanical Sage
                                 </button>
-                                <button type="button" onclick="setTheme('dark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-slate-800 flex items-center justify-center border border-slate-700"><i class="fa-solid fa-moon text-[12px] text-slate-300"></i></div> Night Slate
+                                <button type="button" onclick="setTheme('dark')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #0f172a;"><i class="fa-solid fa-moon" style="color: #cbd5e1;"></i></div> Night Slate
                                 </button>
-                                <div class="px-4 py-2 mt-1 mb-1 border-y border-surface-100 bg-surface-50 text-[10px] font-bold text-surface-400 uppercase tracking-widest">Advanced Protection</div>
-                                <button type="button" onclick="setTheme('bluelight')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-orange-100 flex items-center justify-center border border-orange-200"><i class="fa-solid fa-glasses text-[12px] text-orange-700"></i></div> Blue Light Shield
+                                <div class="menu-section-label" style="margin-top: 4px; border-top: 1px solid var(--border-light);">Advanced Protection</div>
+                                <button type="button" onclick="setTheme('bluelight')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #FFF3E0;"><i class="fa-solid fa-glasses" style="color: #c25e00;"></i></div> Blue Light Shield
                                 </button>
-                                <button type="button" onclick="setTheme('eink')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-gray-200 flex items-center justify-center border border-gray-300"><i class="fa-solid fa-tablet-screen-button text-[12px] text-gray-700"></i></div> E-Ink Grayscale
+                                <button type="button" onclick="setTheme('eink')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #F5F5F5;"><i class="fa-solid fa-tablet-screen-button" style="color: #444;"></i></div> E-Ink Paper
                                 </button>
-                                <button type="button" onclick="setTheme('hcdark')" class="w-full flex items-center gap-3 px-4 py-2.5 text-left text-[13px] font-semibold text-surface-700 hover:bg-surface-50 transition-colors">
-                                    <div class="w-6 h-6 rounded-md bg-black flex items-center justify-center border border-gray-700"><i class="fa-solid fa-circle-half-stroke text-[12px] text-yellow-400"></i></div> High Contrast
+                                <button type="button" onclick="setTheme('hcdark')" class="theme-option-btn">
+                                    <div class="theme-swatch" style="background: #000000;"><i class="fa-solid fa-circle-half-stroke" style="color: #FFFF00;"></i></div> High Contrast
                                 </button>
                             </div>
                         </div>
 
-                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="w-10 h-10 lg:w-auto lg:px-4 flex items-center justify-center gap-2 rounded-xl bg-white/90 backdrop-blur-xl border border-surface-200 text-surface-600 hover:text-surface-900 shadow-sm transition-all">
-                            <i class="fa-solid fa-expand text-brand-500" id="fullscreen-icon"></i> 
-                            <span class="hidden lg:inline text-[13px] font-semibold" id="fullscreen-text">Expand</span>
+                        <button type="button" onclick="toggleFullScreen()" id="fullscreen-btn" class="tool-btn">
+                            <i class="fa-solid fa-expand" id="fullscreen-icon"></i> 
+                            <span id="fullscreen-text">Expand</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Floating Zoom Controls (Documents Only) -->
-                <div id="zoom-controls" class="hidden absolute bottom-8 right-8 z-40 bg-white/95 backdrop-blur-xl border border-surface-200 shadow-float rounded-full flex items-center p-1.5 transition-all">
-                    <button type="button" onclick="changeZoom(-0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-minus text-[14px]"></i></button>
-                    <span id="zoom-level-text" class="text-[12px] font-bold text-surface-700 w-12 text-center font-mono">100%</span>
-                    <button type="button" onclick="changeZoom(0.25)" class="w-8 h-8 flex items-center justify-center rounded-full text-surface-600 hover:bg-surface-100 active:bg-surface-200 transition-colors"><i class="fa-solid fa-plus text-[14px]"></i></button>
+                <div id="zoom-controls" class="hidden">
+                    <button type="button" onclick="changeZoom(-0.25)" class="zoom-btn" aria-label="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+                    <span id="zoom-level-text">100%</span>
+                    <button type="button" onclick="changeZoom(0.25)" class="zoom-btn" aria-label="Zoom In"><i class="fa-solid fa-plus"></i></button>
                 </div>
 
                 <!-- Sticky Reading Progress -->
-                <div class="absolute top-0 left-0 w-full h-[3px] bg-transparent z-40">
-                    <div id="reading-progress" class="h-full bg-brand-500 w-0 transition-all duration-150 rounded-r-full shadow-[0_0_8px_#22c55e]"></div>
+                <div class="progress-track">
+                    <div id="reading-progress"></div>
                 </div>
 
-                <div id="reader-viewport" class="flex-1 overflow-y-auto w-full relative pt-16 lg:pt-24 pb-8 lg:pb-12 px-2 lg:px-8 scroll-smooth hide-scrollbar lg:bg-transparent flex flex-col items-center">
+                <div id="reader-viewport" class="hide-scrollbar">
                     
-                    <div id="placeholder" class="m-auto text-surface-400 flex flex-col items-center p-6 text-center mt-32">
-                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-surface-200">
-                            <i class="fa-solid fa-book-open-reader text-3xl text-surface-300"></i>
+                    <div id="placeholder">
+                        <div class="placeholder-icon">
+                            <i class="fa-solid fa-book-open-reader"></i>
                         </div>
-                        <h2 class="text-lg font-bold text-surface-900 mb-1">Welcome to Demo Resources</h2>
-                        <p class="text-[13px] font-medium max-w-xs text-surface-500">Select a file from the left to view our teaching methodology.</p>
+                        <h2>Welcome to Demo Resources</h2>
+                        <p>Select a lecture or study material from the directory on the left to experience our Plant Pathology learning ecosystem.</p>
                     </div>
 
                     <!-- Video UI Container -->
-                    <div id="video-ui" class="hidden w-full max-w-5xl mx-auto flex-col gap-4">
-                        <div class="video-container-wrapper aspect-video flex items-center justify-center group w-full mx-auto relative">
-                            <video id="main-video-player" preload="metadata" playsinline class="w-full h-full object-contain relative z-10 video-theme-light" controls controlsList="nodownload"></video>
+                    <div id="video-ui" class="hidden">
+                        <div class="video-container-wrapper">
+                            <video id="main-video-player" preload="metadata" playsinline class="video-theme-light" controls controlsList="nodownload"></video>
                         </div>
-                        <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-3 px-3 lg:px-0 lg:py-1 bg-surface-50/50 lg:bg-white/50 rounded-none lg:rounded-2xl border-b lg:border border-surface-200 backdrop-blur-sm">
-                            <div class="flex items-center gap-1 bg-white p-1 rounded-xl border border-surface-200 shrink-0 shadow-sm">
-                                <span class="hidden sm:inline text-[10px] font-bold text-surface-400 uppercase tracking-widest px-2"><i class="fa-solid fa-gauge-high mr-1 text-brand-500"></i> Speed</span>
-                                <button onclick="setSpeed(0.75, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">0.75x</button>
-                                <button onclick="setSpeed(1, this)" class="speed-btn active px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.0x</button>
-                                <button onclick="setSpeed(1.25, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.25x</button>
-                                <button onclick="setSpeed(1.5, this)" class="speed-btn px-3 py-1.5 rounded-lg text-[12px] font-semibold text-surface-600">1.5x</button>
+                        <div class="video-controls-bar hide-scrollbar">
+                            <div class="speed-group">
+                                <span class="speed-label"><i class="fa-solid fa-gauge-high"></i> Speed</span>
+                                <button onclick="setSpeed(0.75, this)" class="speed-btn">0.75x</button>
+                                <button onclick="setSpeed(1, this)" class="speed-btn active">1.0x</button>
+                                <button onclick="setSpeed(1.25, this)" class="speed-btn">1.25x</button>
+                                <button onclick="setSpeed(1.5, this)" class="speed-btn">1.5x</button>
                             </div>
-                            <button onclick="skipVideo(-10)" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-rotate-left"></i> 10s</button>
-                            <button onclick="skipVideo(10)" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-rotate-right"></i> 10s</button>
-                            <button onclick="togglePip()" class="shrink-0 px-3 py-2 rounded-xl bg-white border border-surface-200 text-surface-700 text-[13px] font-semibold shadow-sm"><i class="fa-solid fa-clone text-brand-500"></i> PiP</button>
+                            <button onclick="skipVideo(-10)" class="vid-action-btn"><i class="fa-solid fa-rotate-left"></i> 10s</button>
+                            <button onclick="skipVideo(10)" class="vid-action-btn"><i class="fa-solid fa-rotate-right"></i> 10s</button>
+                            <button onclick="togglePip()" class="vid-action-btn"><i class="fa-solid fa-clone" style="color: var(--gold-accent);"></i> PiP</button>
                         </div>
                     </div>
 
                     <!-- Document UI Container -->
-                    <div id="doc-ui" class="hidden w-full max-w-6xl mx-auto flex-col">
-                        <div id="content-reader" class="reader-paper theme-light p-2 sm:p-4 lg:p-6 w-full min-h-[85vh] h-full flex flex-col relative shadow-sm lg:shadow-card bg-white">
+                    <div id="doc-ui" class="hidden">
+                        <div id="content-reader" class="reader-paper theme-light">
                             <!-- Dynamic Content Rendered Here -->
                         </div>
                     </div>
@@ -315,11 +1010,11 @@
 
         function setTheme(themeName) {
             const paper = document.getElementById('content-reader');
-            paper.className = `reader-paper w-full min-h-[85vh] h-full flex flex-col relative shadow-sm lg:shadow-card bg-white p-2 sm:p-4 lg:p-6 theme-${themeName}`;
+            paper.className = `reader-paper theme-${themeName}`;
             
             const video = document.getElementById('main-video-player');
             if(video) {
-                video.className = `w-full h-full object-contain relative z-10 video-theme-${themeName}`;
+                video.className = `video-theme-${themeName}`;
             }
             localStorage.setItem('reader-theme', themeName);
         }
@@ -332,14 +1027,14 @@
             const text = document.getElementById('fullscreen-text');
             
             if (body.classList.contains('expanded-mode')) {
-                icon.className = 'fa-solid fa-compress text-brand-500'; 
+                icon.className = 'fa-solid fa-compress'; 
                 text.textContent = 'Collapse';
                 try { 
                     if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
                     else if(document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
                 } catch(e){}
             } else {
-                icon.className = 'fa-solid fa-expand text-brand-500'; 
+                icon.className = 'fa-solid fa-expand'; 
                 text.textContent = 'Expand';
                 try { 
                     if(document.exitFullscreen) document.exitFullscreen();
@@ -356,40 +1051,45 @@
                 if(!res.ok) throw new Error("Failed");
                 allResources = await res.json();
                 renderTree();
-            } catch (e) { document.getElementById('tree-container').innerHTML = '<p class="text-red-500 text-center py-4 text-sm">Failed to load materials.</p>'; }
+            } catch (e) { 
+                document.getElementById('tree-container').innerHTML = '<p style="color: var(--error-red); text-align: center; padding: 24px 12px; font-size: 0.85rem; font-weight: 600;">Failed to load materials.</p>'; 
+            }
         }
 
         function renderTree() {
             const tree = document.getElementById('tree-container');
             let html = '';
-            if(allResources.length === 0) { tree.innerHTML = '<p class="text-center text-slate-400 mt-4 text-sm">No materials available.</p>'; return; }
+            if(allResources.length === 0) { 
+                tree.innerHTML = '<p style="text-align: center; color: var(--text-muted); margin-top: 24px; font-size: 0.85rem;">No materials available.</p>'; 
+                return; 
+            }
 
             allResources.forEach(folder => {
                 html += `
-                <div class="mb-1">
-                    <div class="tree-node group flex items-stretch cursor-pointer border border-transparent">
-                        <div onclick="toggleFolder(this); event.stopPropagation();" class="px-3 py-3 lg:py-2.5 text-surface-400 hover:text-surface-800 flex items-center justify-center w-10 lg:w-8">
-                            <i class="fa-solid fa-chevron-down text-[13px] lg:text-[11px] transition-transform duration-200"></i>
+                <div class="tree-folder-group">
+                    <div class="tree-node folder-row">
+                        <div onclick="toggleFolder(this); event.stopPropagation();" class="folder-chevron">
+                            <i class="fa-solid fa-chevron-down"></i>
                         </div>
-                        <div onclick="toggleFolder(this.previousElementSibling); event.stopPropagation();" class="flex-1 pr-3 py-3 lg:py-2.5 text-[15px] lg:text-[14px] font-semibold text-surface-700 flex items-center group-hover:text-surface-900 transition-colors">
-                            <i class="fa-solid fa-folder-closed text-brand-500/80 mr-3 text-lg lg:text-base"></i> 
+                        <div onclick="toggleFolder(this.previousElementSibling); event.stopPropagation();" class="folder-label">
+                            <i class="fa-solid fa-folder-closed"></i> 
                             <span class="truncate">${folder.name}</span>
                         </div>
                     </div>
-                    <div class="tree-children hidden ml-[24px] lg:ml-[22px] border-l border-surface-200 pl-3 mt-1 space-y-1 lg:space-y-0.5">`;
+                    <div class="tree-children hidden">`;
                 
                 folder.items.forEach(file => {
                     const isVideo = file.type === 'video';
-                    const icon = isVideo ? 'fa-circle-play text-purple-500' : 'fa-file-pdf text-red-500';
-                    const iconBg = isVideo ? 'bg-purple-50 border-purple-100' : 'bg-red-50 border-red-100';
+                    const icon = isVideo ? 'fa-circle-play' : 'fa-file-pdf';
+                    const iconClass = isVideo ? 'file-icon-video' : 'file-icon-pdf';
 
                     const fileData = encodeURIComponent(JSON.stringify(file));
                     html += `
-                    <div onclick="viewContent('${fileData}', this)" class="tree-node cursor-pointer px-3 py-3 lg:py-2.5 text-[14px] lg:text-[13.5px] font-medium text-surface-600 flex items-center group transition-colors mt-0.5 border border-transparent">
-                        <div class="w-8 h-8 lg:w-7 lg:h-7 rounded-lg border ${iconBg} flex items-center justify-center mr-3 shrink-0 shadow-sm transition-colors group-hover:bg-white">
-                            <i class="fa-solid ${icon} text-[14px] lg:text-[13px]"></i>
+                    <div onclick="viewContent('${fileData}', this)" class="tree-node file-row">
+                        <div class="file-icon-box ${iconClass}">
+                            <i class="fa-solid ${icon}"></i>
                         </div>
-                        <span class="truncate flex-1 group-hover:text-surface-900">${file.title}</span>
+                        <span class="truncate" style="flex: 1;">${file.title}</span>
                     </div>`;
                 });
                 html += `</div></div>`;
@@ -421,6 +1121,7 @@
             
             if (file.type === 'video') {
                 docUI.classList.add('hidden');
+                docUI.classList.remove('flex');
                 zoomControls.classList.add('hidden');
                 videoUI.classList.remove('hidden');
                 videoUI.classList.add('flex');
@@ -447,11 +1148,11 @@
                     renderGooglePPT(file.url, 'content-reader');
                 } else {
                     document.getElementById('content-reader').innerHTML = `
-                        <div id="doc-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-surface-50 z-10">
-                            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-brand-500 mb-3"></i>
-                            <span class="text-sm font-medium text-slate-500">Rendering document...</span>
+                        <div id="doc-loader" class="doc-loader-overlay">
+                            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--gold-accent); margin-bottom: 12px;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Rendering document...</span>
                         </div>
-                        <div id="pdf-viewer-container" class="w-full flex-1 p-0 overflow-y-auto relative z-0 hide-scrollbar flex flex-col items-center"></div>
+                        <div id="pdf-viewer-container" class="hide-scrollbar" style="width: 100%; flex: 1; overflow-y: auto; position: relative; z-index: 0; display: flex; flex-direction: column; align-items: center;"></div>
                     `;
                     setTimeout(() => loadSecurePDF(file.url, 'pdf-viewer-container'), 100);
                 }
@@ -467,10 +1168,6 @@
                 const pdf = await pdfjsLib.getDocument(url).promise;
                 loader.style.display = 'none'; 
                 
-                /* PERFORMANCE & QUALITY UPGRADE: 
-                   Force a high internal rendering density (minimum 2.5x).
-                   This draws the PDF huge in memory, then CSS squishes it to fit the screen, 
-                   resulting in ultra-crisp "retina" quality text without jagged edges. */
                 const pixelRatio = Math.max(window.devicePixelRatio || 1, 2.5); 
                 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
@@ -481,28 +1178,26 @@
                     
                     const unscaledViewport = page.getViewport({ scale: 1.0 });
                     
-                    // Display Scale: How big it physically sits on the screen
                     const displayScale = (containerWidth - 20) / unscaledViewport.width; 
                     const displayViewport = page.getViewport({ scale: displayScale });
 
-                    // Render Scale: How many pixels are actually drawn in the canvas engine
                     const renderViewport = page.getViewport({ scale: displayScale * pixelRatio });
 
                     const wrapper = document.createElement('div');
-                    wrapper.className = 'relative mb-6 mx-auto shadow-md bg-white overflow-hidden';
+                    wrapper.className = 'pdf-page-wrapper';
                     wrapper.style.width = Math.floor(displayViewport.width) + 'px';
                     wrapper.style.height = Math.floor(displayViewport.height) + 'px';
 
                     const canvas = document.createElement('canvas');
                     
-                    // Give canvas massive internal dimensions for high-res text
                     canvas.width = Math.floor(renderViewport.width);
                     canvas.height = Math.floor(renderViewport.height);
                     
-                    // Constrain it via CSS to fit perfectly inside the wrapper
                     canvas.style.width = Math.floor(displayViewport.width) + 'px';
                     canvas.style.height = Math.floor(displayViewport.height) + 'px';
-                    canvas.className = 'absolute inset-0 w-full h-full pdf-page-canvas block';
+                    canvas.className = 'pdf-page-canvas';
+                    canvas.style.position = 'absolute';
+                    canvas.style.inset = '0';
 
                     wrapper.appendChild(canvas); 
                     container.appendChild(wrapper);
@@ -515,7 +1210,7 @@
                 }
             } catch (err) {
                 loader.style.display = 'none';
-                container.innerHTML = `<div class="bg-rose-50 border border-rose-200 p-4 rounded text-center w-full max-w-md mt-10"><p class="text-rose-600 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Document Engine Error</p><p class="text-xs text-rose-500">CORS restriction or invalid format.</p></div>`;
+                container.innerHTML = `<div class="error-box"><p style="font-weight: 700; margin-bottom: 4px;"><i class="fa-solid fa-triangle-exclamation"></i> Document Engine Error</p><p style="font-size: 0.78rem;">CORS restriction or invalid format.</p></div>`;
             }
         }
 
@@ -524,19 +1219,19 @@
             const embedUrl = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
             
             container.innerHTML = `
-                <div class="w-full h-full min-h-[85vh] relative flex flex-col rounded-xl overflow-hidden border border-surface-200 shadow-inner bg-slate-50">
-                    <div class="p-3 bg-white border-b border-surface-200 flex justify-between items-center shrink-0">
-                        <span class="font-bold text-surface-800 text-[13px] flex items-center">
-                            <i class="fa-solid fa-file-powerpoint text-brand-600 mr-2"></i> Document Viewer
+                <div style="width: 100%; height: 100%; min-height: 85vh; position: relative; display: flex; flex-direction: column; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-light); background: var(--bg-ivory);">
+                    <div style="padding: 12px 16px; background: var(--white); border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                        <span style="font-weight: 700; color: var(--forest-green); font-size: 0.85rem; display: flex; align-items: center;">
+                            <i class="fa-solid fa-file-powerpoint" style="color: var(--gold-accent); margin-right: 8px;"></i> Presentation Viewer
                         </span>
                     </div>
                     
-                    <div class="flex-1 w-full relative">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-0">
-                            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-500 mb-4"></i>
-                            <span class="text-sm font-bold text-slate-700">Loading document...</span>
+                    <div style="flex: 1; width: 100%; position: relative;">
+                        <div class="doc-loader-overlay" style="z-index: 0;">
+                            <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--gold-accent); margin-bottom: 12px;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">Loading presentation...</span>
                         </div>
-                        <iframe src="${embedUrl}" class="w-full h-full absolute inset-0 border-none z-10" allowfullscreen></iframe>
+                        <iframe src="${embedUrl}" style="width: 100%; height: 100%; position: absolute; inset: 0; border: none; z-index: 10;" allowfullscreen></iframe>
                     </div>
                 </div>
             `;
@@ -552,9 +1247,9 @@
         function setSpeed(speed, btnElement) {
             document.getElementById('main-video-player').playbackRate = speed;
             document.querySelectorAll('.speed-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-brand-500', 'text-white'); btn.classList.add('text-surface-600');
+                btn.classList.remove('active');
             });
-            btnElement.classList.remove('text-surface-600'); btnElement.classList.add('active', 'bg-brand-500', 'text-white');
+            btnElement.classList.add('active');
         }
         function skipVideo(seconds) {
             const player = document.getElementById('main-video-player');
