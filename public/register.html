@@ -45,9 +45,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 24px;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23143623' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -55,14 +52,58 @@
 
         a { text-decoration: none; color: inherit; transition: var(--transition); }
         button { cursor: pointer; border: none; background: none; font-family: inherit; transition: var(--transition); }
+
+        .navbar {
+            width: 100%;
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(253, 252, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .nav-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-accent); }
+        .nav-title-group { display: flex; flex-direction: column; }
+        .nav-title { font-family: var(--font-editorial); font-weight: 700; font-size: 1.25rem; color: var(--forest-green); line-height: 1.1; }
+        .nav-subtitle { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 700; }
+
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); position: relative; padding-bottom: 4px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--forest-green); }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 2px;
+            background-color: var(--gold-accent); transition: var(--transition);
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; border-radius: 2px; transition: var(--transition);
+            white-space: nowrap;
+        }
+        .nav-btn-outline { border: 1px solid var(--border-dark); color: var(--forest-green); background: var(--white); }
+        .nav-btn-outline:hover { border-color: var(--forest-green); background: var(--bg-offwhite); }
+        .nav-btn-primary { background-color: var(--forest-green); color: var(--white); border: 1px solid var(--forest-green); }
+        .nav-btn-primary:hover { background-color: var(--botanical-green); border-color: var(--botanical-green); }
         
-        /* Layout & Card */
         .page-container {
             width: 100%;
             max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .premium-card {
@@ -76,49 +117,65 @@
             position: relative;
         }
 
+        .card-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
         .back-link {
-            position: absolute;
-            top: 24px; left: 24px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
-            display: flex; align-items: center; gap: 8px;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px;
+            border-radius: 2px;
+            border: 1px solid var(--border-light);
+            background-color: var(--bg-ivory);
         }
-        .back-link:hover { color: var(--forest-green); }
+        .back-link:hover { color: var(--forest-green); border-color: var(--forest-green); background-color: var(--bg-offwhite); }
 
         .header-logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-light); margin: 0 auto 24px; display: block; box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
         .form-title { font-family: var(--font-editorial); font-size: 2.2rem; color: var(--forest-green); text-align: center; margin-bottom: 8px; font-weight: 700; }
         .form-subtitle { font-size: 0.95rem; color: var(--text-muted); text-align: center; margin-bottom: 32px; }
 
-        /* Wizard Tracker */
+        /* Wizard Tracker - Fixed for Desktop & Mobile */
         .wizard-tracker {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 40px;
             border-bottom: 1px solid var(--border-light);
-            padding-bottom: 16px;
         }
         .step-indicator {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: var(--text-muted);
             position: relative;
             transition: var(--transition);
+            text-align: center;
+            padding: 0 4px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.3;
         }
         .step-active { color: var(--forest-green); }
         .step-active::after {
-            content: ''; position: absolute;
-            bottom: -17px; left: 0; width: 100%; height: 2px;
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
             background-color: var(--gold-accent);
         }
         .step-pending { opacity: 0.5; }
 
-        /* Form Elements */
         .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .input-group { margin-bottom: 24px; }
         .input-label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--forest-green); margin-bottom: 8px; }
@@ -164,6 +221,39 @@
         .check-icon { display: none; position: absolute; top: 12px; right: 12px; color: var(--gold-accent); font-size: 1.2rem; }
         .plan-radio:checked + .plan-card .check-icon { display: block; }
 
+        /* Terms & Conditions Checkbox */
+        .terms-group {
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .terms-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--text-charcoal);
+            cursor: pointer;
+            line-height: 1.5;
+        }
+        .terms-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--forest-green);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .terms-link {
+            color: var(--forest-green);
+            font-weight: 700;
+            text-decoration: underline;
+            transition: var(--transition);
+        }
+        .terms-link:hover {
+            color: var(--gold-accent);
+        }
+
         /* Buttons */
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
@@ -196,7 +286,6 @@
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
 
-        /* View 2: REFINED OTP MODE */
         .otp-wrapper {
             padding: 32px 0;
             text-align: center;
@@ -288,29 +377,73 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes shimmer { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* Responsive */
+        @media (max-width: 1023px) {
+            .nav-links { display: none; }
+        }
         @media (max-width: 768px) {
+            .navbar { padding: 14px 16px; }
+            .nav-btn { padding: 8px 14px; font-size: 0.72rem; }
+            .page-container { padding: 24px 16px; }
             .grid-2-col { grid-template-columns: 1fr; gap: 16px; }
             .plan-grid { grid-template-columns: 1fr; }
-            .wizard-tracker { gap: 16px; flex-wrap: wrap; }
-            .premium-card { padding: 40px 24px; }
-            .form-title { font-size: 1.8rem; }
-            .glossy-otp-container { padding: 40px 20px; }
+            .premium-card { padding: 28px 20px; }
+            .form-title { font-size: 1.75rem; }
+            .wizard-tracker { gap: 4px; margin-bottom: 28px; }
+            .step-indicator {
+                font-size: 0.65rem;
+                letter-spacing: 0.3px;
+                padding: 0 2px 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .nav-title { font-size: 1.05rem; }
+            .nav-subtitle { display: none; }
+            .step-indicator { font-size: 0.6rem; letter-spacing: 0; }
         }
     </style>
 </head>
 <body>
 
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">
+            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo" class="nav-logo">
+            <div class="nav-title-group">
+                <span class="nav-title">Geeky Researcher</span>
+                <span class="nav-subtitle">Secure Portal</span>
+            </div>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#courses">Programmes</a>
+            <a href="login.html">Student Login</a>
+        </div>
+
+        <div class="nav-actions">
+            <a href="index.html" class="nav-btn nav-btn-outline">
+                <i class="fa-solid fa-house"></i> <span>Home</span>
+            </a>
+            <a href="login.html" class="nav-btn nav-btn-primary">
+                <i class="fa-solid fa-right-to-bracket"></i> <span>Login</span>
+            </a>
+        </div>
+    </nav>
+
     <div class="page-container">
         
         <div class="premium-card">
-            <a href="login.html" class="back-link">
-                <i class="fa-solid fa-arrow-left"></i> Return to Login
-            </a>
+            <div class="card-top-bar">
+                <a href="index.html" class="back-link">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+                <a href="login.html" class="back-link">
+                    Login <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
             
             <!-- Header -->
-            <div style="margin-top: 24px;">
-                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Logo" class="header-logo">
+            <div style="margin-top: 8px;">
+                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Logo" class="header-logo">
                 <h2 class="form-title">Student Enrollment</h2>
                 <p class="form-subtitle">Join Geeky Researcher to access exclusive academic modules.</p>
             </div>
@@ -399,13 +532,24 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 40px; text-align: center;">
+                    <!-- Terms & Conditions Agreement -->
+                    <div class="terms-group">
+                        <label class="terms-label">
+                            <input type="checkbox" id="regTerms" required class="terms-checkbox">
+                            <span>I have read and agree to the <a href="terms_conditions.html" target="_blank" class="terms-link">Terms &amp; Conditions</a></span>
+                        </label>
+                    </div>
+
+                    <div style="margin-top: 28px; text-align: center;">
                         <button type="submit" id="btnContinue" class="btn btn-primary" style="max-width: 300px;">
                             <span id="textContinue">Continue to Verification</span>
                             <i id="spinContinue" class="fa-solid fa-circle-notch fa-spin hidden"></i>
                         </button>
                     </div>
                 </form>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 28px;">
+                    Already have an account? <a href="login.html" style="color: var(--forest-green); font-weight: 700; text-decoration: underline;">Sign In</a>
+                </p>
             </div>
 
             <!-- STEP 2: REFINED OTP VERIFICATION -->
@@ -651,6 +795,12 @@
         // Send OTP Request
         async function handleSendOTP(e) {
             e.preventDefault();
+
+            const termsAccepted = document.getElementById('regTerms').checked;
+            if (!termsAccepted) {
+                showAlert('Please agree to the Terms & Conditions to continue.', 'error');
+                return;
+            }
             
             const email = document.getElementById('regEmail').value;
             const btn = document.getElementById('btnContinue');
