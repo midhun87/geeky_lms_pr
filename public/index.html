@@ -110,7 +110,7 @@
             align-items: center;
             justify-content: center;
             padding: 12px 24px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -204,53 +204,62 @@
         .header {
             position: fixed;
             top: 0; left: 0; right: 0;
-            background-color: rgba(253, 252, 248, 0.98);
-            backdrop-filter: blur(12px);
+            background-color: rgba(253, 252, 248, 0.96);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border-light);
             z-index: 1000;
             transition: var(--transition);
         }
         .header .container {
-            max-width: 1440px;
-            padding: 0 40px;
+            max-width: 1400px;
+            padding: 0 32px;
         }
         .header.scrolled {
-            padding: 5px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 30px rgba(20, 54, 35, 0.06);
             background-color: rgba(255, 255, 255, 0.98);
         }
         .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 90px;
-            transition: height 0.3s;
+            height: 88px;
+            transition: height 0.3s ease;
+            gap: 20px;
         }
-        .header.scrolled .nav-container { height: 70px; }
+        .header.scrolled .nav-container { height: 74px; }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             flex-shrink: 0;
         }
         .brand-logo-img {
-            width: 52px; height: 52px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--gold-accent);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(20, 54, 35, 0.12);
+            transition: all 0.3s ease;
+            background-color: var(--white);
+        }
+        .header.scrolled .brand-logo-img {
+            width: 54px;
+            height: 54px;
         }
         .brand:hover .brand-logo-img {
             transform: scale(1.05);
+            border-color: var(--forest-green);
         }
         .brand-text {
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
         .brand-title {
             font-family: var(--font-editorial);
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--forest-green);
             line-height: 1.1;
@@ -260,45 +269,67 @@
             font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--text-muted);
+            color: var(--gold-accent);
             margin-top: 4px;
-            font-weight: 600;
+            font-weight: 700;
             white-space: nowrap;
         }
 
+        /* Sleek Pill Navigation Track */
         .nav-links {
             display: flex;
-            gap: 28px;
+            gap: 4px;
             align-items: center;
+            background-color: var(--bg-offwhite);
+            padding: 5px;
+            border-radius: 100px;
+            border: 1px solid var(--border-light);
         }
         .nav-links a {
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 0.78rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: var(--text-charcoal);
-            position: relative;
-            padding-bottom: 6px;
+            padding: 8px 16px;
+            border-radius: 100px;
             white-space: nowrap;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 0%; height: 2px;
-            background-color: var(--gold-accent);
             transition: var(--transition);
         }
-        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
-        .nav-links a:hover, .nav-links a.active { color: var(--forest-green); }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--forest-green);
+            background-color: var(--white);
+            box-shadow: 0 2px 8px rgba(20, 54, 35, 0.06);
+        }
         
-        .nav-actions { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .nav-actions .btn {
+            padding: 10px 20px;
+            font-size: 0.78rem;
+            border-radius: 100px;
+            letter-spacing: 0.8px;
+        }
         
-        .mobile-menu-btn { display: none; }
+        .mobile-menu-btn {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background-color: var(--white);
+            align-items: center;
+            justify-content: center;
+            color: var(--forest-green);
+        }
         .mobile-nav { display: none; }
 
         .hero {
-            padding: 180px 0 100px;
+            padding: 170px 0 100px;
             min-height: 95vh;
             display: flex;
             align-items: center;
@@ -307,7 +338,6 @@
             overflow: hidden;
         }
         
-        /* Decorative Background Elements */
         .hero::before {
             content: '';
             position: absolute;
@@ -320,16 +350,16 @@
 
         .hero-grid {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: 1.15fr 0.85fr;
             gap: 64px;
             align-items: center;
             position: relative;
             z-index: 1;
         }
-        .hero-content { max-width: 600px; }
+        .hero-content { max-width: 640px; }
         .hero-title {
-            font-size: 4.25rem;
-            line-height: 1.1;
+            font-size: 3.6rem;
+            line-height: 1.15;
             margin-bottom: 24px;
             color: var(--forest-green);
         }
@@ -630,43 +660,79 @@
 
         .about-grid {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 80px;
-            align-items: center;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 64px;
+            align-items: start;
         }
         .about-story {
-            font-size: 1.1rem;
+            font-size: 1.02rem;
             color: var(--text-muted);
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             line-height: 1.8;
         }
-        .about-mission {
-            background: var(--bg-ivory);
-            border: 1px solid var(--border-dark);
-            border-left: 6px solid var(--botanical-green);
-            padding: 40px;
-            margin-top: 40px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        .about-lead {
+            font-family: var(--font-editorial);
+            font-size: 1.35rem;
+            font-style: italic;
+            color: var(--forest-green);
+            margin-bottom: 24px;
+            line-height: 1.5;
+            border-left: 4px solid var(--gold-accent);
+            padding-left: 20px;
         }
-        .about-mission h4 { margin-bottom: 16px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
+        .platform-overview-box {
+            margin-top: 64px;
+            padding: 48px;
+            background: var(--bg-ivory);
+            border: 1px solid var(--border-light);
+            border-top: 4px solid var(--forest-green);
+            box-shadow: 0 15px 35px rgba(20, 54, 35, 0.04);
+        }
+        .overview-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin-top: 28px;
+        }
+        .overview-card {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-left: 5px solid var(--botanical-green);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.02);
+        }
+        .overview-card:last-child { margin-bottom: 0; }
+        .overview-card h4 {
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--forest-green);
+        }
         .brand-signoff {
             font-family: var(--font-editorial);
             font-style: italic;
             font-size: 1.35rem;
             color: var(--gold-accent);
-            margin-top: 40px;
+            margin-top: 36px;
+            text-align: center;
+            padding-top: 28px;
+            border-top: 1px solid var(--border-light);
         }
 
         .faculty-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
+            gap: 28px;
+            position: sticky;
+            top: 110px;
         }
         .faculty-card {
             text-align: center;
             background: var(--white);
             border: 1px solid var(--border-light);
-            padding: 40px 24px;
+            padding: 32px 20px;
             transition: var(--transition);
         }
         .faculty-card:hover { 
@@ -675,8 +741,8 @@
             transform: translateY(-5px);
         }
         .faculty-image {
-            width: 160px; height: 160px;
-            margin: 0 auto 32px;
+            width: 140px; height: 140px;
+            margin: 0 auto 24px;
             border-radius: 50%;
             overflow: hidden;
             border: 4px solid var(--bg-ivory);
@@ -688,9 +754,9 @@
             display: flex; align-items: center; justify-content: center;
             color: var(--text-muted);
         }
-        .faculty-card h4 { font-size: 1.3rem; margin-bottom: 8px; }
-        .faculty-role { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--botanical-green); margin-bottom: 12px; font-weight: 700; }
-        .faculty-qual { font-size: 0.9rem; color: var(--text-muted); font-style: italic; }
+        .faculty-card h4 { font-size: 1.2rem; margin-bottom: 6px; }
+        .faculty-role { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--botanical-green); margin-bottom: 10px; font-weight: 700; }
+        .faculty-qual { font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
 
         .exam-grid {
             display: grid;
@@ -882,9 +948,9 @@
             gap: 80px;
             margin-bottom: 80px;
         }
-        .footer-brand .brand-logo-img { border-color: var(--white); margin-bottom: 24px; display: inline-block; }
+        .footer-brand .brand-logo-img { border-color: var(--white); margin-bottom: 24px; display: inline-block; width: 68px; height: 68px; }
         .footer-brand .brand-title { color: var(--white); margin-bottom: 24px; font-size: 1.8rem; display: block;}
-        .footer-desc { color: rgba(255,255,255,0.8); max-width: 420px; margin-bottom: 40px; font-size: 1.05rem; line-height: 1.7;}
+        .footer-desc { color: rgba(255,255,255,0.8); max-width: 440px; margin-bottom: 40px; font-size: 1.05rem; line-height: 1.7;}
         
         .footer-heading {
             font-family: var(--font-sans);
@@ -947,14 +1013,13 @@
             color: rgba(255,255,255,0.4);
             font-weight: 700;
         }
-.agency-name {
+        .agency-name {
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: rgb(55, 183, 183);
             font-weight: 800;
         }
-
         .agency-credit img {
             height: 40px;
             opacity: 0.8;
@@ -1059,25 +1124,39 @@
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
 
-        @media (max-width: 1200px) {
-            .header .container { padding: 0 24px; }
-            .nav-links { gap: 16px; }
+        @media (max-width: 1280px) {
+            .header .container { padding: 0 20px; }
+            .nav-links a { padding: 8px 12px; font-size: 0.74rem; }
+            .brand-title { font-size: 1.3rem; }
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1120px) {
             .nav-links, .nav-actions { display: none; }
-            .mobile-menu-btn { display: block; color: var(--forest-green); }
+            .mobile-menu-btn { display: inline-flex; }
             .mobile-nav.active {
                 display: flex; flex-direction: column;
                 position: absolute; top: 100%; left: 0; right: 0;
                 background: var(--white); border-bottom: 1px solid var(--border-light);
-                padding: 32px 24px; gap: 24px; box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+                padding: 28px 24px; gap: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.1);
             }
-            .mobile-nav a { font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+            .mobile-nav a {
+                font-weight: 700;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 10px 12px;
+                border-radius: 6px;
+            }
+            .mobile-nav a:hover {
+                background-color: var(--bg-offwhite);
+                color: var(--forest-green);
+            }
 
-            .hero-title { font-size: 3.5rem; }
+            .hero-title { font-size: 3.1rem; }
             .ecosystem-grid, .courses-grid, .exam-grid, .books-grid, .syllabus-modal-grid { grid-template-columns: repeat(2, 1fr); }
-            .about-grid { grid-template-columns: 1fr; gap: 64px; }
+            .about-grid { grid-template-columns: 1fr; gap: 56px; }
+            .faculty-grid { position: static; }
+            .overview-columns { grid-template-columns: 1fr; gap: 32px; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
             .resources-layout { gap: 40px; }
         }
@@ -1095,6 +1174,7 @@
             .ecosystem-grid, .courses-grid, .faculty-grid, .exam-grid, .books-grid, .syllabus-modal-grid { grid-template-columns: 1fr; }
             .resources-layout { grid-template-columns: 1fr; gap: 64px; }
             .footer-grid { grid-template-columns: 1fr; gap: 56px; }
+            .platform-overview-box { padding: 32px 24px; }
             
             .modal-content { max-height: 95vh; }
             .modal-header { padding: 24px; }
@@ -1106,17 +1186,17 @@
 
     <header class="header" id="header">
         <div class="container nav-container">
-            <a href="#" class="brand">
-                <!-- Added Provided Logo -->
-                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Geeky Researcher Logo" class="brand-logo-img">
+            <a href="#home" class="brand">
+                <!-- Updated Client Logo & Size -->
+                <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo" class="brand-logo-img">
                 <div class="brand-text">
                     <span class="brand-title">Geeky Researcher</span>
-                    <span class="brand-subtitle">Plant Pathology LMS</span>
+                    <span class="brand-subtitle">Master Plant Pathology</span>
                 </div>
             </a>
             
-            <nav class="nav-links">
-                <a href="#home">Home</a>
+            <nav class="nav-links" aria-label="Main Navigation">
+                <a href="#home" class="active">Home</a>
                 <a href="#about">About</a>
                 <a href="#courses">Programmes</a>
                 <a href="#syllabus">Syllabus</a>
@@ -1130,12 +1210,12 @@
                 <a href="register.html" class="btn btn-primary">Enroll Now</a>
             </div>
 
-            <button class="mobile-menu-btn" id="mobile-menu-btn">
-                <svg class="icon" style="width: 28px; height: 28px;" viewBox="0 0 24 24"><path d="M3 6H21V8H3V6M3 12H21V14H3V12M3 18H21V20H3V18Z"/></svg>
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="icon" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M3 6H21V8H3V6M3 12H21V14H3V12M3 18H21V20H3V18Z"/></svg>
             </button>
         </div>
         
-        <nav class="mobile-nav" id="mobile-nav">
+        <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile Navigation">
             <a href="#home">Home</a>
             <a href="#about">About</a>
             <a href="#courses">Programmes</a>
@@ -1143,8 +1223,10 @@
             <a href="#resources">Resources</a>
             <a href="#achievements">Achievements</a>
             <a href="#contact">Contact</a>
-            <a href="login.html" class="btn btn-outline" style="text-align: center;">Login</a>
-            <a href="register.html" class="btn btn-primary" style="text-align: center;">Enroll Now</a>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <a href="login.html" class="btn btn-outline" style="flex: 1; text-align: center;">Login</a>
+                <a href="register.html" class="btn btn-primary" style="flex: 1; text-align: center;">Enroll Now</a>
+            </div>
         </nav>
     </header>
 
@@ -1152,7 +1234,7 @@
         <div class="container hero-grid">
             <div class="hero-content reveal">
                 <span class="eyebrow">Scientific Learning • Exam Preparation</span>
-                <h1 class="hero-title">Master Plant Pathology. Build Your Research Future.</h1>
+                <h1 class="hero-title">Master Plant Pathology: Start your academic journey with Geeky researcher</h1>
                 <p class="hero-brand-statement">One Subject. One Platform. Plant Pathology.</p>
                 <p class="hero-description">
                     A focused learning ecosystem designed to help students and researchers understand Plant Pathology with conceptual clarity, structured lectures, systematic practice, and examination-oriented preparation.
@@ -1188,8 +1270,7 @@
             
             <div class="hero-visual reveal">
                 <div class="hero-image-frame">
-                    <!-- Added Provided Collage Image -->
-                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791625706/Plant_Pathology_Microscopy_Collage_q0im4g.png" alt="Plant Pathology Microscopy Collage" class="hero-image-main">
+                    <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733104/Home_znrmty.jpg" alt="Plant Pathology Microscopy Collage" class="hero-image-main">
                 </div>
             </div>
         </div>
@@ -1214,11 +1295,11 @@
                 <div class="stat-label">Monthly Tests</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">10+</div>
+                <div class="stat-value">20+</div>
                 <div class="stat-label">Subject-Wise</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">15+</div>
+                <div class="stat-value">25+</div>
                 <div class="stat-label">Model Tests</div>
             </div>
             <div class="stat-item">
@@ -1317,58 +1398,108 @@
     </section>
 
     <section class="section section-light" id="about">
-        <div class="container about-grid">
-            <div class="reveal">
-                <div class="section-header" style="text-align: left; margin-bottom: 40px; margin-left: 0;">
-                    <span class="eyebrow">The Brand Story</span>
-                    <h2>Every Great Journey Begins With a Dream.</h2>
+        <div class="container">
+            <div class="about-grid">
+                <div class="reveal">
+                    <div class="section-header" style="text-align: left; margin-bottom: 32px; margin-left: 0;">
+                        <span class="eyebrow">Brand Story</span>
+                        <h2>Every Empire Begins With a Dream.</h2>
+                    </div>
+                    <p class="about-lead">
+                        Ours began with two unknown, unrecognised geeks.
+                    </p>
+                    <p class="about-story">
+                        A decade ago, Nirmal Raj and Dr. N.H. Shankar Reddy were simply two students with big dreams and countless conversations about life, learning, excellence, and the desire to make something meaningful happen. What began as informal discussions slowly evolved into a shared academic journey—shaping our knowledge, strengthening our ambitions, and defining the path we wanted to create.
+                    </p>
+                    <p class="about-story">
+                        Over the years, that journey transformed into a vision: to learn, to share, and to make quality knowledge accessible to others. And that vision gave birth to Geeky Researcher.
+                    </p>
+                    <p class="about-story">
+                        What started as a simple initiative to disseminate knowledge in Plant Science and Plant Pathology gradually grew with the constant encouragement, trust, and support of our incredible subscribers. We began creating educational videos, sharing concepts, discussing subjects, and building a learning community driven by curiosity and the pursuit of knowledge.
+                    </p>
+                    <p class="about-story">
+                        With years of academic experience, teaching, research, and subject expertise, we took the next step—to make quality education more focused, accessible, and affordable. Thus, Geeky Services was born under the Geeky Researcher brand.
+                    </p>
+                    <p class="about-story">
+                        From two students with a dream to a growing educational platform serving learners across the country, the journey has been built not by shortcuts, but by knowledge, consistency, trust, and an unwavering belief in education.
+                    </p>
+                    <p class="about-story" style="font-family: var(--font-editorial); font-style: italic; font-weight: 600; color: var(--forest-green); font-size: 1.2rem; margin-top: 12px;">
+                        And this is only the beginning …..
+                    </p>
                 </div>
-                <p class="about-story">
-                    Geeky Researcher began with two students, Nirmal Raj and N.H. Shankar Reddy, who shared a vision of learning, excellence, and making quality knowledge accessible to others.
-                </p>
-                <p class="about-story">
-                    Over time, this vision developed into a focused educational initiative in Plant Science and Plant Pathology. Through educational videos, concept explanations, research-oriented learning, and the trust of subscribers, the initiative grew into a dedicated learning ecosystem under the Geeky Researcher brand.
-                </p>
-                <div class="about-mission">
-                    <h4>Our Mission</h4>
-                    <p style="color: var(--text-muted); line-height: 1.7;">To create a focused, reliable, and academically strong learning ecosystem for Plant Pathology. We believe Plant Pathology should be understood, not memorized.</p>
+                
+                <div class="faculty-grid reveal">
+                    <div class="faculty-card">
+                        <div class="faculty-image">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791623903/N_H_Sankar_Reddy_u3ccs3.jpg" alt="Dr. N.H. Shankar Reddy">
+                        </div>
+                        <h4>Dr. N.H. Shankar Reddy</h4>
+                        <p class="faculty-role">Founder and Tutor</p>
+                        <p class="faculty-qual">Ph.D., Plant Pathology</p>
+                    </div>
+                    <div class="faculty-card">
+                        <div class="faculty-image placeholder">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733012/WhatsApp_Image_2026-10-11_at_2.05.10_PM_wtsps9.jpg" alt="Dr. R. Nirmala Raj">
+                        </div>
+                        <h4>Dr. R. Nirmala Raj</h4>
+                        <p class="faculty-role">Founder</p>
+                        <p class="faculty-qual">Ph.D., Genetics & Plant Breeding</p>
+                    </div>
+                    <div class="faculty-card">
+                        <div class="faculty-image">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791623903/M_Gurivi_Reddy_wffrmv.jpg" alt="Dr. M. Gurivi Reddy">
+                        </div>
+                        <h4>Dr. M. Gurivi Reddy</h4>
+                        <p class="faculty-role">Visiting Member</p>
+                        <p class="faculty-qual">Ph.D., Plant Pathology</p>
+                    </div>
+                    <div class="faculty-card">
+                        <div class="faculty-image">
+                            <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791636735/G_Soma_Shekar_vozycx.jpg" alt="G. Somasekhar">
+                        </div>
+                        <h4>G. Somasekhar</h4>
+                        <p class="faculty-role">Financial Advisor</p>
+                        <p class="faculty-qual">Operations & Strategy</p>
+                    </div>
                 </div>
-                <p class="brand-signoff">“Stay Geeky, stay tuned. We are Team Geeky Researcher.”</p>
             </div>
-            
-            <div class="faculty-grid reveal">
-                <div class="faculty-card">
-                    <div class="faculty-image">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791623903/N_H_Sankar_Reddy_u3ccs3.jpg" alt="N.H. Shankar Reddy">
+
+            <!-- Geeky Researcher (Geeky Services) Platform Details -->
+            <div class="platform-overview-box reveal">
+                <span class="eyebrow">Academic Identity</span>
+                <h3 style="font-size: 2.1rem; margin-bottom: 8px;">Geeky Researcher (Geeky Services)</h3>
+                
+                <div class="overview-columns">
+                    <div>
+                        <p class="about-story">
+                            Geeky Researcher is a dedicated educational platform for Plant Pathology, created to help students and researchers learn concepts with clarity, depth, and scientific understanding. We primarily support aspirants preparing for: <strong>ASRB-NET, ARS, SMS, STO, SAUs, JRF, SRF, Ph.D.</strong>
+                        </p>
+                        <p class="about-story" style="font-family: var(--font-editorial); font-style: italic; font-size: 1.2rem; color: var(--botanical-green); font-weight: 600; border-left: 3px solid var(--gold-accent); padding-left: 16px; margin: 24px 0;">
+                            Our journey began with a simple vision: One Subject. One Platform. Geeky researcher = Plant Pathology.
+                        </p>
+                        <p class="about-story" style="margin-bottom: 0;">
+                            Through our YouTube channel and structured learning programs, we provide concept-driven lectures, exam-oriented preparation, practice tests, revisions, and research-focused learning resources for students preparing for competitive examinations and pursuing higher education in Plant Pathology.
+                        </p>
                     </div>
-                    <h4>N.H. Shankar Reddy</h4>
-                    <p class="faculty-role">Founder and Tutor</p>
-                    <p class="faculty-qual">Ph.D., Plant Pathology</p>
-                </div>
-                <div class="faculty-card">
-                    <div class="faculty-image placeholder">
-                        <svg class="icon" style="width: 56px; height: 56px; fill: var(--border-dark);" viewBox="0 0 24 24"><path d="M12 4A4 4 0 0 1 16 8A4 4 0 0 1 12 12A4 4 0 0 1 8 8A4 4 0 0 1 12 4M12 14C16.42 14 20 15.79 20 18V20H4V18C4 15.79 7.58 14 12 14Z"/></svg>
+
+                    <div>
+                        <div class="overview-card">
+                            <h4>What Makes Geeky Researcher Different</h4>
+                            <p style="color: var(--text-muted); line-height: 1.7; font-size: 0.98rem;">
+                                We believe Plant Pathology should be understood, not memorized. Our teaching approach focuses on connecting fundamental concepts and our content is designed to help learners move from basic concepts to advanced understanding, while developing the scientific thinking required for competitive examinations, higher studies, and research.
+                            </p>
+                        </div>
+
+                        <div class="overview-card" style="border-left-color: var(--gold-accent);">
+                            <h4>Our Mission</h4>
+                            <p style="color: var(--text-muted); line-height: 1.7; font-size: 0.98rem;">
+                                Our mission is to create a focused, reliable, and academically strong learning ecosystem for Plant Pathology
+                            </p>
+                        </div>
                     </div>
-                    <h4>Dr. R. Nirmala Raj</h4>
-                    <p class="faculty-role">Founder</p>
-                    <p class="faculty-qual">Ph.D., Genetics & Plant Breeding</p>
                 </div>
-                <div class="faculty-card">
-                    <div class="faculty-image">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791623903/M_Gurivi_Reddy_wffrmv.jpg" alt="Dr. M. Gurivi Reddy">
-                    </div>
-                    <h4>Dr. M. Gurivi Reddy</h4>
-                    <p class="faculty-role">Visiting Member</p>
-                    <p class="faculty-qual">Ph.D., Plant Pathology</p>
-                </div>
-                <div class="faculty-card">
-                    <div class="faculty-image">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791636735/G_Soma_Shekar_vozycx.jpg" alt="G. Somasekhar">
-                    </div>
-                    <h4>G. Somasekhar</h4>
-                    <p class="faculty-role">Financial Advisor</p>
-                    <p class="faculty-qual">Operations & Strategy</p>
-                </div>
+
+                <p class="brand-signoff">“Stay Geeky, stay tuned, we are Team geeky researcher” – Dr. N.H. Shankar Reddy</p>
             </div>
         </div>
     </section>
@@ -1417,7 +1548,6 @@
                         <li><svg class="icon" viewBox="0 0 24 24"><path d="M10 16.5L16 12L10 7.5V16.5M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2Z"/></svg> ARS Mains Demo Videos</li>
                     </ul>
                     
-                    <!-- Added Free Resources Redirect Link -->
                     <a href="freeresources.html" class="btn btn-primary" style="margin-top: 16px;">
                         Access Free Resources <svg class="icon" viewBox="0 0 24 24" style="margin-left: -4px;"><path d="M4 11V13H16L10.5 18.5L11.92 19.92L19.84 12L11.92 4.08L10.5 5.5L16 11H4Z"/></svg>
                     </a>
@@ -1426,7 +1556,7 @@
                 </div>
                 
                 <div>
-                    <h3 style="margin-bottom: 32px; font-size: 1.75rem;">Recommended Reading</h3>
+                    <h3 style="margin-bottom: 32px; font-size: 1.75rem;">Geeky Publications</h3>
                     <!-- Dynamic Target -->
                     <div id="dynamic-books-grid" class="books-grid">
                         <!-- Fallback / Initial State based on supplied text -->
@@ -1455,13 +1585,13 @@
     </section>
 
     <section class="section section-light" id="achievements">
-        <div class="container" style="max-width: 1400px;"> <!-- Slightly wider container for scroll layout -->
+        <div class="container" style="max-width: 1400px;">
             <div class="section-header reveal">
                 <span class="eyebrow">Wall of Fame 2025</span>
                 <h2>Success Built Through Consistent Learning</h2>
                 <p>Recognizing the scholars who have achieved top ranks in competitive examinations across India.</p>
                 
-                <div style="display: flex; justify-content: center; gap: 40px; margin-top: 32px; color: var(--forest-green); font-family: var(--font-editorial); font-size: 1.35rem; font-weight: 700;">
+                <div style="display: flex; justify-content: center; gap: 40px; margin-top: 32px; color: var(--forest-green); font-family: var(--font-editorial); font-size: 1.35rem; font-weight: 700; flex-wrap: wrap;">
                     <span>45+ NET Cleared</span>
                     <span style="color: var(--border-dark);">|</span>
                     <span>30 ARS Mains</span>
@@ -1480,7 +1610,7 @@
                     “Your subscription is a promise, we ensure its worth every moment and never a missed opportunity.”
                 </div>
                 <div class="promise-author">
-                    <h4>N.H. Shankar Reddy</h4>
+                    <h4>Dr. N.H. Shankar Reddy</h4>
                     <p>Founder & Principal Tutor</p>
                 </div>
             </div>
@@ -1491,15 +1621,15 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <!-- Brand logo in footer -->
-                    <a href="#" class="brand" style="margin-bottom: 24px; display: inline-flex;">
-                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1783935221/WhatsApp_Image_2026-07-08_at_6.25.14_PM_aiuvde.jpg" alt="Geeky Researcher Logo" class="brand-logo-img" style="border-color: rgba(255,255,255,0.5);">
+                    <!-- Updated Brand logo in footer -->
+                    <a href="#home" class="brand" style="margin-bottom: 24px; display: inline-flex;">
+                        <img src="https://res.cloudinary.com/dzuxwvamy/image/upload/v1791733103/WhatsApp_Image_2026-10-11_at_12.57.36_PM_wl6n9r.jpg" alt="Geeky Researcher Logo" class="brand-logo-img" style="border-color: rgba(255,255,255,0.5);">
                         <div class="brand-text">
                             <span class="brand-title" style="color: var(--white); margin-bottom: 0;">Geeky Researcher</span>
                             <span class="brand-subtitle" style="color: var(--gold-accent);">Plant Pathology Platform</span>
                         </div>
                     </a>
-                    <p class="footer-desc">The definitive educational platform for Plant Pathology. Built by researchers, for future researchers. Elevate your conceptual understanding and ace competitive exams.</p>
+                    <p class="footer-desc">The platform is designed for trainings all grades of plant pathologists from basics to advance with focus, consistency and preparation.</p>
                     <div class="social-links">
                         <a href="https://www.youtube.com/@geekyresearcher" target="_blank" aria-label="YouTube"><svg class="icon" viewBox="0 0 24 24"><path d="M10 15L15 12L10 9V15M21.5 12C21.5 17.25 17.25 21.5 12 21.5C6.75 21.5 2.5 17.25 2.5 12C2.5 6.75 6.75 2.5 12 2.5C17.25 2.5 21.5 6.75 21.5 12Z"/></svg></a>
                         <a href="http://geekyresearcher.com/" target="_blank" aria-label="Website"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2M11 19.93C7.05 19.43 4 16.05 4 12C4 11.38 4.08 10.79 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18V19.93M17.9 17.39C17.64 16.58 16.9 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.77 20 8.64 20 12C20 14.08 19.2 15.97 17.9 17.39Z"/></svg></a>
@@ -1544,7 +1674,7 @@
             <!-- Agency Credit -->
             <div class="agency-credit">
                 <p class="agency-title">Designed & Developed by</p>
-                 <p  class="agency-name">Xeta Tech Solutions Pvt Ltd.</p>
+                <p class="agency-name">Xeta Tech Solutions Pvt Ltd.</p>
                 <a href="https://xetatechsolutions.com/" target="_blank">
                     <img src="https://res.cloudinary.com/dpz44zf0z/image/upload/v1760704788/XETA_SOLUTIONS_LOGO_bcsbwh.png" alt="Xeta Tech Solutions">
                 </a>
@@ -1595,11 +1725,25 @@
                 link.addEventListener('click', () => { mobileNav.classList.remove('active'); });
             });
 
-            // Header Scroll Effect
+            // Header Scroll & Active Section Highlight
             const header = document.getElementById('header');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            const sections = document.querySelectorAll('section[id], footer[id]');
+
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 20) header.classList.add('scrolled');
                 else header.classList.remove('scrolled');
+
+                let currentSection = 'home';
+                sections.forEach(sec => {
+                    const top = sec.offsetTop - 130;
+                    if (window.scrollY >= top) {
+                        currentSection = sec.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === `#${currentSection}`);
+                });
             });
 
             // Scroll Reveal Animation
@@ -1677,7 +1821,6 @@
                         `;
                     }).join('');
                     
-                    // Render using the new scrolling container
                     contentHtml += `<div id="ach-tab-${safeId}" class="ach-tab-content ${isHidden} achievements-scroller">${itemsHtml}</div>`;
                 });
                 contentHtml += `</div>`;
@@ -1688,22 +1831,18 @@
                 // Initialize Auto-Scroll logic
                 const allScrollers = document.querySelectorAll('.achievements-scroller');
                 
-                // Pause scrolling on hover or touch interactions
                 allScrollers.forEach(scroller => {
                     scroller.addEventListener('mouseenter', () => scroller.dataset.paused = 'true');
                     scroller.addEventListener('mouseleave', () => scroller.dataset.paused = 'false');
                     scroller.addEventListener('touchstart', () => scroller.dataset.paused = 'true', {passive: true});
-                    // Resume 1.5 seconds after a touch ends
                     scroller.addEventListener('touchend', () => { 
                         setTimeout(() => scroller.dataset.paused = 'false', 1500); 
                     }, {passive: true});
                 });
 
-                // Clear any existing intervals if function runs again
                 if(window.autoScrollInterval) clearInterval(window.autoScrollInterval);
                 
                 window.autoScrollInterval = setInterval(() => {
-                    // Only scroll the active, visible tab
                     const activeScroller = document.querySelector('.achievements-scroller:not(.hidden)');
                     
                     if (!activeScroller || activeScroller.dataset.paused === 'true') return;
@@ -1712,15 +1851,14 @@
                     if (!card) return;
 
                     const maxScroll = activeScroller.scrollWidth - activeScroller.clientWidth;
-                    const scrollAmount = card.offsetWidth + 32; // Card width + gap size
+                    const scrollAmount = card.offsetWidth + 32;
 
-                    // Reset to start if at the end, otherwise scroll next
                     if (activeScroller.scrollLeft >= maxScroll - 10) {
                         activeScroller.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
                         activeScroller.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                     }
-                }, 3500); // 3.5 seconds per slide
+                }, 3500);
 
             } catch(e) { 
                 container.innerHTML = '<p style="text-align: center; color: #d9534f; padding: 40px;">Failed to load achievements data.</p>'; 
@@ -1750,7 +1888,6 @@
 
                 let html = '';
                 courses.forEach(course => {
-                    // Safe injection
                     const safeFeatures = (course.features || []).map(f => `<li><svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"/></svg> <span>${escapeHtml(f)}</span></li>`).join('');
                     const oldPriceHtml = course.oldPrice ? `<span class="course-old-price">₹ ${escapeHtml(course.oldPrice.toString())}</span>` : '';
                     
